@@ -1,28 +1,8 @@
-# AshamaneCore
+MagicStormTeam
 
 --------------
 
-
-* [Build Status](#build-status)
-* [Introduction](#introduction)
-* [Requirements](#requirements)
-* [Install](#install)
-* [Reporting issues](#reporting-issues)
-* [Submitting fixes](#submitting-fixes)
-* [Copyright](#copyright)
-* [Authors &amp; Contributors](#authors--contributors)
-* [Links](#links)
-
-
-
-## Build Status
-
-[![master Build Status](https://travis-ci.org/AshamaneProject/AshamaneCore.svg?branch=master)](https://travis-ci.org/AshamaneProject/AshamaneCore)
-[![Build status](https://ci.appveyor.com/api/projects/status/kb0wjxh3va9c3e0k/branch/master?svg=true)](https://ci.appveyor.com/project/Traesh/ashamanecore/branch/master)
-
-## Introduction
-
-AshamaneCore is a *MMORPG* Framework based mostly in C++.
+MagicStormTeam is a *MMORPG* Framework based mostly in C++.
 
 It is fully based on *TrinityCore*, with upgrades like :
 
