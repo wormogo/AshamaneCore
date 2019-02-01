@@ -696,6 +696,44 @@ public:
     }
 };
 
+// 211546 - Word of Versatility
+class spell_word_of_versatility : public SpellScriptLoader
+{
+public:
+    spell_word_of_versatility() : SpellScriptLoader("spell_word_of_versatility") {}
+
+    class spell_word_of_versatility_SpellScript : public SpellScript
+    {
+        PrepareSpellScript(spell_word_of_versatility_SpellScript);
+
+        void HandleDummy(SpellEffIndex /*effIndex*/)
+        {
+            if (Unit* caster = GetCaster())
+                if (Unit* target = GetHitUnit())
+                    if (target->GetTypeId() == TYPEID_UNIT)
+                        switch (target->GetEntry())
+                        {
+                        case 89278:
+                        case 89969:
+                            caster->ToPlayer()->KilledMonsterCredit(106642, ObjectGuid::Empty);
+                            break;
+                        default:
+                            break;
+                        }
+        }
+
+        void Register()
+        {
+            OnEffectHitTarget += SpellEffectFn(spell_word_of_versatility_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+        }
+    };
+
+    SpellScript* GetSpellScript() const
+    {
+        return new spell_word_of_versatility_SpellScript();
+    }
+};
+
 void AddSC_azsuna()
 {
     new scene_azsuna_runes();
