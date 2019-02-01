@@ -167,6 +167,7 @@ void AddSC_stonetalon_mountains();
 void AddSC_tanaris();
 void AddSC_the_barrens();
 void AddSC_thousand_needles();
+void AddSC_mount_hyjal();
 void AddSC_thunder_bluff();
 void AddSC_ungoro_crater();
 void AddSC_winterspring();
@@ -311,6 +312,7 @@ void AddKalimdorScripts()
     AddSC_azshara();
     AddSC_azuremyst_isle();
     AddSC_bloodmyst_isle();
+    AddSC_mount_hyjal();
     AddSC_darkshore();
     AddSC_desolace();
     AddSC_durotar();
