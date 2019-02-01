@@ -34,6 +34,7 @@
 #include "WaypointManager.h"
 #include "MotionMaster.h"
 #include "PhasingHandler.h"
+#include "SpellInfo.h"
 
 class scene_azsuna_runes : public SceneScript
 {
@@ -488,11 +489,222 @@ public:
     }
 };
 
+// 250361
+class go_sabotaged_portal_stabilizer : public GameObjectScript
+{
+public:
+    go_sabotaged_portal_stabilizer() : GameObjectScript("go_sabotaged_portal_stabilizer") { }
+
+    bool OnGossipHello(Player* player, GameObject* go) override
+    {
+        player->CastSpell(go, 6478, true);
+        player->KillCreditGO(250361, go->GetGUID());
+
+        return true;
+    }
+};
+
+// 214482 - Radiant Ley Crystal
+class spell_gen_radiant_ley_crystal : public SpellScriptLoader
+{
+public:
+    spell_gen_radiant_ley_crystal() : SpellScriptLoader("spell_gen_radiant_ley_crystal") { }
+
+    class spell_gen_radiant_ley_crystal_SpellScript : public SpellScript
+    {
+        PrepareSpellScript(spell_gen_radiant_ley_crystal_SpellScript);
+
+        SpellCastResult CheckRequirement()
+        {
+            if (Unit* caster = GetCaster())
+            {
+                if (Unit* target = ObjectAccessor::GetUnit(*caster, GetCaster()->GetTarget()))
+                {
+                    if (target->GetTypeId() == TYPEID_UNIT)
+                    {
+                        switch (target->GetEntry())
+                        {
+                        case 107961:
+                            caster->ToPlayer()->KilledMonsterCredit(107961, ObjectGuid::Empty);
+                            return SPELL_CAST_OK;
+                        case 107962:
+                            caster->ToPlayer()->KilledMonsterCredit(107962, ObjectGuid::Empty);
+                            return SPELL_CAST_OK;
+                        case 107963:
+                            caster->ToPlayer()->KilledMonsterCredit(107963, ObjectGuid::Empty);
+                            return SPELL_CAST_OK;
+                        case 107964:
+                            caster->ToPlayer()->KilledMonsterCredit(107964, ObjectGuid::Empty);
+                            return SPELL_CAST_OK;
+                        default:
+                            return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+                        }
+                    }
+                }
+            }
+
+            return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+        }
+
+        void Register() override
+        {
+            OnCheckCast += SpellCheckCastFn(spell_gen_radiant_ley_crystal_SpellScript::CheckRequirement);
+        }
+    };
+
+    SpellScript* GetSpellScript() const override
+    {
+        return new spell_gen_radiant_ley_crystal_SpellScript();
+    }
+};
+
+enum WitheredJim
+{
+    NPC_ENTRY_WITHERED_JIM_CLONE              = 112350,
+    NPC_ENTRY_WITHERED_JIM                    = 102075,
+    NPC_ENTRY_NIGHTSTABLE_ENERGY              = 112342,
+
+    SPELL_WITHERED_PRESENCE_AREA_TRIGGER      = 223632,
+    SPELL_WITHERED_PRESENCE_BUFF              = 223599,
+    SPELL_MORE_MORE_MORE                      = 223715,
+    SPELL_MORE_MORE_MORE_TRIGGERED            = 223723,
+    SPELL_NIGHTSHIFTED_BOLTS                  = 223623,
+    SPELL_RESONANCE                           = 223614,
+    SPELL_NIGHTSTABLE_ENERGY                  = 223689
+};
+
+enum WitheredJimEvents
+{
+    EVENT_NIGHTSHIFTED_BOLTS = 0,
+    EVENT_RESONANCE          = 1,
+    EVENT_NIGHTSTABLE_ENERGY = 2,
+    EVENT_MORE_MORE_MORE     = 3,
+    EVENT_SUMMON_CLONE       = 4
+};
+
+#define CLONE_MAX_COUNT 5
+
+class boss_withered_jim : public CreatureScript
+{
+public:
+    boss_withered_jim() : CreatureScript("boss_withered_jim") {}
+
+    struct boss_withered_jimAI : public ScriptedAI
+    {
+        boss_withered_jimAI(Creature* creature) : ScriptedAI(creature), summons(me), countclons(0)
+        {
+        }
+
+        EventMap events;
+        SummonList summons;
+        uint8 countclons;
+        
+        void Reset() override
+        {
+            events.Reset();
+            summons.DespawnAll();
+            countclons = 0;
+        }
+        
+        void EnterCombat(Unit* unit) override
+        {
+            events.ScheduleEvent(EVENT_NIGHTSHIFTED_BOLTS, 18000);
+            events.ScheduleEvent(EVENT_RESONANCE, 24000);
+            events.ScheduleEvent(EVENT_NIGHTSTABLE_ENERGY, 22000);
+            if (me->GetEntry() == NPC_ENTRY_WITHERED_JIM)
+                events.ScheduleEvent(EVENT_MORE_MORE_MORE, 30000);
+            DoCast(SPELL_WITHERED_PRESENCE_AREA_TRIGGER); // AT
+            DoCast(SPELL_WITHERED_PRESENCE_BUFF);
+        }  
+        
+        void JustSummoned(Creature* summon) override
+        {
+            summons.Summon(summon);  
+            DoZoneInCombat(me, 150.0f);
+            if (summon->GetEntry() == NPC_ENTRY_WITHERED_JIM_CLONE)
+                summon->CastSpell(summon, SPELL_WITHERED_PRESENCE_BUFF);
+            if (summon->GetEntry() == NPC_ENTRY_NIGHTSTABLE_ENERGY)
+                summon->DespawnOrUnsummon(9000);
+        }
+
+        void JustDied(Unit* who) override
+        {
+            summons.DespawnAll();
+        }
+                
+        void DamageTaken(Unit* attacker, uint32& /*damage*/) override
+        {
+            if (attacker->GetTypeId() != TYPEID_PLAYER)
+                return;
+            
+            if (attacker->GetPositionZ() >= 60.0f)
+                me->Kill(attacker); //cheaters and others
+        }
+              
+        void UpdateAI(uint32 diff) override
+        {
+            if (me->HasUnitState(UNIT_STATE_CASTING))
+                return;
+            
+            if (!UpdateVictim())
+                return;
+
+            events.Update(diff);
+            
+            while (uint32 eventId = events.ExecuteEvent())
+            {
+                switch (eventId)
+                {
+                    case EVENT_NIGHTSHIFTED_BOLTS:
+                        DoCast(SPELL_NIGHTSHIFTED_BOLTS);
+                        events.ScheduleEvent(EVENT_NIGHTSHIFTED_BOLTS, urand(25000, 30000));
+                        break;
+                    case EVENT_RESONANCE:
+                        DoCast(SPELL_RESONANCE);
+                        events.ScheduleEvent(EVENT_NIGHTSHIFTED_BOLTS, urand(24000, 30000));
+                        break;
+                    case EVENT_NIGHTSTABLE_ENERGY:
+                        DoCast(SPELL_NIGHTSTABLE_ENERGY);
+                        events.ScheduleEvent(EVENT_NIGHTSHIFTED_BOLTS, urand(29000, 34000));
+                        break;
+                    case EVENT_MORE_MORE_MORE:
+                        ++countclons;
+                        DoCast(SPELL_MORE_MORE_MORE);
+                        if (countclons < CLONE_MAX_COUNT)
+                            events.ScheduleEvent(EVENT_MORE_MORE_MORE, 30000);
+                        events.ScheduleEvent(EVENT_SUMMON_CLONE, 1000);
+                        break;
+                    case EVENT_SUMMON_CLONE:
+                        if (me->HasAura(SPELL_MORE_MORE_MORE))
+                            events.ScheduleEvent(EVENT_SUMMON_CLONE, 1000);
+                        else
+                        {
+                            if (Creature* clone = me->SummonCreature(NPC_ENTRY_WITHERED_JIM_CLONE, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation()))
+                                clone->CastSpell(clone, SPELL_MORE_MORE_MORE_TRIGGERED);
+                        }
+                        break;
+                }
+            }
+            
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* creature) const override
+    {
+        return new boss_withered_jimAI(creature);
+    }
+};
+
 void AddSC_azsuna()
 {
     new scene_azsuna_runes();
     RegisterCreatureAI(questnpc_soul_gem);
     RegisterCreatureAI(questnpc_mana_drained_whelpling);
     new npc_prince_farondis();
+    new boss_withered_jim();
     new npc_prince_farondis_escort();
+    new spell_word_of_versatility();
+    new go_sabotaged_portal_stabilizer();
+    new spell_gen_radiant_ley_crystal();
 }
