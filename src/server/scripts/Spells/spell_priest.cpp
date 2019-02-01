@@ -34,6 +34,7 @@
 #include "SpellMgr.h"
 #include "TemporarySummon.h"
 #include "SpellHistory.h"
+#include "GridNotifiers.h"
 
 enum PriestSpells
 {
@@ -188,6 +189,12 @@ enum PriestSpells
     SPELL_PRIEST_VOID_TENDRILS_SUMMON               = 127665,
     SPELL_PRIEST_VOID_TENDRILS_TRIGGER              = 127665,
     SPELL_PRIEST_WEAKENED_SOUL                      = 6788,
+    SPELL_PRIEST_SPHERE_OF_INSANITY                 = 194179,
+    SPELL_PRIEST_SPHERE_OF_INSANITY_AURA            = 194230,
+    SPELL_PRIEST_SPHERE_OF_INSANITY_TRIGGER         = 194182,
+    SPELL_PRIEST_SPHERE_OF_INSANITY_DAMAGE          = 194238,
+    SPELL_PRIEST_SHADOW_WORD_PAIN                   = 589,
+    SPELL_PRIEST_MIND_BLAST                         = 8092,
 };
 
 enum PriestSpellIcons
@@ -2735,6 +2742,149 @@ struct at_pri_divine_star : AreaTriggerAI
     }
 };
 
+// Sphere Of Insanity - 194182
+class spell_arti_pri_sphere_of_insanity_summon : public SpellScriptLoader
+{
+public:
+    spell_arti_pri_sphere_of_insanity_summon() : SpellScriptLoader("spell_arti_pri_sphere_of_insanity_summon") { }
+
+    class spell_arti_pri_sphere_of_insanity_summon_SpellScript : public SpellScript
+    {
+        PrepareSpellScript(spell_arti_pri_sphere_of_insanity_summon_SpellScript);
+
+        void HandleSummon(SpellEffIndex /*effIndex*/)
+        {
+            Unit* caster = GetCaster();
+            if (!caster)
+                return;
+
+            std::list<Creature*> list;
+
+            for (auto itr = caster->m_Controlled.begin(); itr != caster->m_Controlled.end(); ++itr)
+                if ((*itr)->GetEntry() == GetEffectInfo()->MiscValue && (*itr)->GetTypeId() == TYPEID_UNIT && (*itr)->IsAlive())
+                    list.push_back((*itr)->ToCreature());
+
+            if (list.empty())
+                return;
+
+            for (Creature* sphere : list)
+                sphere->DespawnOrUnsummon();
+
+            Position offset = { 0.0f, 0.0f, 2.0f, 0.0f };
+            const_cast<WorldLocation*>(GetExplTargetDest())->RelocateOffset(offset);
+            GetHitDest()->RelocateOffset(offset);
+        }
+
+        void Register() override
+        {
+            OnEffectLaunch += SpellEffectFn(spell_arti_pri_sphere_of_insanity_summon_SpellScript::HandleSummon, EFFECT_0, SPELL_EFFECT_SUMMON);
+        }
+    };
+
+    SpellScript* GetSpellScript() const override
+    {
+        return new spell_arti_pri_sphere_of_insanity_summon_SpellScript();
+    }
+};
+
+// Sphere Of Insanity - 194230
+class spell_arti_pri_sphere_of_insanity : public SpellScriptLoader
+{
+public:
+    spell_arti_pri_sphere_of_insanity() : SpellScriptLoader("spell_arti_pri_sphere_of_insanity") { }
+
+    class spell_arti_pri_sphere_of_insanity_AuraScript : public AuraScript
+    {
+        PrepareAuraScript(spell_arti_pri_sphere_of_insanity_AuraScript);
+
+        bool Validate(SpellInfo const* /*spellInfo*/) override
+        {
+            return ValidateSpellInfo
+            ({
+                SPELL_PRIEST_SPHERE_OF_INSANITY_TRIGGER,
+                SPELL_PRIEST_SPHERE_OF_INSANITY_DAMAGE,
+                SPELL_PRIEST_SHADOW_WORD_PAIN,
+            });
+        }
+
+        bool CheckProc(ProcEventInfo& eventInfo)
+        {
+            if (!eventInfo.GetActor() || !eventInfo.GetDamageInfo() || !eventInfo.GetDamageInfo()->GetDamage())
+                return false;
+
+            if (eventInfo.GetDamageInfo()->GetSpellInfo()->Id == SPELL_PRIEST_MIND_BLAST || eventInfo.GetDamageInfo()->GetSpellInfo()->Id == 15407 ||
+                eventInfo.GetDamageInfo()->GetSpellInfo()->Id == 73510)
+                return true;
+
+            return false;
+        }
+
+        void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+        {
+            PreventDefaultAction();
+
+            Unit* caster = eventInfo.GetActor();
+            int32 damage = eventInfo.GetDamageInfo()->GetDamage();
+
+            std::list<Creature*> list;
+
+            for (auto itr = caster->m_Controlled.begin(); itr != caster->m_Controlled.end(); ++itr)
+                if ((*itr)->GetEntry() == 98680 && (*itr)->GetTypeId() == TYPEID_UNIT && (*itr)->IsAlive())
+                    list.push_back((*itr)->ToCreature());
+
+            if (list.empty())
+                return;
+
+            Creature* sphere = list.front();
+            if (!sphere)
+                return;
+
+            damage = CalculatePct(damage, sSpellMgr->AssertSpellInfo(SPELL_PRIEST_SPHERE_OF_INSANITY_TRIGGER)->GetEffect(EFFECT_2)->BasePoints);
+
+            std::list<Unit*> targetList;
+            sphere->GetAttackableUnitListInRange(targetList, 100.f);
+            if (!targetList.empty())
+            {
+                targetList.remove_if(Trinity::UnitAuraCheck(false, SPELL_PRIEST_SHADOW_WORD_PAIN, caster->GetGUID()));
+                if (!targetList.empty())
+                    for (Unit* target : targetList)
+                        sphere->CastCustomSpell(target, SPELL_PRIEST_SPHERE_OF_INSANITY_DAMAGE, &damage, NULL, NULL, true, NULL, NULL, caster->GetGUID());
+            }
+        }
+
+        void AfterRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+        {
+            Unit* caster = GetCaster();
+            if (!caster)
+                return;
+
+            std::list<Creature*> list;
+
+            for (auto itr = caster->m_Controlled.begin(); itr != caster->m_Controlled.end(); ++itr)
+                if ((*itr)->GetEntry() == 98680 && (*itr)->GetTypeId() == TYPEID_UNIT && (*itr)->IsAlive())
+                    list.push_back((*itr)->ToCreature());
+
+            if (list.empty())
+                return;
+
+            for (Creature* sphere : list)
+                sphere->DespawnOrUnsummon();
+        }
+
+        void Register() override
+        {
+            DoCheckProc += AuraCheckProcFn(spell_arti_pri_sphere_of_insanity_AuraScript::CheckProc);
+            OnEffectProc += AuraEffectProcFn(spell_arti_pri_sphere_of_insanity_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+            AfterEffectRemove += AuraEffectRemoveFn(spell_arti_pri_sphere_of_insanity_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        }
+    };
+
+    AuraScript* GetAuraScript() const override
+    {
+        return new spell_arti_pri_sphere_of_insanity_AuraScript();
+    }
+};
+
 void AddSC_priest_spell_scripts()
 {
     RegisterAreaTriggerAI(at_pri_angelic_feather);
@@ -2801,6 +2951,8 @@ void AddSC_priest_spell_scripts()
     RegisterAuraScript(spell_pri_clarity_of_will);
     RegisterAuraScript(spell_pri_twist_of_fate);
     RegisterAuraScript(spell_pri_mind_bomb);
+    RegisterSpellScript(spell_arti_pri_sphere_of_insanity_summon);
+    RegisterSpellScript(spell_arti_pri_sphere_of_insanity);
 
     RegisterSpellAndAuraScriptPair(spell_pri_power_word_shield, spell_pri_power_word_shield_AuraScript);
 }
