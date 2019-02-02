@@ -1331,7 +1331,7 @@ void AuraEffect::HandleShapeshiftBoosts(Unit* target, bool apply) const
             break;
         case FORM_AQUATIC_FORM:
             spellId = 5421;
-            target->RemoveAura(115034)
+            target->RemoveAura(115034);
             break;
         case FORM_BEAR_FORM:
             spellId = 1178;
