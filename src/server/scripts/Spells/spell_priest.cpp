@@ -2800,8 +2800,6 @@ void AddSC_priest_spell_scripts()
     RegisterAuraScript(spell_pri_clarity_of_will);
     RegisterAuraScript(spell_pri_twist_of_fate);
     RegisterAuraScript(spell_pri_mind_bomb);
-    RegisterSpellScript(spell_arti_pri_sphere_of_insanity_summon);
-    RegisterSpellScript(spell_arti_pri_sphere_of_insanity);
 
     RegisterSpellAndAuraScriptPair(spell_pri_power_word_shield, spell_pri_power_word_shield_AuraScript);
 }
