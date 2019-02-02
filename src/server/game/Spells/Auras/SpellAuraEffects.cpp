@@ -1319,6 +1319,7 @@ void AuraEffect::HandleShapeshiftBoosts(Unit* target, bool apply) const
             spellId2 = 48629;
             spellId3 = 106840;
             spellId4 = 113636;
+            target->RemoveAura(115034);
             break;
         case FORM_TREE_OF_LIFE:
             spellId = 5420;
@@ -1326,23 +1327,28 @@ void AuraEffect::HandleShapeshiftBoosts(Unit* target, bool apply) const
             break;
         case FORM_TRAVEL_FORM:
             spellId = 5419;
+            target->RemoveAura(115034);
             break;
         case FORM_AQUATIC_FORM:
             spellId = 5421;
+            target->RemoveAura(115034)
             break;
         case FORM_BEAR_FORM:
             spellId = 1178;
             spellId2 = 21178;
             spellId3 = 106829;
             spellId4 = 106899;
+            target->RemoveAura(115034);
             break;
         case FORM_FLIGHT_FORM:
             spellId = 33948;
             spellId2 = 34764;
+            target->RemoveAura(115034);
             break;
         case FORM_FLIGHT_FORM_EPIC:
             spellId  = 40122;
             spellId2 = 40121;
+            target->RemoveAura(115034);
             break;
         case FORM_SPIRIT_OF_REDEMPTION:
             spellId  = 27792;
