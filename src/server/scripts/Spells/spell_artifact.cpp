@@ -722,6 +722,50 @@ class aura_artifact_shaman_stormkeeper : public AuraScript
     }
 };
 
+// 194024 - Thrive in the Shadows
+class spell_arti_pri_thrive : public SpellScriptLoader
+{
+public:
+    spell_arti_pri_thrive() : SpellScriptLoader("spell_arti_pri_thrive") { }
+
+    class spell_arti_pri_thrive_SpellScript : public SpellScript
+    {
+        PrepareSpellScript(spell_arti_pri_thrive_SpellScript);
+
+        enum eSpells
+        {
+            SPELL_PRIEST_THRIVE         = 194024,
+            SPELL_PRIEST_THRIVE_HEAL    = 194025
+        };
+
+        bool Validate(SpellInfo const* /*spell*/) override
+        {
+            if (!sSpellMgr->GetSpellInfo(SPELL_PRIEST_THRIVE))
+                return false;
+            return true;
+        }
+
+        void HandleOnCast()
+        {
+            if (Unit* caster = GetCaster())
+            {
+                int32 basepoints0 = caster->GetMaxHealth() / 2 / 7;
+                caster->CastCustomSpell(caster, SPELL_PRIEST_THRIVE_HEAL, &basepoints0, NULL, NULL, true, NULL);
+            }
+        }
+
+        void Register()
+        {
+            OnCast += SpellCastFn(spell_arti_pri_thrive_SpellScript::HandleOnCast);
+        }
+    };
+
+    SpellScript* GetSpellScript() const
+    {
+        return new spell_arti_pri_thrive_SpellScript();
+    }
+};
+
 // Sphere Of Insanity - 194182
 class spell_arti_pri_sphere_of_insanity_summon : public SpellScriptLoader
 {
@@ -862,50 +906,6 @@ public:
     AuraScript* GetAuraScript() const override
     {
         return new spell_arti_pri_sphere_of_insanity_AuraScript();
-    }
-};
-
-// 194024 - Thrive in the Shadows
-class spell_arti_pri_thrive : public SpellScriptLoader
-{
-public:
-    spell_arti_pri_thrive() : SpellScriptLoader("spell_arti_pri_thrive") { }
-
-    class spell_arti_pri_thrive_SpellScript : public SpellScript
-    {
-        PrepareSpellScript(spell_arti_pri_thrive_SpellScript);
-
-        enum eSpells
-        {
-            SPELL_PRIEST_THRIVE         = 194024,
-            SPELL_PRIEST_THRIVE_HEAL    = 194025
-        };
-
-        bool Validate(SpellInfo const* /*spell*/) override
-        {
-            if (!sSpellMgr->GetSpellInfo(SPELL_PRIEST_THRIVE))
-                return false;
-            return true;
-        }
-
-        void HandleOnCast()
-        {
-            if (Unit* caster = GetCaster())
-            {
-                int32 basepoints0 = caster->GetMaxHealth() / 2 / 7;
-                caster->CastCustomSpell(caster, SPELL_PRIEST_THRIVE_HEAL, &basepoints0, NULL, NULL, true, NULL);
-            }
-        }
-
-        void Register()
-        {
-            OnCast += SpellCastFn(spell_arti_pri_thrive_SpellScript::HandleOnCast);
-        }
-    };
-
-    SpellScript* GetSpellScript() const
-    {
-        return new spell_arti_pri_thrive_SpellScript();
     }
 };
 
