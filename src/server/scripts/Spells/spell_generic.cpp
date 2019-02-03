@@ -4805,6 +4805,65 @@ public:
     }
 };
 
+// https://ru.wowhead.com/spell=225124
+// 7.3.5
+class spell_gen_sands_of_time : public SpellScriptLoader
+{
+public:
+    spell_gen_sands_of_time() : SpellScriptLoader("spell_gen_sands_of_time") { }
+
+    class spell_gen_sands_of_time_AuraScript : public AuraScript
+    {
+        PrepareAuraScript(spell_gen_sands_of_time_AuraScript);
+
+        void Absorb(AuraEffect* aurEff, DamageInfo& dmgInfo, uint32& absorbAmount)
+        {
+            Unit* target = GetCaster();
+
+            if (!target)
+                return;
+
+            int32 bp = aurEff->GetAmount();
+            int32 damage = dmgInfo.GetDamage();
+
+            if (damage > bp)
+            {
+                bp = damage - bp;
+            }
+            else
+                bp = damage;
+
+            if (target->GetHealth() >= damage || target->HasAura(229333))
+            {
+                dmgInfo.AbsorbDamage(0);
+                absorbAmount = 0;
+                return;
+            }
+            else
+            {
+                target->CastSpell(target, 229333, true);
+                target->ModifyHealth(1000000);
+                int32 bp = damage / 5;
+                target->CastCustomSpell(target, 229457, &bp, NULL, NULL, true);
+            }
+            dmgInfo.AbsorbDamage(bp);
+            absorbAmount = bp;
+
+            PreventDefaultAction();
+        }
+
+        void Register()
+        {
+            OnEffectAbsorb += AuraEffectAbsorbFn(spell_gen_sands_of_time_AuraScript::Absorb, EFFECT_1);
+        }
+    };
+
+    AuraScript* GetAuraScript() const override
+    {
+        return new spell_gen_sands_of_time_AuraScript();
+    }
+};
+
 void AddSC_generic_spell_scripts()
 {
     new spell_gen_absorb0_hitlimit1();
@@ -4918,4 +4977,5 @@ void AddSC_generic_spell_scripts()
     RegisterSpellScript(spell_spatial_rift_despawn);
     RegisterSpellScript(spell_light_judgement);
     new playerscript_light_reckoning();
+    new spell_gen_sands_of_time();
 }
