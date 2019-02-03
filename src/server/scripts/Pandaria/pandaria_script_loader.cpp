@@ -86,6 +86,7 @@ void AddSC_boss_sha_of_anger();
 void AddSC_boss_xuen();
 void AddSC_boss_yu_lon();
 
+
 // Zones
 void AddSC_dread_wastes();
 void AddSC_jade_forest();
