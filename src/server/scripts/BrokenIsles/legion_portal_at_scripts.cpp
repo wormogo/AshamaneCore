@@ -60,4 +60,8 @@ void AddSC_legion_portal_at_scripts()
     new at_legion_instance_portal("at_legion_portal_warl_oh_exit",     1220, -796.369568f, 4577.488f, 700.57702f, 4.626544f);
     new at_legion_instance_portal("at_legion_portal_archerus_to_upper",1220, -1469.25f,     1116.78f, 313.74f,    4.165537f);
     new at_legion_instance_portal("at_legion_portal_archerus_to_lower",1220, -1473.09f,     1109.74f, 270.07f,    4.177318f);
+    new at_legion_instance_portal("at_legion_portal_nighthold",        1530, -153.59f, 3517.41f, -252.45f, 0.75f);
+    new at_legion_instance_portal("at_legion_portal_nighthold_exit",   1220, 1227.523f, 4210.746f, -66.f, 2.59f);
+    new at_legion_instance_portal("at_portal_nighthold_lo1",           1530, 524.225f, 3324.473f, 19.5f, 2.11f);
+    new at_legion_instance_portal("at_portal_nighthold_lo2",           1530, 388.29f, 3321.877f, -188.f, 1.22f);
 }

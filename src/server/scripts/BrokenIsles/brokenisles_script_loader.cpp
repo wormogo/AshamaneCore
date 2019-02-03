@@ -108,12 +108,12 @@ void AddSC_boss_harbaron_maw();
 void AddSC_boss_helya_maw();
 
 // Neltharion's Lair
-//void AddSC_instance_neltharions_lair();
-//void AddSC_neltharions_lair();
-//void AddSC_boss_rokmora();
-//void AddSC_boss_ularogg_cragshaper();
-//void AddSC_boss_naraxas();
-//void AddSC_boss_dargrul_the_underking();
+void AddSC_instance_neltharions_lair();
+void AddSC_neltharions_lair();
+void AddSC_boss_rokmora();
+void AddSC_boss_ularogg_cragshaper();
+void AddSC_boss_naraxas();
+void AddSC_boss_dargrul_the_underking();
 
 // Vault of the Wardens
 //void AddSC_instance_vault_of_the_wardens();
@@ -269,12 +269,12 @@ void AddBrokenIslesScripts()
     AddSC_boss_helya_maw();
 
     // Neltharion's Lair
-    //AddSC_instance_neltharions_lair();
-    //AddSC_neltharions_lair();
-    //AddSC_boss_rokmora();
-    //AddSC_boss_ularogg_cragshaper();
-    //AddSC_boss_naraxas();
-    //AddSC_boss_dargrul_the_underking();
+    AddSC_instance_neltharions_lair();
+    AddSC_neltharions_lair();
+    AddSC_boss_rokmora();
+    AddSC_boss_ularogg_cragshaper();
+    AddSC_boss_naraxas();
+    AddSC_boss_dargrul_the_underking();
 
     // Vault of the Wardens
     //AddSC_instance_vault_of_the_wardens();
