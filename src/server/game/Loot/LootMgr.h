@@ -46,6 +46,7 @@ struct TC_GAME_API LootStoreItem
     uint32  mincount;                                       // mincount for drop items
     uint32  maxcount;                                       // max drop count for the item mincount or Ref multiplicator
     ConditionContainer conditions;                               // additional loot condition
+    std::vector<int32> bonus;
 
     // Constructor
     // displayid is filled in IsValid() which must be called after
