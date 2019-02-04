@@ -15902,7 +15902,7 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
                     SendNewItem(item, quest->RewardItemCount[i], true, false);
                 }
                 else if (quest->IsDFQuest())
-                    SendItemRetrievalMail(quest->RewardItemId[i], quest->RewardItemCount[i]);
+                    SendItemRetrievalMail(quest->RewardItemId[i], quest->RewardItemCount[i], {}, {});
             }
         }
     }
@@ -28323,7 +28323,7 @@ void Player::RefundItem(Item* item)
     CharacterDatabase.CommitTransaction(trans);
 }
 
-void Player::SendItemRetrievalMail(uint32 itemEntry, uint32 count)
+void Player::SendItemRetrievalMail(uint32 itemEntry, uint32 count, ItemRandomEnchantmentId const& randomPropertyId /*= {}*/, std::vector<int32> const& bonusListIDs /*= std::vector<int32>()*/)
 {
     MailSender sender(MAIL_CREATURE, UI64LIT(34337) /* The Postmaster */);
     MailDraft draft("Recovered Item", "We recovered a lost item in the twisting nether and noted that it was yours.$B$BPlease find said object enclosed."); // This is the text used in Cataclysm, it probably wasn't changed.
@@ -28331,6 +28331,12 @@ void Player::SendItemRetrievalMail(uint32 itemEntry, uint32 count)
 
     if (Item* item = Item::CreateItem(itemEntry, count, nullptr))
     {
+        if (uint32 upgradeID = sDB2Manager.GetRulesetItemUpgrade(itemEntry))
+            item->SetModifier(ITEM_MODIFIER_UPGRADE_ID, upgradeID);
+
+        for (int32 bonusListID : bonusListIDs)
+            item->AddBonuses(bonusListID);
+
         item->SaveToDB(trans);
         draft.AddItem(item);
     }

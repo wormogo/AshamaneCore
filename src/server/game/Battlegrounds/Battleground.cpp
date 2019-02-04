@@ -41,6 +41,7 @@
 #include "Transport.h"
 #include "Util.h"
 #include "WorldStatePackets.h"
+#include "CreatureAIImpl.h"
 #include <cstdarg>
 
 template<class Do>
@@ -531,6 +532,17 @@ inline void Battleground::_ProcessJoin(uint32 diff)
 
     if (GetRemainingTime() > 0 && (m_EndTime -= diff) > 0)
         SetRemainingTime(GetRemainingTime() - diff);
+	
+	//Honorable Medallion...
+    for (BattlegroundPlayerMap::const_iterator itr = GetPlayers().begin(); itr != GetPlayers().end(); ++itr)
+        if (Player* player = ObjectAccessor::FindPlayer(itr->first))
+        {
+            if (!player->IsInWorld())
+                continue;
+
+            if (!player->HasAura(197912))
+                player->CastSpell(player, 197912, true);
+        }
 }
 
 inline void Battleground::_ProcessLeave(uint32 diff)
@@ -693,7 +705,7 @@ void Battleground::RewardChestToTeam(uint32 TeamID)
 {
     for (BattlegroundPlayerMap::const_iterator itr = m_Players.begin(); itr != m_Players.end(); ++itr)
         if (Player* player = _GetPlayerForTeam(TeamID, itr, "RewardChestToTeam"))
-            player->AddItem(player->GetNativeTeam() == ALLIANCE ? ITEM_BG_ALLIANCE_CHEST : ITEM_BG_HORDE_CHEST, 1);
+            player->AddItem(player->IsInAlliance() ? ITEM_BG_ALLIANCE_CHEST : ITEM_BG_HORDE_CHEST, 1);
 }
 
 void Battleground::UpdateWorldState(uint32 variable, uint32 value, bool hidden /*= false*/)
@@ -789,6 +801,41 @@ void Battleground::EndBattleground(uint32 winner)
             player->CombatStop();
             player->getHostileRefManager().deleteReferences();
         }
+		
+		if (isArena())
+        {
+            //if (!player->GetChallenge())
+            {
+                int32 Honor;
+                if (team == winner)
+                {
+                    BattlegroundScoreMap::const_iterator score = PlayerScores.find(player->GetGUID());
+                    int32 kills = score->second->GetHonorableKills();
+                    RewardArena(player, true);
+                    //random battleground 300, random arena 100.
+                    //random arena sliv 35
+                    Honor = 100;
+
+                    player->KilledMonsterCredit(1127300); // Kill Credit for Win Arena
+
+                    player->UpdateCriteria(CRITERIA_TYPE_WIN_ARENA, 1);
+                }
+                else
+                {
+                    Honor = 35;
+                }
+
+                uint32 money = urand(80000, 110000);
+                money *= sWorld->getRate(RATE_DROP_MONEY);
+                player->ModifyMoney(money);
+                player->RewardHonor(player, 0, Honor, false);
+            }
+        }
+        else
+        {
+            if (team == winner)
+                player->KilledMonsterCredit(1127299); // Kill Credit for Win BG
+        }
 
         // remove temporary currency bonus auras before rewarding player
         player->RemoveAura(SPELL_HONORABLE_DEFENDER_25Y);
@@ -821,37 +868,43 @@ void Battleground::EndBattleground(uint32 winner)
         }
 
         // Reward winner team
-        if (team == winner)
+        if (!isArena())
         {
-            if (IsRandom() || BattlegroundMgr::IsBGWeekend(GetTypeID()))
+            if (team == winner)
             {
-                UpdatePlayerScore(player, SCORE_BONUS_HONOR, GetBonusHonorFromKill(winnerKills));
-                if (!player->GetRandomWinner())
+                if (IsRandom() || BattlegroundMgr::IsBGWeekend(GetTypeID()))
                 {
-                    player->SetRandomWinner(true);
-                    // TODO: win honor xp
+                    UpdatePlayerScore(player, SCORE_BONUS_HONOR, GetBonusHonorFromKill(winnerKills));
+
+                    if (!player->GetRandomWinner())
+                    {
+                        player->SetRandomWinner(true);
+                        player->RewardHonor(player, 0, 300, false);
+                    }
+                }
+                else
+                {
+                    player->RewardHonor(player, 0, 300, false);
+                }
+
+                player->UpdateCriteria(CRITERIA_TYPE_WIN_BG, 1);
+                if (!guildAwarded)
+                {
+                    guildAwarded = true;
+                    if (ObjectGuid::LowType guildId = GetBgMap()->GetOwnerGuildId(player->GetBGTeam()))
+                    {
+                        if (Guild* guild = sGuildMgr->GetGuildById(guildId))
+                            guild->UpdateCriteria(CRITERIA_TYPE_WIN_BG, 1, 0, 0, NULL, player);
+                    }
                 }
             }
             else
             {
-                // TODO: loss honor xp
+                if (IsRandom() || BattlegroundMgr::IsBGWeekend(GetTypeID()))
+                    player->RewardHonor(player, 0, 100, false);
+                else
+                    player->RewardHonor(player, 0, 50, false);
             }
-
-            player->UpdateCriteria(CRITERIA_TYPE_WIN_BG, 1);
-            if (!guildAwarded)
-            {
-                guildAwarded = true;
-                if (ObjectGuid::LowType guildId = GetBgMap()->GetOwnerGuildId(player->GetBGTeam()))
-                {
-                    if (Guild* guild = sGuildMgr->GetGuildById(guildId))
-                        guild->UpdateCriteria(CRITERIA_TYPE_WIN_BG, 1, 0, 0, NULL, player);
-                }
-            }
-        }
-        else
-        {
-            if (IsRandom() || BattlegroundMgr::IsBGWeekend(GetTypeID()))
-                UpdatePlayerScore(player, SCORE_BONUS_HONOR, GetBonusHonorFromKill(loserKills));
         }
 
         player->ResetAllPowers();
@@ -1167,6 +1220,9 @@ void Battleground::AddOrSetPlayerToCorrectBgGroup(Player* player, uint32 team)
                 }
         }
     }
+	
+	if (!player->HasAura(197912))
+        player->CastSpell(player, 197912, true);
 }
 
 // This method should be called when player logs into running battleground
@@ -1897,4 +1953,86 @@ bool Battleground::CheckAchievementCriteriaMeet(uint32 criteriaId, Player const*
 uint8 Battleground::GetUniqueBracketId() const
 {
     return uint8(GetMinLevel() / 5) - 1; // 10 - 1, 15 - 2, 20 - 3, etc.
+}
+
+void Battleground::RewardBattleground(Player* player, bool win)
+{
+	//itemList.push_back(111598); 7.1.5
+	
+    std::list<uint32> itemList;
+	
+    if (win)
+    {
+        if (roll_chance_i(30))
+            itemList.push_back(143680);
+        //if (roll_chance_i(60)) 7.1.5
+        //    itemList.push_back(RAND(143606, 143607));
+        if (roll_chance_i(50))
+            itemList.push_back(147446);
+        else
+            itemList.push_back(player->GetBGTeam() == ALLIANCE ? ITEM_BG_ALLIANCE_CHEST : ITEM_BG_HORDE_CHEST);
+    }
+
+    if (itemList.empty())
+        return;
+
+    for (uint32 itemId : itemList)
+    {
+        ItemPosCountVec dest;
+        InventoryResult msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemId, 1);
+        if (msg != EQUIP_ERR_OK)
+        {
+            player->SendItemRetrievalMail(itemId, 1, GenerateItemRandomPropertyId(itemId), {});
+            return;
+        }
+
+        Item* item = player->StoreNewItem(dest, itemId, true, GenerateItemRandomPropertyId(itemId), GuidSet(), {});
+        if (!item)
+        {
+            player->SendItemRetrievalMail(itemId, 1, GenerateItemRandomPropertyId(itemId), {});
+            return;
+        }
+
+        player->SendNewItem(item, 1, true, false);
+    }
+}
+
+void Battleground::RewardArena(Player* player, bool win)
+{
+    std::list<uint32> itemList;
+    if (win)
+    {
+        //if (roll_chance_i(30)) // 7.1.5
+        //    itemList.push_back(RAND(143606, 143607));		
+		if (roll_chance_i(30))
+            itemList.push_back(143713);
+
+        if (roll_chance_i(10))
+            itemList.push_back(147446);
+        else if (roll_chance_i(10))
+            itemList.push_back(player->GetBGTeam() == ALLIANCE ? ITEM_BG_ALLIANCE_CHEST : ITEM_BG_HORDE_CHEST);
+    }
+
+    if (itemList.empty())
+        return;
+
+    for (uint32 itemId : itemList)
+    {
+        ItemPosCountVec dest;
+        InventoryResult msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemId, 1);
+        if (msg != EQUIP_ERR_OK)
+        {
+            player->SendItemRetrievalMail(itemId, 1, GenerateItemRandomPropertyId(itemId), {});
+            return;
+        }
+
+        Item* item = player->StoreNewItem(dest, itemId, true, GenerateItemRandomPropertyId(itemId), GuidSet(), {});
+        if (!item)
+        {
+            player->SendItemRetrievalMail(itemId, 1, GenerateItemRandomPropertyId(itemId), {});
+            return;
+        }
+
+        player->SendNewItem(item, 1, true, false);
+    }
 }

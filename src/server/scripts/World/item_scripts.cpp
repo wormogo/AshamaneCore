@@ -38,6 +38,9 @@ EndContentData */
 #include "Spell.h"
 #include "SpellMgr.h"
 #include "TemporarySummon.h"
+#include "LootMgr.h"
+#include "ObjectMgr.h"
+#include "Formulas.h"
 
 /*#####
 # item_only_for_flight
@@ -454,6 +457,104 @@ public:
     }
 };
 
+// Satchel of Battlefield Spoils - 143606,143607
+// 7.3.5 147446
+class item_satchel_of_battlefield_spoils : public ItemScript
+{
+public:
+    item_satchel_of_battlefield_spoils() : ItemScript("item_satchel_of_battlefield_spoils") { }
+
+    bool OnOpen(Player* player, Item* item) override
+    {
+        ItemTemplate const* proto = item->GetTemplate();
+        LootTemplate const* lootTemplate = LootTemplates_Item.GetLootFor(proto->GetId());
+        if (!lootTemplate)
+            return true;
+
+        uint32 itemID = 0;
+        std::unordered_map<uint32, std::vector<int32>> lootTable;
+        std::unordered_map<uint32, std::vector<int32>> items;
+        lootTemplate->FillAutoAssignationLoot(lootTable);
+
+        for (auto loot : lootTable)
+        {
+            ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(loot.first);
+            if (!itemTemplate)
+                continue;
+
+            if ((itemTemplate->GetAllowableClass() && !(itemTemplate->GetAllowableClass() & player->getClassMask())) ||
+                (itemTemplate->GetAllowableRace() && !(itemTemplate->GetAllowableRace() & player->getRaceMask())))
+                continue;
+
+            if (itemTemplate->IsUsableByLootSpecialization(player, false) || !itemTemplate->HasSpec())
+                items[loot.first] = loot.second;
+        }
+
+        if (items.empty())
+            return true;
+
+        auto items_random = std::next(std::begin(items), urand(0u, items.size() - 1));
+        itemID = items_random->first;
+        std::vector<int32> bonuses = items_random->second;
+
+        if (!itemID)
+            return true;
+
+        uint32 ilvl = player->GetAverageItemLevelEquipped();
+        uint32 bonus = 0;
+
+        if (ItemTemplate const* item = sObjectMgr->GetItemTemplate(itemID))
+        {
+            uint32 MaxIlvl = 905; // for BG, Skirmish
+
+            if (item->GetSubClass() == ITEM_SUBCLASS_ARMOR_RELIC)
+                MaxIlvl = 870;
+
+            uint32 startIlvl = 810;
+            uint32 MultipleIlvl = Trinity::GetNumberMultipleOfFive(ilvl); // returns a number that is multiple by five, example: 811 = 810. 813 = 815
+            uint32 differenceMaxStartIlvl = MaxIlvl - startIlvl;
+            uint32 modificatorIlvl = 0;
+            bonus = (ilvl >= MaxIlvl ? differenceMaxStartIlvl : (ilvl >= startIlvl + modificatorIlvl ? (MultipleIlvl + 5 - startIlvl) : modificatorIlvl));
+            if (bonus > differenceMaxStartIlvl)
+                bonus = differenceMaxStartIlvl;
+
+
+            if (item->GetSubClass() == ITEM_SUBCLASS_ARMOR_RELIC)
+            {
+                bonuses.push_back(3427);
+                bonuses.push_back(1602 + bonus);
+            }
+            else
+            {
+                bonuses.push_back(3460);
+                bonuses.push_back(1442 + bonus);
+            }
+        }
+
+        ItemPosCountVec dest;
+        InventoryResult msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemID, 1);
+        if (msg != EQUIP_ERR_OK)
+        {
+            player->SendItemRetrievalMail(itemID, 1, GenerateItemRandomPropertyId(itemID), bonuses);
+            player->DestroyItem(item->GetBagSlot(), item->GetSlot(), true);
+            return true;
+        }
+
+        Item* newItem = player->StoreNewItem(dest, itemID, true, GenerateItemRandomPropertyId(itemID), GuidSet(), 0, bonuses);
+        if (!newItem)
+        {
+            player->SendItemRetrievalMail(itemID, 1, GenerateItemRandomPropertyId(itemID), bonuses);
+            player->DestroyItem(item->GetBagSlot(), item->GetSlot(), true);
+            return true;
+        }
+
+        player->SendNewItem(newItem, 1, true, false);
+        player->DestroyItem(item->GetBagSlot(), item->GetSlot(), true);
+
+        return true;
+    }
+};
+
 void AddSC_item_scripts()
 {
     new item_only_for_flight();
@@ -469,4 +570,5 @@ void AddSC_item_scripts()
     new item_captured_frog();
     new item_primal_egg();
     new item_pulsating_sac();
+    new item_satchel_of_battlefield_spoils();
 }

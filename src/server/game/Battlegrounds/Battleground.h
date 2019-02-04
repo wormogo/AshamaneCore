@@ -514,6 +514,9 @@ class TC_GAME_API Battleground
 
         // because BattleGrounds with different types and same level range has different m_BracketId
         uint8 GetUniqueBracketId() const;
+		
+		virtual void RewardArena(Player* player, bool win);
+        virtual void RewardBattleground(Player* player, bool win);
 
     protected:
         // this method is called, when BG cannot spawn its own spirit guide, or something is wrong, It correctly ends Battleground

@@ -69,6 +69,24 @@ namespace Trinity
         return 1.0f;
     }
 
+    inline uint32 GetNumberMultipleOfFive(uint32 averageItemLevel)
+    {
+        uint8 difference = averageItemLevel % 5;
+        uint32 average_new = averageItemLevel - difference;
+        if (difference >= 3)
+        {
+            for (uint8 i = 1; i < 4; ++i)
+            {
+                if (((averageItemLevel + i) % 5) == 0)
+                {
+                    average_new = averageItemLevel + i;
+                    break;
+                }
+            }
+        }
+        return average_new;
+    }
+
     namespace Honor
     {
         inline float hk_honor_at_level_f(uint8 level, float multiplier = 1.0f)

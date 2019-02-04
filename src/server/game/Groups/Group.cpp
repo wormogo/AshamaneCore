@@ -1537,7 +1537,7 @@ void Group::CountTheRoll(Rolls::iterator rollI)
                         {
                             LootItem* lootItem = loot.LootItemInSlot(i, player);
                             player->SendEquipError(msg, nullptr, nullptr, lootItem->itemid);
-                            player->SendItemRetrievalMail(lootItem->itemid, lootItem->count);
+                            player->SendItemRetrievalMail(lootItem->itemid, lootItem->count, {}, {});
                         }
                     }
                 }

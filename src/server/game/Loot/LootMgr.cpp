@@ -1185,3 +1185,76 @@ void LoadLootTables()
 
     LoadLootTemplates_Reference();
 }
+
+void LootTemplate::FillAutoAssignationLoot(std::unordered_map<uint32, std::vector<int32>>& itemList, Player* player, bool isBGReward /*= false*/) const
+{
+    for (LootStoreItemList::const_iterator itra = Entries.begin(); itra != Entries.end(); ++itra)
+    {
+        LootStoreItem* itema = *itra;
+        if (!itema)
+            continue;
+
+        if (!itema->reference)
+        {
+            if (ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(itema->itemid))
+                itemList[itema->itemid] = itema->bonus;
+        }
+        else
+        {
+           LootTemplate const* lootTemplate = LootTemplates_Reference.GetLootFor(itema->reference);
+            if (!lootTemplate)
+                continue;
+
+            if (!lootTemplate->Entries.empty())
+            {
+                for (LootStoreItemList::const_iterator itrb = lootTemplate->Entries.begin(); itrb != lootTemplate->Entries.end(); ++itrb)
+                {
+                    LootStoreItem* itemb = *itrb;
+                    if (!itemb)
+                        continue;
+                    if (ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(itemb->itemid))
+                        itemList[itemb->itemid] = itemb->bonus;
+                }
+            }
+            else if (!lootTemplate->Groups.empty())
+            {
+                for (LootGroups::const_iterator i = lootTemplate->Groups.begin(); i != lootTemplate->Groups.end(); ++i)
+                {
+                    if (LootGroup* groupLoot = *i)
+                    {
+                        if (!groupLoot)
+                            continue;
+
+                        LootStoreItemList* groupList = groupLoot->GetEqualChancedItemList();
+                        if (!groupList->empty())
+                        {
+                            for (LootStoreItemList::const_iterator itrc = groupList->begin(); itrc != groupList->end(); ++itrc)
+                            {
+                                LootStoreItem* itemc = *itrc;
+                                if (!itemc)
+                                    continue;
+
+                                if (ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(itemc->itemid))
+                                    itemList[itemc->itemid] = itemc->bonus;
+                            }
+                        }
+
+                        groupList = groupLoot->GetExplicitlyChancedItemList();
+                        if (!groupList->empty())
+                        {
+                            for (LootStoreItemList::const_iterator itrd = groupList->begin(); itrd != groupList->end(); ++itrd)
+                            {
+                                LootStoreItem* itemd = *itrd;
+                                if (!itemd)
+                                    continue;
+
+                                if (ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(itemd->itemid))
+                                    itemList[itemd->itemid] = itemd->bonus;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
