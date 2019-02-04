@@ -132,7 +132,7 @@ public:
     }
 };
 
-// 228329 & 228330 - Téléportation
+// 228329 & 228330 - T?l?portation
 class spell_dalaran_teleportation : public SpellScript
 {
     PrepareSpellScript(spell_dalaran_teleportation);
@@ -224,6 +224,85 @@ public:
     }
 };
 
+class CastEventTP : public BasicEvent
+{
+public:
+    CastEventTP(Unit* caster, uint32 spellId, bool trigger) :
+        _caster(caster), _spellId(spellId), _trigger(trigger) { }
+
+    bool Execute(uint64 /*time*/, uint32 /*diff*/)
+    {
+        if (_caster)
+            _caster->CastSpell(_caster, _spellId, _trigger);
+        return true;
+    }
+
+private:
+    Unit * _caster;
+    uint32 _spellId;
+    bool _trigger;
+};
+
+// 108868 7.x.x
+class npc_hunter_talua : public CreatureScript
+{
+public:
+    npc_hunter_talua() : CreatureScript("npc_hunter_talua") { }
+
+    bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 /*action*/) override
+    {
+        if (player->getLevel() < 98 || player->getClass() != CLASS_HUNTER)
+            return true;
+
+        if (Pet* pet = player->GetPet())
+            player->RemovePet(nullptr, PET_SAVE_DISMISS, false);
+
+        player->CastSpell(player, 216213, true);
+        player->m_Events.AddEvent(new CastEventTP(player, 216216, true), player->m_Events.CalculateTime(10000));
+
+        return true;
+    }
+};
+
+class npc_great_eagle : public CreatureScript
+{
+public:
+    npc_great_eagle() : CreatureScript("npc_great_eagle") { }
+
+    struct npc_great_eagleAI : public ScriptedAI
+    {
+        npc_great_eagleAI(Creature* creature) : ScriptedAI(creature) { }
+
+        uint8 curID;
+        void Reset()
+        {
+        }
+
+        void SpellHit(Unit* caster, SpellInfo const* spell) override
+        {
+            me->GetMotionMaster()->MoveDistract(1000);
+            me->GetMotionMaster()->MovePoint(1, -854.9718f, 4185.322f, 754.1122f);
+        }
+
+        void MovementInform(uint32 type, uint32 id)
+        {
+            if (type != POINT_MOTION_TYPE)
+                return;
+
+            switch (id)
+            {
+            case 1:
+                me->DespawnOrUnsummon(0);
+                break;
+            }
+        }
+    };
+    CreatureAI* GetAI(Creature* creature) const
+    {
+        return new npc_great_eagleAI(creature);
+    }
+};
+
 void AddSC_dalaran_legion()
 {
     new OnLegionArrival();
@@ -233,4 +312,6 @@ void AddSC_dalaran_legion()
     new npc_dalaran_karazhan_khadgar();
     new scene_dalaran_kharazan_teleportion();
     new zone_legion_dalaran_underbelly();
+    new npc_hunter_talua();
+    new npc_great_eagle();
 }
