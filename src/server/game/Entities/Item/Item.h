@@ -64,6 +64,48 @@ enum ItemUpdateState
     ITEM_REMOVED                                 = 3
 };
 
+enum ItemLevelBonus
+{
+    ITEM_LEVEL_LEGION_MIN_LEVEL         = 805,
+    ITEM_LEVEL_LEGION_MAX_LEVEL         = 985, // 7.3.5
+    ITEM_LEVEL_LEGION_EPIC              = 905, // 7.3.5
+    ITEM_LEVEL_LEGION_T19               = 875,
+    ITEM_LEVEL_LEGION_T20               = 900,
+
+    ITEM_LEVEL_BONUS_MAX_ROLLS          = 10,
+    ITEM_LEVEL_BONUS_SUCCESS_CHANCE     = 20,
+    ITEM_LEVEL_BONUS_AFTER_SUCCES_PCT   = 80,
+    ITEM_LEVEL_BONUS_FORGED             = 5,
+    ITEM_LEVEL_BONUS_TITANFORGED        = 15
+};
+
+enum ItemForgedConstant : uint32
+{
+    BONUS_ITEM_LEVEL_START            = 1467,
+    BONUS_ITEM_RARE                   = 3397,
+    BONUS_ITEM_EPIC                   = 3462,
+    BONUS_ITEM_EPIC_WARFORGED         = 3336,
+    BONUS_ITEM_EPIC_TITANFORGED       = 3337,
+    BONUS_ITEM_TITANFORGED            = 3338,
+    BONUS_ITEM_WARFORGED              = 3339,
+    BONUS_ITEM_SOCKET_PRISMASTIC      = 523,
+    BONUS_ITEM_LEECH                  = 41,
+    BONUS_ITEM_AVOIDANCE              = 40,
+    BONUS_ITEM_INDESTRUCTIBLE         = 43,
+    BONUS_ITEM_SPEED                  = 42,
+
+    BONUS_CACHE_MYTHIC                = 569,
+    BONUS_CACHE_HEROIC                = 570,
+    BONUS_ITEM_T19_LEVEL_START        = 1472, // nitehold t19
+    BONUS_ITEM_T19_EPIC               = 3514,
+    BONUS_ITEM_T19_HEROIC             = 3516,
+    BONUS_ITEM_T19_MYTHIC             = 3518,
+
+    BONUS_ITEM_T20_LEVEL_START        = 1482, // gs t20
+    BONUS_ITEM_T20_EPIC               = 3561,
+    BONUS_ITEM_T20_HEROIC             = 3562,
+    BONUS_ITEM_T20_MYTHIC             = 3563,
+};
 
 #define MAX_ITEM_SPELLS 5
 

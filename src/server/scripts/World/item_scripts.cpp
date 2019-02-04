@@ -16,19 +16,19 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Item_Scripts
-SD%Complete: 100
-SDComment: Items for a range of different items. See content below (in script)
-SDCategory: Items
-EndScriptData */
+ /* ScriptData
+ SDName: Item_Scripts
+ SD%Complete: 100
+ SDComment: Items for a range of different items. See content below (in script)
+ SDCategory: Items
+ EndScriptData */
 
-/* ContentData
-item_nether_wraith_beacon(i31742)   Summons creatures for quest Becoming a Spellfire Tailor (q10832)
-item_flying_machine(i34060, i34061)  Engineering crafted flying machines
-item_gor_dreks_ointment(i30175)     Protecting Our Own(q10488)
-item_only_for_flight                Items which should only useable while flying
-EndContentData */
+ /* ContentData
+ item_nether_wraith_beacon(i31742)   Summons creatures for quest Becoming a Spellfire Tailor (q10832)
+ item_flying_machine(i34060, i34061)  Engineering crafted flying machines
+ item_gor_dreks_ointment(i30175)     Protecting Our Own(q10488)
+ item_only_for_flight                Items which should only useable while flying
+ EndContentData */
 
 #include "ScriptMgr.h"
 #include "GameObject.h"
@@ -41,14 +41,15 @@ EndContentData */
 #include "LootMgr.h"
 #include "ObjectMgr.h"
 #include "Formulas.h"
+#include "SharedDefines.h"
 
-/*#####
-# item_only_for_flight
-#####*/
+ /*#####
+ # item_only_for_flight
+ #####*/
 
 enum OnlyForFlight
 {
-    SPELL_ARCANE_CHARGES    = 45072
+    SPELL_ARCANE_CHARGES = 45072
 };
 
 class item_only_for_flight : public ItemScript
@@ -64,18 +65,18 @@ public:
         //for special scripts
         switch (itemId)
         {
-            case 24538:
-                if (player->GetAreaId() != 3628)
-                    disabled = true;
-                break;
-            case 34489:
-                if (player->GetZoneId() != 4080)
-                    disabled = true;
-                break;
-            case 34475:
-                if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(SPELL_ARCANE_CHARGES))
-                    Spell::SendCastResult(player, spellInfo, 0, castId, SPELL_FAILED_NOT_ON_GROUND);
-                break;
+        case 24538:
+            if (player->GetAreaId() != 3628)
+                disabled = true;
+            break;
+        case 34489:
+            if (player->GetZoneId() != 4080)
+                disabled = true;
+            break;
+        case 34475:
+            if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(SPELL_ARCANE_CHARGES))
+                Spell::SendCastResult(player, spellInfo, 0, castId, SPELL_FAILED_NOT_ON_GROUND);
+            break;
         }
 
         // allow use in flight only
@@ -101,10 +102,10 @@ public:
     {
         if (player->GetQuestStatus(10832) == QUEST_STATUS_INCOMPLETE)
         {
-            if (Creature* nether = player->SummonCreature(22408, player->GetPositionX(), player->GetPositionY()+20, player->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN, 180000))
+            if (Creature* nether = player->SummonCreature(22408, player->GetPositionX(), player->GetPositionY() + 20, player->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN, 180000))
                 nether->AI()->AttackStart(player);
 
-            if (Creature* nether = player->SummonCreature(22408, player->GetPositionX(), player->GetPositionY()-20, player->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN, 180000))
+            if (Creature* nether = player->SummonCreature(22408, player->GetPositionX(), player->GetPositionY() - 20, player->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN, 180000))
                 nether->AI()->AttackStart(player);
         }
         return false;
@@ -198,23 +199,23 @@ public:
 
 enum PileFakeFur
 {
-    GO_CARIBOU_TRAP_1                                      = 187982,
-    GO_CARIBOU_TRAP_2                                      = 187995,
-    GO_CARIBOU_TRAP_3                                      = 187996,
-    GO_CARIBOU_TRAP_4                                      = 187997,
-    GO_CARIBOU_TRAP_5                                      = 187998,
-    GO_CARIBOU_TRAP_6                                      = 187999,
-    GO_CARIBOU_TRAP_7                                      = 188000,
-    GO_CARIBOU_TRAP_8                                      = 188001,
-    GO_CARIBOU_TRAP_9                                      = 188002,
-    GO_CARIBOU_TRAP_10                                     = 188003,
-    GO_CARIBOU_TRAP_11                                     = 188004,
-    GO_CARIBOU_TRAP_12                                     = 188005,
-    GO_CARIBOU_TRAP_13                                     = 188006,
-    GO_CARIBOU_TRAP_14                                     = 188007,
-    GO_CARIBOU_TRAP_15                                     = 188008,
-    GO_HIGH_QUALITY_FUR                                    = 187983,
-    NPC_NESINGWARY_TRAPPER                                 = 25835
+    GO_CARIBOU_TRAP_1 = 187982,
+    GO_CARIBOU_TRAP_2 = 187995,
+    GO_CARIBOU_TRAP_3 = 187996,
+    GO_CARIBOU_TRAP_4 = 187997,
+    GO_CARIBOU_TRAP_5 = 187998,
+    GO_CARIBOU_TRAP_6 = 187999,
+    GO_CARIBOU_TRAP_7 = 188000,
+    GO_CARIBOU_TRAP_8 = 188001,
+    GO_CARIBOU_TRAP_9 = 188002,
+    GO_CARIBOU_TRAP_10 = 188003,
+    GO_CARIBOU_TRAP_11 = 188004,
+    GO_CARIBOU_TRAP_12 = 188005,
+    GO_CARIBOU_TRAP_13 = 188006,
+    GO_CARIBOU_TRAP_14 = 188007,
+    GO_CARIBOU_TRAP_15 = 188008,
+    GO_HIGH_QUALITY_FUR = 187983,
+    NPC_NESINGWARY_TRAPPER = 25835
 };
 
 #define CaribouTrapsNum 15
@@ -265,9 +266,9 @@ public:
 
 enum PetrovClusterBombs
 {
-    SPELL_PETROV_BOMB           = 42406,
-    AREA_ID_SHATTERED_STRAITS   = 4064,
-    ZONE_ID_HOWLING             = 495
+    SPELL_PETROV_BOMB = 42406,
+    AREA_ID_SHATTERED_STRAITS = 4064,
+    ZONE_ID_HOWLING = 495
 };
 
 class item_petrov_cluster_bombs : public ItemScript
@@ -298,30 +299,30 @@ public:
 ######*/
 enum HelpThemselves
 {
-    QUEST_CANNOT_HELP_THEMSELVES                  =  11876,
-    NPC_TRAPPED_MAMMOTH_CALF                      =  25850,
-    GO_MAMMOTH_TRAP_1                             = 188022,
-    GO_MAMMOTH_TRAP_2                             = 188024,
-    GO_MAMMOTH_TRAP_3                             = 188025,
-    GO_MAMMOTH_TRAP_4                             = 188026,
-    GO_MAMMOTH_TRAP_5                             = 188027,
-    GO_MAMMOTH_TRAP_6                             = 188028,
-    GO_MAMMOTH_TRAP_7                             = 188029,
-    GO_MAMMOTH_TRAP_8                             = 188030,
-    GO_MAMMOTH_TRAP_9                             = 188031,
-    GO_MAMMOTH_TRAP_10                            = 188032,
-    GO_MAMMOTH_TRAP_11                            = 188033,
-    GO_MAMMOTH_TRAP_12                            = 188034,
-    GO_MAMMOTH_TRAP_13                            = 188035,
-    GO_MAMMOTH_TRAP_14                            = 188036,
-    GO_MAMMOTH_TRAP_15                            = 188037,
-    GO_MAMMOTH_TRAP_16                            = 188038,
-    GO_MAMMOTH_TRAP_17                            = 188039,
-    GO_MAMMOTH_TRAP_18                            = 188040,
-    GO_MAMMOTH_TRAP_19                            = 188041,
-    GO_MAMMOTH_TRAP_20                            = 188042,
-    GO_MAMMOTH_TRAP_21                            = 188043,
-    GO_MAMMOTH_TRAP_22                            = 188044,
+    QUEST_CANNOT_HELP_THEMSELVES = 11876,
+    NPC_TRAPPED_MAMMOTH_CALF = 25850,
+    GO_MAMMOTH_TRAP_1 = 188022,
+    GO_MAMMOTH_TRAP_2 = 188024,
+    GO_MAMMOTH_TRAP_3 = 188025,
+    GO_MAMMOTH_TRAP_4 = 188026,
+    GO_MAMMOTH_TRAP_5 = 188027,
+    GO_MAMMOTH_TRAP_6 = 188028,
+    GO_MAMMOTH_TRAP_7 = 188029,
+    GO_MAMMOTH_TRAP_8 = 188030,
+    GO_MAMMOTH_TRAP_9 = 188031,
+    GO_MAMMOTH_TRAP_10 = 188032,
+    GO_MAMMOTH_TRAP_11 = 188033,
+    GO_MAMMOTH_TRAP_12 = 188034,
+    GO_MAMMOTH_TRAP_13 = 188035,
+    GO_MAMMOTH_TRAP_14 = 188036,
+    GO_MAMMOTH_TRAP_15 = 188037,
+    GO_MAMMOTH_TRAP_16 = 188038,
+    GO_MAMMOTH_TRAP_17 = 188039,
+    GO_MAMMOTH_TRAP_18 = 188040,
+    GO_MAMMOTH_TRAP_19 = 188041,
+    GO_MAMMOTH_TRAP_20 = 188042,
+    GO_MAMMOTH_TRAP_21 = 188043,
+    GO_MAMMOTH_TRAP_22 = 188044,
 };
 
 #define MammothTrapsNum 22
@@ -366,8 +367,8 @@ public:
 
 enum TheEmissary
 {
-    QUEST_THE_EMISSARY      =   11626,
-    NPC_LEVIROTH            =   26452
+    QUEST_THE_EMISSARY = 11626,
+    NPC_LEVIROTH = 26452
 };
 
 class item_trident_of_nazjan : public ItemScript
@@ -383,9 +384,11 @@ public:
             {
                 pLeviroth->AI()->AttackStart(player);
                 return false;
-            } else
+            }
+            else
                 player->SendEquipError(EQUIP_ERR_OUT_OF_RANGE, item, NULL);
-        } else
+        }
+        else
             player->SendEquipError(EQUIP_ERR_CLIENT_LOCKED_OUT, item, NULL);
         return true;
     }
@@ -393,8 +396,8 @@ public:
 
 enum CapturedFrog
 {
-    QUEST_THE_PERFECT_SPIES      = 25444,
-    NPC_VANIRAS_SENTRY_TOTEM     = 40187
+    QUEST_THE_PERFECT_SPIES = 25444,
+    NPC_VANIRAS_SENTRY_TOTEM = 40187
 };
 
 class item_captured_frog : public ItemScript
@@ -452,6 +455,168 @@ public:
         uint8 msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, 137608, 1); // Growling Sac
         if (msg == EQUIP_ERR_OK)
             player->StoreNewItem(dest, 137608, true, GenerateItemRandomPropertyId(137608));
+
+        return true;
+    }
+};
+
+// Leggings of the foregone 240719
+// 7.3.5
+class loot_item_leggings_of_the_foregone : public ItemScript
+{
+public:
+    loot_item_leggings_of_the_foregone() : ItemScript("loot_item_leggings_of_the_foregone") { }
+
+    bool OnUse(Player* player, Item* item, SpellCastTargets const& /*targets*/, ObjectGuid castId) override
+    {
+        uint32 itemId = item->GetEntry();
+
+        std::vector<uint32> items;
+
+        items.push_back(147173);
+        items.push_back(147125);
+        items.push_back(147148);
+        items.push_back(147137);
+        items.push_back(147161);
+        items.push_back(147166);
+        items.push_back(147184);
+        items.push_back(147131);
+        items.push_back(147191);
+        items.push_back(147143);
+        items.push_back(147179);
+        items.push_back(147155);
+
+        // Process items
+        Trinity::Containers::RandomShuffle(items);
+        for (auto itemId : items)
+        {
+            // Safe! Item rewards always have an item template
+            ItemTemplate const* proto = sObjectMgr->GetItemTemplate(itemId);
+
+            bool allowRace = proto->GetAllowableRace() && (proto->GetAllowableRace() & player->getRaceMask());
+            bool allowSpec = !proto->HasSpec() || proto->IsUsableByLootSpecialization(player, false);
+            if (!allowRace || !allowSpec)
+                continue;
+
+            // Generate bonuses for selected item
+            uint32 itemLevel = ITEM_LEVEL_LEGION_T20;
+            uint32 epicbonus = BONUS_ITEM_T20_EPIC;
+            for (uint32 bonusListID : item->GetDynamicValues(ITEM_DYNAMIC_FIELD_BONUSLIST_IDS))
+            {
+                if (bonusListID == BONUS_CACHE_HEROIC)
+                {
+                    itemLevel = 915;
+                    epicbonus = BONUS_ITEM_T20_HEROIC;
+                }
+                if (bonusListID == BONUS_CACHE_MYTHIC)
+                {
+                    itemLevel = 930;
+                    epicbonus = BONUS_ITEM_T20_MYTHIC;
+                }
+
+            }
+
+            std::vector<int32> bonusLists;
+
+            int32 diff = itemLevel - ITEM_LEVEL_LEGION_T20;
+
+            bonusLists.push_back(epicbonus);
+
+            bonusLists.push_back(int32(BONUS_ITEM_T20_LEVEL_START + diff));
+
+            ItemPosCountVec dest;
+            bool mailed = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemId, 1) != EQUIP_ERR_OK;
+            player->SendDisplayToast(itemId, 0, 1, DISPLAY_TOAST_METHOD_CURRENCY_OR_ITEM, TOAST_TYPE_ITEM, false, mailed, bonusLists);
+            if (mailed)
+                player->SendItemRetrievalMail(itemId, 1, GenerateItemRandomPropertyId(itemId), bonusLists);
+            else
+                player->StoreNewItem(dest, itemId, true, GenerateItemRandomPropertyId(itemId), GuidSet(), 0, bonusLists);
+
+            break;
+        }
+
+        player->DestroyItem(item->GetBagSlot(), item->GetSlot(), true);
+
+        return true;
+    }
+};
+
+// gloves of the-foregone 240719
+// 7.3.5
+class loot_item_gloves_of_the_foregone : public ItemScript
+{
+public:
+    loot_item_gloves_of_the_foregone() : ItemScript("loot_item_gloves_of_the_foregone") { }
+
+    bool OnUse(Player* player, Item* item, SpellCastTargets const& /*targets*/, ObjectGuid castId) override
+    {
+        uint32 itemId = item->GetEntry();
+
+        std::vector<uint32> items;
+
+        items.push_back(147171);
+        items.push_back(147123);
+        items.push_back(147146);
+        items.push_back(147135);
+
+        items.push_back(147159);
+        items.push_back(147164);
+        items.push_back(147182);
+        items.push_back(147129);
+        items.push_back(147189);
+        items.push_back(147141);
+        items.push_back(147177);
+        items.push_back(147153);
+
+        // Process items
+        Trinity::Containers::RandomShuffle(items);
+        for (auto itemId : items)
+        {
+            // Safe! Item rewards always have an item template
+            ItemTemplate const* proto = sObjectMgr->GetItemTemplate(itemId);
+
+            bool allowRace = proto->GetAllowableRace() && (proto->GetAllowableRace() & player->getRaceMask());
+            bool allowSpec = !proto->HasSpec() || proto->IsUsableByLootSpecialization(player, false);
+            if (!allowRace || !allowSpec)
+                continue;
+
+            // Generate bonuses for selected item
+            uint32 itemLevel = ITEM_LEVEL_LEGION_T20;
+            uint32 epicbonus = BONUS_ITEM_T20_EPIC;
+            for (uint32 bonusListID : item->GetDynamicValues(ITEM_DYNAMIC_FIELD_BONUSLIST_IDS))
+            {
+                if (bonusListID == BONUS_CACHE_HEROIC)
+                {
+                    itemLevel = 915;
+                    epicbonus = BONUS_ITEM_T20_HEROIC;
+                }
+                if (bonusListID == BONUS_CACHE_MYTHIC)
+                {
+                    itemLevel = 930;
+                    epicbonus = BONUS_ITEM_T20_MYTHIC;
+                }
+
+            }
+
+            std::vector<int32> bonusLists;
+
+            int32 diff = itemLevel - ITEM_LEVEL_LEGION_T20;
+
+            bonusLists.push_back(epicbonus);
+
+            bonusLists.push_back(int32(BONUS_ITEM_T20_LEVEL_START + diff));
+
+            ItemPosCountVec dest;
+            bool mailed = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemId, 1) != EQUIP_ERR_OK;
+            player->SendDisplayToast(itemId, 0, 1, DISPLAY_TOAST_METHOD_CURRENCY_OR_ITEM, TOAST_TYPE_ITEM, false, mailed, bonusLists);
+            if (mailed)
+                player->SendItemRetrievalMail(itemId, 1, GenerateItemRandomPropertyId(itemId), bonusLists);
+            else
+                player->StoreNewItem(dest, itemId, true, GenerateItemRandomPropertyId(itemId), GuidSet(), 0, bonusLists);
+
+            break;
+        }
+        player->DestroyItem(item->GetBagSlot(), item->GetSlot(), true);
 
         return true;
     }
@@ -536,6 +701,7 @@ public:
         if (msg != EQUIP_ERR_OK)
         {
             player->SendItemRetrievalMail(itemID, 1, GenerateItemRandomPropertyId(itemID), bonuses);
+            player->SendDisplayToast(itemID, 0, 1, DISPLAY_TOAST_METHOD_LOOT, TOAST_TYPE_ITEM, false, true, bonuses);
             player->DestroyItem(item->GetBagSlot(), item->GetSlot(), true);
             return true;
         }
@@ -544,11 +710,330 @@ public:
         if (!newItem)
         {
             player->SendItemRetrievalMail(itemID, 1, GenerateItemRandomPropertyId(itemID), bonuses);
+            player->SendDisplayToast(itemID, 0, 1, DISPLAY_TOAST_METHOD_LOOT, TOAST_TYPE_ITEM, false, true, bonuses);
             player->DestroyItem(item->GetBagSlot(), item->GetSlot(), true);
             return true;
         }
 
+        player->SendDisplayToast(itemID, 0, 1, DISPLAY_TOAST_METHOD_LOOT, TOAST_TYPE_ITEM, false, true, bonuses);
         player->SendNewItem(newItem, 1, true, false);
+        player->DestroyItem(item->GetBagSlot(), item->GetSlot(), true);
+
+        return true;
+    }
+};
+
+// item 143579 Cloak of the Foreseen
+// item 143577
+// item 143578
+// 7.3.5
+class loot_item_cloak_of_the_foreseen : public ItemScript
+{
+public:
+    loot_item_cloak_of_the_foreseen() : ItemScript("loot_item_cloak_of_the_foreseen") { }
+
+    bool OnUse(Player* player, Item* item, SpellCastTargets const& /*targets*/, ObjectGuid castId) override
+    {
+        uint32 itemId = item->GetEntry();
+
+        std::vector<uint32> items;
+
+        items.push_back(138374);
+        items.push_back(138368);
+        items.push_back(138367);
+        items.push_back(138372);
+        items.push_back(138373);
+        items.push_back(138369);
+        items.push_back(138370);
+        items.push_back(138375);
+        items.push_back(138365);
+        items.push_back(138366);
+        items.push_back(138371);
+        items.push_back(138364);
+
+        // Process items
+        Trinity::Containers::RandomShuffle(items);
+        for (auto itemId : items)
+        {
+
+            // Safe! Item rewards always have an item template
+            ItemTemplate const* proto = sObjectMgr->GetItemTemplate(itemId);
+            bool allowRace = proto->GetAllowableRace() && (proto->GetAllowableRace() & player->getRaceMask());
+            bool allowSpec = !proto->HasSpec() || proto->IsUsableByLootSpecialization(player, false);
+            if (!allowRace || !allowSpec)
+                continue;
+
+            // Generate bonuses for selected item
+            uint32 itemLevel = ITEM_LEVEL_LEGION_T19;
+            uint32 epicbonus = BONUS_ITEM_T20_EPIC;
+            for (uint32 bonusListID : item->GetDynamicValues(ITEM_DYNAMIC_FIELD_BONUSLIST_IDS))
+            {
+                if (bonusListID == BONUS_CACHE_HEROIC)
+                {
+                    itemLevel = 895;
+                    epicbonus = BONUS_ITEM_T19_HEROIC;
+                }
+                if (bonusListID == BONUS_CACHE_MYTHIC)
+                {
+                    itemLevel = 905;
+                    epicbonus = BONUS_ITEM_T19_MYTHIC;
+                }
+
+            }
+
+            std::vector<int32> bonusLists;
+
+            int32 diff = itemLevel - ITEM_LEVEL_LEGION_T19;
+            bonusLists.push_back(epicbonus);
+
+            bonusLists.push_back(int32(BONUS_ITEM_T19_LEVEL_START + diff));
+
+            ItemPosCountVec dest;
+            bool mailed = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemId, 1) != EQUIP_ERR_OK;
+            player->SendDisplayToast(itemId, 0, 1, DISPLAY_TOAST_METHOD_CURRENCY_OR_ITEM, TOAST_TYPE_ITEM, false, mailed, bonusLists);
+            if (mailed)
+                player->SendItemRetrievalMail(itemId, 1, GenerateItemRandomPropertyId(itemId), bonusLists);
+            else
+                player->StoreNewItem(dest, itemId, true, GenerateItemRandomPropertyId(itemId), GuidSet(), 0, bonusLists);
+
+            break;
+        }
+        player->DestroyItem(item->GetBagSlot(), item->GetSlot(), true);
+
+        return true;
+    }
+};
+
+// item 143576 Shoulders-of-the-foreseen
+// item 143566
+// item 143570
+// 7.3.5
+class loot_item_shoulders_of_the_foreseen : public ItemScript
+{
+public:
+    loot_item_shoulders_of_the_foreseen() : ItemScript("loot_item_shoulders_of_the_foreseen") { }
+
+    bool OnUse(Player* player, Item* item, SpellCastTargets const& /*targets*/, ObjectGuid castId) override
+    {
+        uint32 itemId = item->GetEntry();
+
+        std::vector<uint32> items;
+
+        items.push_back(138347);
+        items.push_back(138337);
+        items.push_back(138363);
+        items.push_back(138348);
+        items.push_back(138323);
+        items.push_back(138362);
+        items.push_back(138322);
+        items.push_back(138380);
+        items.push_back(138321);
+        items.push_back(138361);
+        items.push_back(138336);
+        items.push_back(138338);
+
+
+        // Process items
+        Trinity::Containers::RandomShuffle(items);
+        for (auto itemId : items)
+        {
+            // Safe! Item rewards always have an item template
+            ItemTemplate const* proto = sObjectMgr->GetItemTemplate(itemId);
+
+            bool allowRace = proto->GetAllowableRace() && (proto->GetAllowableRace() & player->getRaceMask());
+            bool allowSpec = !proto->HasSpec() || proto->IsUsableByLootSpecialization(player, false);
+            if (!allowRace || !allowSpec)
+                continue;
+
+            // Generate bonuses for selected item
+            uint32 itemLevel = ITEM_LEVEL_LEGION_T19;
+            uint32 epicbonus = BONUS_ITEM_T20_EPIC;
+            for (uint32 bonusListID : item->GetDynamicValues(ITEM_DYNAMIC_FIELD_BONUSLIST_IDS))
+            {
+                if (bonusListID == BONUS_CACHE_HEROIC)
+                {
+                    itemLevel = 895;
+                    epicbonus = BONUS_ITEM_T19_HEROIC;
+                }
+                if (bonusListID == BONUS_CACHE_MYTHIC)
+                {
+                    itemLevel = 905;
+                    epicbonus = BONUS_ITEM_T19_MYTHIC;
+                }
+
+            }
+
+            std::vector<int32> bonusLists;
+
+            int32 diff = itemLevel - ITEM_LEVEL_LEGION_T19;
+            bonusLists.push_back(epicbonus);
+
+            bonusLists.push_back(int32(BONUS_ITEM_T19_LEVEL_START + diff));
+
+            ItemPosCountVec dest;
+            bool mailed = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemId, 1) != EQUIP_ERR_OK;
+            player->SendDisplayToast(itemId, 0, 1, DISPLAY_TOAST_METHOD_CURRENCY_OR_ITEM, TOAST_TYPE_ITEM, false, mailed, bonusLists);
+            if (mailed)
+                player->SendItemRetrievalMail(itemId, 1, GenerateItemRandomPropertyId(itemId), bonusLists);
+            else
+                player->StoreNewItem(dest, itemId, true, GenerateItemRandomPropertyId(itemId), GuidSet(), 0, bonusLists);
+
+            break;
+        }
+        player->DestroyItem(item->GetBagSlot(), item->GetSlot(), true);
+
+        return true;
+    }
+};
+
+// Chest of the Foregone 240716
+// 7.3.5
+class loot_item_chest_of_the_foregone : public ItemScript
+{
+public:
+    loot_item_chest_of_the_foregone() : ItemScript("loot_item_chest_of_the_foregone") { }
+
+    bool OnUse(Player* player, Item* item, SpellCastTargets const& /*targets*/, ObjectGuid castId) override
+    {
+        uint32 itemId = item->GetEntry();
+
+        std::vector<uint32> items;
+
+        //147316 - 147169, 147121, 147149, 147133
+        //147317 - 147157, 147167, 147185, 147127
+        //147318 - 147187, 147139, 147175, 147151
+        items.push_back(147169);
+        items.push_back(147121);
+        items.push_back(147149);
+        items.push_back(147133);
+        items.push_back(147157);
+        items.push_back(147167);
+        items.push_back(147185);
+        items.push_back(147127);
+        items.push_back(147187);
+        items.push_back(147139);
+        items.push_back(147175);
+        items.push_back(147151);
+
+        // Process items
+        Trinity::Containers::RandomShuffle(items);
+        for (auto itemId : items)
+        {
+            // Safe! Item rewards always have an item template
+            ItemTemplate const* proto = sObjectMgr->GetItemTemplate(itemId);
+
+            bool allowRace = proto->GetAllowableRace() && (proto->GetAllowableRace() & player->getRaceMask());
+            bool allowSpec = !proto->HasSpec() || proto->IsUsableByLootSpecialization(player, false);
+            if (!allowRace || !allowSpec)
+                continue;
+
+            // Generate bonuses for selected item
+            uint32 itemLevel = ITEM_LEVEL_LEGION_T20;
+            uint32 epicbonus = BONUS_ITEM_T20_EPIC;
+            for (uint32 bonusListID : item->GetDynamicValues(ITEM_DYNAMIC_FIELD_BONUSLIST_IDS))
+            {
+                if (bonusListID == BONUS_CACHE_HEROIC)
+                {
+                    itemLevel = 915;
+                    epicbonus = BONUS_ITEM_T20_HEROIC;
+                }
+                if (bonusListID == BONUS_CACHE_MYTHIC)
+                {
+                    itemLevel = 930;
+                    epicbonus = BONUS_ITEM_T20_MYTHIC;
+                }
+
+            }
+
+            std::vector<int32> bonusLists;
+
+            int32 diff = itemLevel - ITEM_LEVEL_LEGION_T20;
+
+            bonusLists.push_back(epicbonus);
+
+            bonusLists.push_back(int32(BONUS_ITEM_T20_LEVEL_START + diff));
+
+            ItemPosCountVec dest;
+            bool mailed = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemId, 1) != EQUIP_ERR_OK;
+            player->SendDisplayToast(itemId, 0, 1, DISPLAY_TOAST_METHOD_CURRENCY_OR_ITEM, TOAST_TYPE_ITEM, false, mailed, bonusLists);
+            if (mailed)
+                player->SendItemRetrievalMail(itemId, 1, GenerateItemRandomPropertyId(itemId), bonusLists);
+            else
+                player->StoreNewItem(dest, itemId, true, GenerateItemRandomPropertyId(itemId), GuidSet(), 0, bonusLists);
+
+            break;
+        }
+        player->DestroyItem(item->GetBagSlot(), item->GetSlot(), true);
+
+        return true;
+    }
+};
+
+// unsullied_plate_helmet 153155
+// 7.3.5
+class loot_item_unsullied_plate_helmet : public ItemScript
+{
+public:
+    loot_item_unsullied_plate_helmet() : ItemScript("loot_item_unsullied_plate_helmet") { }
+
+    bool OnUse(Player* player, Item* item, SpellCastTargets const& /*targets*/, ObjectGuid castId) override
+    {
+        uint32 itemId = item->GetEntry();
+
+        std::vector<uint32> itemstwo;
+
+        itemstwo.push_back(152747);
+
+        // Process items
+        Trinity::Containers::RandomShuffle(itemstwo);
+        for (auto itemId : itemstwo)
+        {
+            // Safe! Item rewards always have an item template
+            ItemTemplate const* proto = sObjectMgr->GetItemTemplate(itemId);
+
+            bool allowRace = proto->GetAllowableRace() && (proto->GetAllowableRace() & player->getRaceMask());
+            bool allowSpec = !proto->HasSpec() || proto->IsUsableByLootSpecialization(player, false);
+            if (!allowRace || !allowSpec)
+                continue;
+
+            // Generate bonuses for selected item
+            uint32 itemLevel = ITEM_LEVEL_LEGION_T20;
+            uint32 epicbonus = BONUS_ITEM_T20_EPIC;
+            for (uint32 bonusListIDTwo : item->GetDynamicValues(ITEM_DYNAMIC_FIELD_BONUSLIST_IDS))
+            {
+                if (bonusListIDTwo == BONUS_CACHE_HEROIC)
+                {
+                    itemLevel = 915;
+                    epicbonus = BONUS_ITEM_T20_HEROIC;
+                }
+                if (bonusListIDTwo == BONUS_CACHE_MYTHIC)
+                {
+                    itemLevel = 930;
+                    epicbonus = BONUS_ITEM_T20_MYTHIC;
+                }
+
+            }
+
+            std::vector<int32> bonusListsTwo;
+
+            int32 diff = itemLevel - ITEM_LEVEL_LEGION_T20;
+            /*if (int32 forgedDiff = Item::GenerateForgedBonus(itemLevel, bonusListsTwo, true))
+                diff += forgedDiff;*/
+
+            bonusListsTwo.push_back(epicbonus);
+
+            bonusListsTwo.push_back(int32(BONUS_ITEM_T20_LEVEL_START + diff));
+
+            ItemPosCountVec dest;
+            bool mailed = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemId, 1) != EQUIP_ERR_OK;
+            player->SendDisplayToast(itemId, 0, 1, DISPLAY_TOAST_METHOD_CURRENCY_OR_ITEM, TOAST_TYPE_ITEM, false, mailed, bonusListsTwo);
+            if (mailed)
+                player->SendItemRetrievalMail(itemId, 1, GenerateItemRandomPropertyId(itemId), bonusListsTwo);
+            else
+                player->StoreNewItem(dest, itemId, true, GenerateItemRandomPropertyId(itemId), GuidSet(), 0, bonusListsTwo);
+
+            break;
+        }
         player->DestroyItem(item->GetBagSlot(), item->GetSlot(), true);
 
         return true;
@@ -568,7 +1053,13 @@ void AddSC_item_scripts()
     new item_dehta_trap_smasher();
     new item_trident_of_nazjan();
     new item_captured_frog();
+    new item_satchel_of_battlefield_spoils();
     new item_primal_egg();
     new item_pulsating_sac();
-    new item_satchel_of_battlefield_spoils();
+    new loot_item_leggings_of_the_foregone();
+    new loot_item_gloves_of_the_foregone();
+    new loot_item_cloak_of_the_foreseen();
+    new loot_item_shoulders_of_the_foreseen();
+    new loot_item_chest_of_the_foregone();
+    new loot_item_unsullied_plate_helmet();
 }

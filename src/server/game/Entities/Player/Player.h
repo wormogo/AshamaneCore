@@ -2319,6 +2319,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         uint32 DoRandomRoll(uint32 minimum, uint32 maximum);
         uint8 GetItemLimitCategoryQuantity(ItemLimitCategoryEntry const* limitEntry) const;
         void ShowNeutralPlayerFactionSelectUI();
+        void SendDisplayToast(uint32 entry, uint32 questId, uint32 count, DisplayToastMethod method, ToastTypes type, bool bonusRoll, bool mailed, std::vector<int32> bonus = {});
 
         void SetEffectiveLevelAndMaxItemLevel(uint32 effectiveLevel, uint32 maxItemLevel);
 

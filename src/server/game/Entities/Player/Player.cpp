@@ -29905,3 +29905,25 @@ void Player::FinishWeek()
         slotInfo.WeekGames = 0;
     }
 }
+
+void Player::SendDisplayToast(uint32 entry, uint32 questId, uint32 count, DisplayToastMethod method, ToastTypes type, bool bonusRoll, bool mailed, std::vector<int32> itemBonus)
+{
+    std::vector<uint32> itembonus = {};
+    for (auto itemb : itemBonus)
+        itembonus.push_back(itemb);
+	
+	WorldPackets::Loot::DisplayToast displayToast;
+    displayToast.EntityId = entry;
+    displayToast.ToastType = type;
+    displayToast.Quantity = count;
+    if (type == TOAST_TYPE_ITEM)
+    {
+        ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(entry);
+        if (!itemTemplate)
+            return;
+
+        displayToast.ToastMethod = method;
+        displayToast.bonusListIDs = itembonus;
+        SendDirectMessage(displayToast.Write());
+    }
+}
