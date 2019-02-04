@@ -2940,6 +2940,333 @@ struct at_dh_sigil_of_silence : AreaTriggerAI
     }
 };
 
+// 185123 - Throw Glaive
+class spell_dh_throw_glaive : public SpellScriptLoader
+{
+public:
+    spell_dh_throw_glaive() : SpellScriptLoader("spell_dh_throw_glaive") { }
+
+    class spell_dh_throw_glaive_SpellScript : public SpellScript
+    {
+        PrepareSpellScript(spell_dh_throw_glaive_SpellScript);
+
+        void HandleOnHit(SpellEffIndex /*effIndex*/)
+        {
+            int32 damage = CalculatePct(GetHitDamage(), 150);
+
+            if (Unit* caster = GetCaster())
+                if (caster->HasAura(206473))
+                    caster->CastCustomSpell(GetHitUnit(), 207690, &damage, nullptr, nullptr, true);
+        }
+
+        void Register() override
+        {
+            OnEffectHitTarget += SpellEffectFn(spell_dh_throw_glaive_SpellScript::HandleOnHit, EFFECT_1, SPELL_EFFECT_WEAPON_PERCENT_DAMAGE);
+        }
+    };
+
+    SpellScript* GetSpellScript() const override
+    {
+        return new spell_dh_throw_glaive_SpellScript();
+    }
+};
+
+// 226778 Infernal Strike
+class spell_dh_infernal_strike_timer : public AuraScript
+{
+    PrepareAuraScript(spell_dh_infernal_strike_timer);
+
+    enum Spells
+    {
+        SPELL_DH_INFERNAL_STRIKE_DAMAGE = 189112,
+    };
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_DH_INFERNAL_STRIKE_DAMAGE });
+    }
+
+    void OnRemove(AuraEffect const* aurEff, AuraEffectHandleModes mode)
+    {
+        GetCaster()->CastSpell(GetCaster()->GetPositionX(), GetCaster()->GetPositionY(), GetCaster()->GetPositionZ(), SPELL_DH_INFERNAL_STRIKE_DAMAGE, true);
+    }
+    void Register()
+    {
+        OnEffectRemove += AuraEffectRemoveFn(spell_dh_infernal_strike_timer::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+    }
+
+};
+
+// 206476 Momentum
+class spell_dh_momentum : public AuraScript
+{
+    PrepareAuraScript(spell_dh_momentum);
+
+    enum Spells
+    {
+        SPELL_DH_MOMENTUM_TRIGGERED = 208628,
+        SPELL_DH_VENGEFUL_RETREAT = 198813,
+        SPELL_DH_FEL_RUSH = 192611,
+    };
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_DH_VENGEFUL_RETREAT, SPELL_DH_FEL_RUSH, SPELL_DH_MOMENTUM_TRIGGERED });
+    }
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        return eventInfo.GetDamageInfo() &&
+            !GetCaster()->ToPlayer()->GetSpellHistory()->HasCooldown(GetId()) &&
+            (eventInfo.GetSpellInfo()->Id == SPELL_DH_VENGEFUL_RETREAT || eventInfo.GetSpellInfo()->Id == SPELL_DH_FEL_RUSH);
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo &procInfo)
+    {
+        GetCaster()->CastSpell(GetTarget(), SPELL_DH_MOMENTUM_TRIGGERED, true);
+        // Add cooldown so it procs only on first target of target map
+        GetCaster()->ToPlayer()->GetSpellHistory()->AddCooldown(GetId(), 0, std::chrono::seconds(1));
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_dh_momentum::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_dh_momentum::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+    }
+};
+
+// 179057 - Chaos Nova
+class spell_dh_chaos_nova : public SpellScriptLoader
+{
+public:
+    spell_dh_chaos_nova() : SpellScriptLoader("spell_dh_chaos_nova") { }
+
+    class spell_dh_chaos_nova_SpellScript : public SpellScript
+    {
+        PrepareSpellScript(spell_dh_chaos_nova_SpellScript);
+
+        void HandleDamage(SpellEffIndex effIndex)
+        {
+            uint32 ap = GetCaster()->GetTotalAttackPowerValue(BASE_ATTACK);
+            AddPct(ap, 25);
+            uint32 damage = 1 + ap;
+
+            if (Unit* target = GetHitUnit())
+            {
+                damage = GetCaster()->SpellDamageBonusDone(target, GetSpellInfo(), uint32(damage), SPELL_DIRECT_DAMAGE, GetEffectInfo(effIndex));
+                damage = target->SpellDamageBonusTaken(GetCaster(), GetSpellInfo(), uint32(damage), SPELL_DIRECT_DAMAGE, GetEffectInfo(effIndex));
+            }
+
+            SetHitDamage(damage);
+        }
+
+        void Register() override
+        {
+            OnEffectHitTarget += SpellEffectFn(spell_dh_chaos_nova_SpellScript::HandleDamage, EFFECT_1, SPELL_EFFECT_SCHOOL_DAMAGE);
+        }
+    };
+
+    SpellScript* GetSpellScript() const override
+    {
+        return new spell_dh_chaos_nova_SpellScript();
+    }
+};
+
+// 212105 Fel Devastation Damage
+class spell_dh_fel_devastation_damage : public SpellScriptLoader
+{
+public:
+    spell_dh_fel_devastation_damage() : SpellScriptLoader("spell_dh_fel_devastation_damage") { }
+
+    class spell_dh_fel_devastation_damage_SpellScript : public SpellScript
+    {
+        PrepareSpellScript(spell_dh_fel_devastation_damage_SpellScript);
+
+        void HandleDamage(SpellEffIndex /*effIndex*/)
+        {
+            if (Unit* caster = GetCaster())
+            {
+                uint32 damage = static_cast<int> (GetCaster()->GetTotalAttackPowerValue(BASE_ATTACK) + 1.0f);
+                if (GetHitUnit())
+                {
+                    caster->CastSpell(caster, 212106, true);
+                    SetHitDamage(damage);
+                }
+            }
+        }
+
+        void Register() override
+        {
+            OnEffectHitTarget += SpellEffectFn(spell_dh_fel_devastation_damage_SpellScript::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        }
+    };
+
+    SpellScript* GetSpellScript() const override
+    {
+        return new spell_dh_fel_devastation_damage_SpellScript();
+    }
+};
+
+// 212106 Fel Devastation heal
+class spell_dh_fel_devastation_heal : public SpellScriptLoader
+{
+public:
+    spell_dh_fel_devastation_heal() : SpellScriptLoader("spell_dh_fel_devastation_heal") { }
+
+    class spell_dh_fel_devastation_heal_SpellScript : public SpellScript
+    {
+        PrepareSpellScript(spell_dh_fel_devastation_heal_SpellScript);
+
+        void HandleHeal(SpellEffIndex /*effIndex*/)
+        {
+            if (Unit* caster = GetCaster())
+            {
+                uint32 heal = static_cast<int> (GetCaster()->GetTotalAttackPowerValue(BASE_ATTACK) * 2.5f);
+                if (GetHitUnit())
+                    SetHitHeal(heal);
+            }
+        }
+
+        void Register() override
+        {
+            OnEffectHitTarget += SpellEffectFn(spell_dh_fel_devastation_heal_SpellScript::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);
+        }
+    };
+
+    SpellScript* GetSpellScript() const override
+    {
+        return new spell_dh_fel_devastation_heal_SpellScript();
+    }
+};
+
+// 207760 Burning Alive
+class spell_dh_burning_alive : public SpellScriptLoader
+{
+public:
+    spell_dh_burning_alive() : SpellScriptLoader("spell_dh_burning_alive") { }
+
+    class spell_dh_burning_alive_SpellScript : public SpellScript
+    {
+        PrepareSpellScript(spell_dh_burning_alive_SpellScript);
+
+        void FilterTargets(std::list<WorldObject*>& unitList)
+        {
+            unitList.remove_if(Trinity::UnitAuraCheck(true, 207771));
+            Trinity::Containers::RandomResize(unitList, 1);
+        }
+
+        void OnHitEffect(SpellEffIndex /*effIndex*/)
+        {
+            if (!GetCaster())
+                return;
+
+            if (Unit* target = GetHitUnit())
+            {
+                target->CastSpell(target, 207771, true);
+            }
+        }
+
+        void HandleAfterHit()
+        {
+            if (Unit* caster = GetOriginalCaster())
+            {
+                if (Player* player = caster->ToPlayer())
+                {
+                    if (Unit* target = GetHitUnit())
+                    {
+                        if (target->HasAura(207771))
+                        {
+                            if (AuraEffect* eff = target->GetAuraEffect(207771, EFFECT_0))
+                            {
+                                int32 damage = static_cast<int> (GetCaster()->GetTotalAttackPowerValue(BASE_ATTACK) * 0.5f);
+                                eff->SetAmount(damage);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        void Register() override
+        {
+            OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_dh_burning_alive_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
+            OnEffectHitTarget += SpellEffectFn(spell_dh_burning_alive_SpellScript::OnHitEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+            AfterHit += SpellHitFn(spell_dh_burning_alive_SpellScript::HandleAfterHit);
+        }
+    };
+
+    SpellScript* GetSpellScript() const override
+    {
+        return new spell_dh_burning_alive_SpellScript();
+    }
+};
+
+// 205411 - Desperate Instincts
+class spell_dh_desperate_instincts : public SpellScriptLoader
+{
+public:
+    spell_dh_desperate_instincts() : SpellScriptLoader("spell_dh_desperate_instincts") { }
+
+    class spell_dh_desperate_instincts_AuraScript : public AuraScript
+    {
+        PrepareAuraScript(spell_dh_desperate_instincts_AuraScript);
+
+        bool CheckProc(ProcEventInfo& eventInfo)
+        {
+            if (Player* player = GetTarget()->ToPlayer())
+                if (player->GetSpellHistory()->HasCooldown(198589) && !player->HealthBelowPct(GetSpellInfo()->GetEffect(EFFECT_0)->BasePoints))
+                    return false;
+            return true;
+        }
+
+        void HandleProc(AuraEffect const* aurEff, ProcEventInfo& /*eventInfo*/)
+        {
+            if (Player* player = GetTarget()->ToPlayer())
+                if (!player->GetSpellHistory()->HasCooldown(198589) && player->HealthBelowPct(GetSpellInfo()->GetEffect(EFFECT_0)->BasePoints))
+                    player->CastSpell(player, GetSpellInfo()->GetEffect(EFFECT_0)->TriggerSpell, true);
+        }
+
+        void Register() override
+        {
+            DoCheckProc += AuraCheckProcFn(spell_dh_desperate_instincts_AuraScript::CheckProc);
+            OnEffectProc += AuraEffectProcFn(spell_dh_desperate_instincts_AuraScript::HandleProc, EFFECT_1, SPELL_AURA_DUMMY);
+        }
+    };
+
+    AuraScript* GetAuraScript() const override
+    {
+        return new spell_dh_desperate_instincts_AuraScript();
+    }
+};
+
+// 236189 - Demonic Infusion
+class spell_dh_demonic_infusion : public SpellScriptLoader
+{
+public:
+    spell_dh_demonic_infusion() : SpellScriptLoader("spell_dh_demonic_infusion") { }
+
+    class spell_dh_demonic_infusion_SpellScript : public SpellScript
+    {
+        PrepareSpellScript(spell_dh_demonic_infusion_SpellScript);
+
+        void HandleOnHit(SpellEffIndex /*effIndex*/)
+        {
+            if (Unit* caster = GetCaster())
+                caster->AddAura(203819, caster);
+        }
+
+        void Register() override
+        {
+            OnEffectHitTarget += SpellEffectFn(spell_dh_demonic_infusion_SpellScript::HandleOnHit, EFFECT_0, SPELL_EFFECT_ENERGIZE);
+        }
+    };
+
+    SpellScript* GetSpellScript() const override
+    {
+        return new spell_dh_demonic_infusion_SpellScript();
+    }
+};
+
 void AddSC_demon_hunter_spell_scripts()
 {
     new spell_dh_annihilation();
@@ -3010,4 +3337,14 @@ void AddSC_demon_hunter_spell_scripts()
 
     /// Custom NPC scripts
     new npc_dh_spell_trainer();
+
+    new spell_dh_throw_glaive();
+    RegisterAuraScript(spell_dh_infernal_strike_timer);
+    RegisterAuraScript(spell_dh_momentum);
+    new spell_dh_chaos_nova();
+    new spell_dh_fel_devastation_damage();
+    new spell_dh_fel_devastation_heal();
+    new spell_dh_burning_alive();
+    new spell_dh_desperate_instincts();
+    new spell_dh_demonic_infusion();
 }
