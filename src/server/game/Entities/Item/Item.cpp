@@ -2775,3 +2775,12 @@ void BonusData::AddBonus(uint32 type, int32 const (&values)[3])
             break;
     }
 }
+
+void Item::InitializeBonus()
+{
+    ItemTemplate const* proto = GetTemplate();
+    if (!proto)
+        return;
+
+    _bonusData.Initialize(proto);
+}

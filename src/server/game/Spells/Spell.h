@@ -490,6 +490,7 @@ class TC_GAME_API Spell
         void EffectGiveHonor(SpellEffIndex effIndex);
         void EffectDash(SpellEffIndex effIndex);
         void EffectLearnTransmogSet(SpellEffIndex effIndex);
+        void EffectChangeItemBonus(SpellEffIndex effIndex);
 
         typedef std::unordered_set<Aura*> UsedSpellMods;
 

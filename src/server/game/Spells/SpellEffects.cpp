@@ -302,7 +302,7 @@ pEffect SpellEffects[TOTAL_SPELL_EFFECTS]=
     &Spell::EffectAddGarrisonFollower,                      //220 SPELL_EFFECT_ADD_GARRISON_FOLLOWER
     &Spell::EffectNULL,                                     //221 SPELL_EFFECT_221
     &Spell::EffectCreateHeirloomItem,                       //222 SPELL_EFFECT_CREATE_HEIRLOOM_ITEM
-    &Spell::EffectNULL,                                     //223 SPELL_EFFECT_CHANGE_ITEM_BONUSES
+    &Spell::EffectChangeItemBonus,                          //223 SPELL_EFFECT_CHANGE_ITEM_BONUSES
     &Spell::EffectActivateGarrisonBuilding,                 //224 SPELL_EFFECT_ACTIVATE_GARRISON_BUILDING
     &Spell::EffectNULL,                                     //225 SPELL_EFFECT_GRANT_BATTLEPET_LEVEL
     &Spell::EffectNULL,                                     //226 SPELL_EFFECT_226
@@ -6153,4 +6153,113 @@ void Spell::EffectLearnTransmogSet(SpellEffIndex /*effIndex*/)
         return;
 
     unitTarget->ToPlayer()->GetSession()->GetCollectionMgr()->AddTransmogSet(effectInfo->MiscValue);
+}
+
+void Spell::EffectChangeItemBonus(SpellEffIndex effIndex)
+{
+    if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT)
+        return;
+
+    Item* itemTarget = m_targets.GetItemTarget();
+    if (!itemTarget)
+        return;
+
+    if (m_caster->GetTypeId() != TYPEID_PLAYER)
+        return;
+
+    Player* player = m_caster->ToPlayer();
+
+    if (m_spellInfo->Id == 183484) // Obliterum
+    {
+        const uint32 oblite_bonus[11] = { 596, 597, 598, 599, 666, 667, 668, 669, 670, 671, 672 }; // 596 0/10 Obliterum, 597 1/10 and etc...
+        std::vector<uint32> const& Bonusfields = itemTarget->GetDynamicValues(ITEM_DYNAMIC_FIELD_BONUSLIST_IDS);
+        std::vector<int32> bonusesListIDs;
+        bonusesListIDs.insert(bonusesListIDs.end(), Bonusfields.begin(), Bonusfields.end());
+        uint32 newBonusId = 0;
+        bool NeedInit = false;
+        for (uint32 j = 0; j < 10; ++j) // because not check last bonusId
+        {
+            if (NeedInit) // already change bonus
+                break;
+
+            for (uint32 k = 0; k < bonusesListIDs.size(); ++k)
+            {
+                if (NeedInit) // already change bonus
+                    break;
+
+                if (oblite_bonus[j] == bonusesListIDs[k])
+                {
+                    bonusesListIDs.erase(bonusesListIDs.begin() + k);
+                    if (itemTarget->IsEquipped())
+                        player->_ApplyItemBonuses(itemTarget, itemTarget->GetSlot(), false);
+
+                    itemTarget->ClearDynamicValue(ITEM_DYNAMIC_FIELD_BONUSLIST_IDS);
+                    bonusesListIDs.push_back(oblite_bonus[j + 1]);
+                    NeedInit = true;
+                    break;
+                }
+            }
+        }
+
+        if (!NeedInit)
+            return;
+
+        itemTarget->InitializeBonus();
+        for (uint32 newBonusId : bonusesListIDs)
+            itemTarget->AddBonuses(newBonusId);
+
+        if (itemTarget->IsEquipped())
+            player->_ApplyItemBonuses(itemTarget, itemTarget->GetSlot(), true);
+
+        itemTarget->SetState(ITEM_CHANGED, player); // Can SaveToDb
+
+        if (itemTarget->IsEquipped())
+            player->SetVisibleItemSlot(itemTarget->GetSlot(), itemTarget);
+    }
+    else if (m_spellInfo->Id == 225158 || m_spellInfo->Id == 225160 || m_spellInfo->Id == 225161) // Upgrade Armor Class Halls
+    {
+        if (effIndex != EFFECT_1) // only upgrade for 1 effect
+            return;
+
+        std::vector<uint32> const& Bonusfields = itemTarget->GetDynamicValues(ITEM_DYNAMIC_FIELD_BONUSLIST_IDS);
+        int32 bonusitemid = (Bonusfields.empty() ? 1472 : Bonusfields[0]) + (m_spellInfo->GetEffect(EFFECT_3)->BasePoints - itemTarget->GetItemLevel(player)); // calculate new bonusId. 1472 give 0 bonusitemlvl
+
+        if (itemTarget->IsEquipped())
+            player->_ApplyItemBonuses(itemTarget, itemTarget->GetSlot(), false);
+
+        itemTarget->ClearDynamicValue(ITEM_DYNAMIC_FIELD_BONUSLIST_IDS); // because have 1 bonusListId
+        itemTarget->InitializeBonus();
+        itemTarget->AddBonuses(bonusitemid);
+
+        if (itemTarget->IsEquipped())
+            player->_ApplyItemBonuses(itemTarget, itemTarget->GetSlot(), true);
+
+        itemTarget->SetState(ITEM_CHANGED, player); // Can SaveToDb
+
+        if (itemTarget->IsEquipped())
+            player->SetVisibleItemSlot(itemTarget->GetSlot(), itemTarget);
+    }
+    else if (m_spellInfo->Id == 257327)
+    {
+        if (effIndex != EFFECT_0) // only upgrade for 1 effect
+            return;
+
+        std::vector<uint32> const& Bonusfields = itemTarget->GetDynamicValues(ITEM_DYNAMIC_FIELD_BONUSLIST_IDS);
+        int32 bonusitemid = 3630;
+
+        if (itemTarget->IsEquipped())
+            player->_ApplyItemBonuses(itemTarget, itemTarget->GetSlot(), false);
+
+        itemTarget->ClearDynamicValue(ITEM_DYNAMIC_FIELD_BONUSLIST_IDS); // because have 1 bonusListId
+        itemTarget->InitializeBonus();
+        itemTarget->AddBonuses(bonusitemid);
+
+        if (itemTarget->IsEquipped())
+            player->_ApplyItemBonuses(itemTarget, itemTarget->GetSlot(), true);
+
+        itemTarget->SetState(ITEM_CHANGED, player); // Can SaveToDb
+
+        if (itemTarget->IsEquipped())
+            player->SetVisibleItemSlot(itemTarget->GetSlot(), itemTarget);
+    }
 }

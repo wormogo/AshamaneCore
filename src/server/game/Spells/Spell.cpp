@@ -6836,6 +6836,127 @@ SpellCastResult Spell::CheckItems(uint32* param1 /*= nullptr*/, uint32* param2 /
                  }
                  break;
             }
+	    case SPELL_EFFECT_CHANGE_ITEM_BONUSES:
+            {
+                Item* pitem = m_targets.GetItemTarget();
+                if (!pitem || pitem->IsBroken())
+                    return SPELL_FAILED_NO_VALID_TARGETS;
+
+                if (!pitem->IsSoulBound())
+                    return SPELL_FAILED_NOT_SOULBOUND;
+
+                if (m_spellInfo->Id == 183484) // Obliterum
+                {
+                    std::vector<int32> oblitebonuses = { 596, 597, 598, 599, 666, 667, 668, 669, 670, 671, 672 }; // 596 0/10 Obliterum, 597 1/10 and etc...
+                    std::vector<uint32> const& Bonusfields = pitem->GetDynamicValues(ITEM_DYNAMIC_FIELD_BONUSLIST_IDS);
+                    bool HaveBonus = false;
+                    for (uint32 itembonuses : oblitebonuses)
+                    {
+                        if (HaveBonus)
+                            break;
+
+                        for (uint32 BonusIds : Bonusfields)
+                        {
+                            if (HaveBonus)
+                                break;
+
+                            if (itembonuses && BonusIds && BonusIds == itembonuses && BonusIds != 672) // last
+                            {
+                                HaveBonus = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!HaveBonus)
+                        return SPELL_FAILED_NO_VALID_TARGETS;
+                }
+                else if (m_spellInfo->Id == 225158 || m_spellInfo->Id == 225160 || m_spellInfo->Id == 225161) // Upgrade Armor Class Halls
+                {
+                    if (pitem->GetItemLevel(player) != m_spellInfo->GetEffect(EFFECT_2)->BasePoints || m_spellInfo->GetEffect(EFFECT_3)->BasePoints <= (int32)pitem->GetItemLevel(player))
+                        return SPELL_FAILED_NO_VALID_TARGETS;
+
+                    std::vector<int32> Itemlist =  // ItemId for Upgrade Armor Class Halls
+                    {
+                        139767, 139763, 139764, 139765, 139766, 139768, 139769, 139770, // Warlock
+                        139749, 139754, 139748, 139750, 139751, 139747, 139753, 139752, // Mage
+                        139759, 139755, 139756, 139757, 139758, 139760, 139761, 139762, // Priest
+                        139673, 139674, 139675, 139676, 139677, 139678, 139679, 139680, // Death Knight
+                        139690, 139691, 139692, 139693, 139694, 139695, 139696, 139697, // Paladin
+                        139681, 139682, 139683, 139684, 139685, 139686, 139687, 139688, // Warrior
+                        139698, 139699, 139700, 139701, 139702, 139703, 139704, 139705, // Shaman
+                        139707, 139708, 139709, 139710, 139711, 139712, 139713, 139714, // Hunter
+                        139739, 139740, 139741, 139742, 139743, 139744, 139745, 139746, // Rogue
+                        139715, 139716, 139717, 139718, 139719, 139720, 139721, 139722, // Demon Hunter
+                        139731, 139732, 139733, 139734, 139735, 139736, 139737, 139738, // Monk
+                        139723, 139724, 139725, 139726, 139727, 139728, 139729, 139730, // Druid
+                    };
+
+                    bool ItemFound = false;
+                    for (uint32 ItemEntry : Itemlist)
+                    {
+                        if (ItemFound)
+                            break;
+
+                        if (ItemEntry == pitem->GetEntry())
+                        {
+                            ItemFound = true;
+                            break;
+                        }
+                    }
+
+                    if (!ItemFound)
+                        return SPELL_FAILED_NO_VALID_TARGETS;
+                }
+                else if (m_spellInfo->Id == 257327) // Upgrade Stabilized Essence 7.3.5
+                {
+                    if (m_spellInfo->GetEffect(EFFECT_1)->BasePoints <= (int32)pitem->GetItemLevel(player))
+                        return SPELL_FAILED_NO_VALID_TARGETS;
+
+                    std::vector<int32> Itemlist =  // ItemId for Upgrade Armor Class Halls
+                    {
+                        132394, 132459, 132863, 133971, 137061, 137062, 137063, 137064, 137065, 137088,
+                        143732, 144244, 144274, 144275, 144280, 144385, 144432, 132444, 132393, 132437, 137071, 137072, 137073,
+                        137074, 137075, 137076, 143728, 144236, 144260, 144279, 144281, 144295, 144326, 144358, 144369, 132375,
+                        132376, 137019, 137020, 137021, 137053, 137066, 137109, 144273, 144364, 144438, 132861, 133977, 137014,
+                        137015, 137016, 137017, 137018, 137616, 144239, 144340, 144361, 132365, 132379, 132381, 132406, 132407,
+                        132409, 132413, 132436, 132448, 132450, 132458, 137056, 137084, 137090, 137091, 137092, 137095, 137096,
+                        137097, 137098, 137099, 137100, 137101, 137102, 137104, 137105, 137107, 138140, 140846, 141353, 144277,
+                        132411, 132461, 137057, 137058, 137059, 137060, 137094, 137108, 141321, 144242, 144247, 144292, 144303,
+                        144355, 132366, 132367, 132374, 132441, 132442, 132445, 132454, 132456, 132457, 132864, 133800, 133970,
+                        133976, 137078, 137079, 137080, 137081, 137082, 137083, 137085, 137086, 137087, 137089, 137103, 138879,
+                        132357, 132447, 132451, 132453, 132466, 137067, 137068, 137069, 137070, 137077, 144293, 144354, 132443,
+                        132455, 137022, 137023, 137024, 137025, 137026, 137027, 137028, 137029, 137030, 137031, 137032, 137033,
+                        137034, 137035, 137036, 137227, 138117, 138949, 132369, 132378, 132410, 132449, 132452, 132460, 133973,
+                        133974, 137037, 137038, 137039, 137040, 137041, 137042, 137043, 137044, 137045, 137046, 137047, 137048,
+                        137049, 137050, 137051, 137052, 137054, 137055, 137220, 137223, 137276, 137382, 138854, 144249, 144258,
+                        151649, 151821, 151642, 151808, 151809, 151810, 151646, 151787, 151786, 151814, 151640, 151795, 151796,
+                        151644, 151782, 151812, 151813, 151650, 151822, 151823, 151824, 151647, 151785, 151819, 151641, 151803,
+                        151805, 151807, 144259, 150936, 151817, 151815, 151818, 151639, 151798, 151799, 151643, 151784, 151788,
+                        151811, 151636, 151783, 151800, 151801, 151802, 146666, 146667, 146668, 146669
+                    };
+
+                    bool ItemFound = false;
+                    for (uint32 ItemEntry : Itemlist)
+                    {
+                        if (ItemFound)
+                            break;
+
+                        if (ItemEntry == pitem->GetEntry())
+                        {
+                            ItemFound = true;
+                            break;
+                        }
+                    }
+
+                    if (!ItemFound)
+                        return SPELL_FAILED_NO_VALID_TARGETS;
+                }
+                else
+                    return SPELL_FAILED_NO_VALID_TARGETS;
+
+                break;
+            }
             default:
                 break;
         }
