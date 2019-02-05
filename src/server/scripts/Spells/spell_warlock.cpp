@@ -200,6 +200,7 @@ enum WarlockSpells
     SPELL_WARLOCK_UNSTABLE_AFFLICTION_DAMAGE_5      = 233499,
     SPELL_WARLOCK_UNSTABLE_AFFLICTION_DISPEL        = 196364,
     SPELL_WARLOCK_WRITHE_IN_AGONY                   = 196102,
+    SPELL_WARLOCK_SINDOREY_SPITE                    = 208871,
 };
 
 enum WarlockSpellIcons
@@ -3627,6 +3628,79 @@ class spell_warl_incinerate : public SpellScript
     }
 };
 
+// Sin'dorei Spite - 208868
+// 7.3.5
+class spell_warl_sindorei_spite : public SpellScriptLoader
+{
+public:
+    spell_warl_sindorei_spite() : SpellScriptLoader("spell_warl_sindorei_spite") { }
+
+    class spell_warl_sindorei_spite_AuraScript : public AuraScript
+    {
+        PrepareAuraScript(spell_warl_sindorei_spite_AuraScript);
+
+        bool Validate(SpellInfo const* /*spellInfo*/) override
+        {
+            return ValidateSpellInfo({ SPELL_WARLOCK_SINDOREY_SPITE });
+        }
+
+        bool CheckProc(ProcEventInfo& eventInfo)
+        {
+            return false;
+        }
+
+        void Register() override
+        {
+            DoCheckProc += AuraCheckProcFn(spell_warl_sindorei_spite_AuraScript::CheckProc);
+        }
+    };
+
+    AuraScript* GetAuraScript() const override
+    {
+        return new spell_warl_sindorei_spite_AuraScript();
+    }
+};
+
+// 18540 && 1122
+// 7.3.5
+class spell_warl_sindorei_spite_proc : public SpellScriptLoader
+{
+public:
+    spell_warl_sindorei_spite_proc() : SpellScriptLoader("spell_warl_sindorei_spite_proc") { }
+
+    class spell_warl_sindorei_spite_proc_SpellScript : public SpellScript
+    {
+        PrepareSpellScript(spell_warl_sindorei_spite_proc_SpellScript);
+
+        bool Validate(SpellInfo const* /*spellInfo*/) override
+        {
+            return ValidateSpellInfo({ SPELL_WARLOCK_SINDOREY_SPITE });
+        }
+
+        void Cast()
+        {
+            Unit* caster = GetCaster();
+            if (!caster)
+                return;
+
+            caster->CastSpell(caster, SPELL_WARLOCK_SINDOREY_SPITE, true);
+
+            if (Unit* pet = caster->GetGuardianPet())
+                pet->CastSpell(pet, SPELL_WARLOCK_SINDOREY_SPITE, true);
+        }
+
+        void Register() override
+        {
+            AfterCast += SpellCastFn(spell_warl_sindorei_spite_proc_SpellScript::Cast);
+        }
+    };
+
+    SpellScript* GetSpellScript() const override
+    {
+        return new spell_warl_sindorei_spite_proc_SpellScript();
+    }
+};
+
 void AddSC_warlock_spell_scripts()
 {
     RegisterAuraScript(spell_warl_demonskin);
@@ -3706,6 +3780,8 @@ void AddSC_warlock_spell_scripts()
     RegisterAuraScript(aura_warl_phantomatic_singularity);
     RegisterAuraScript(spell_warl_grimoire_of_service_aura);
     RegisterSpellScript(spell_warl_incinerate);
+    new spell_warl_sindorei_spite();
+    new spell_warl_sindorei_spite_proc();
 
     ///AreaTrigger scripts
     RegisterAreaTriggerAI(at_warl_rain_of_fire);
