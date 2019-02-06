@@ -143,6 +143,13 @@ void AddSC_boss_advisor_melandrus();
 void AddSC_court_of_stars();
 void AddSC_instance_court_of_stars();
 
+//TheArcway
+void AddSC_freakz_instance_the_arcway();
+void AddSC_freakz_boss_general_xakal();
+void AddSC_freakz_boss_naltira();
+void AddSC_freakz_boss_ivanyr();
+void AddSC_freakz_boss_advisor_vandros();
+
 // Seat of Triumvirate
 void AddSC_boss_zuraal_the_ascended();
 void AddSC_boss_saprish();
@@ -171,9 +178,16 @@ void AddSC_boss_harjatan();
 void AddSC_boss_tos_kiljaeden();
 void AddSC_boss_maiden_of_vigilance();
 void AddSC_boss_sasszine();
-void AddSC_boss_sisters_of_moon();
 void AddSC_tomb_of_sargeras();
 void AddSC_instance_tomb_of_sargeras();
+
+// The HightHold
+void AddSC_instance_the_nighthold();
+void AddSC_the_nighthold();
+void AddSC_boss_skorpyron();
+void AddSC_boss_chronomatic_anomaly();
+void AddSC_boss_trilliax();
+void AddSC_boss_aluriel();
 
 // The name of this function should match:
 // void Add${NameOfDirectory}Scripts()
@@ -332,7 +346,14 @@ void AddBrokenIslesScripts()
     AddSC_boss_tos_kiljaeden();
     AddSC_boss_maiden_of_vigilance();
     AddSC_boss_sasszine();
-    AddSC_boss_sisters_of_moon();
     AddSC_tomb_of_sargeras();
     AddSC_instance_tomb_of_sargeras();
+	
+	// The HightHold
+    AddSC_instance_the_nighthold();
+    AddSC_the_nighthold();
+    AddSC_boss_skorpyron();
+    AddSC_boss_chronomatic_anomaly();
+    AddSC_boss_trilliax();
+    AddSC_boss_aluriel();
 }
