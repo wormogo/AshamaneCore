@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017-2018 AshamaneProject <https://github.com/AshamaneProject>
  * Copyright (C) 2008-2017 TrinityCore <http://www.trinitycore.org/>
  *
@@ -17,7 +17,52 @@
  */
 
 #include "ScriptMgr.h"
+enum
+{
+    ///WARLOCK Quest 
+    NPC_RITSSYN_FLAMESCOWL_103506 = 103506,
+    QUEST_THE_SIXTH = 40716,
+
+    QUEST_THE_NEW_BLOOD = 40729,
+};
+
+struct npc_ritssyn_flamescowl_103506 : public ScriptedAI
+{
+    npc_ritssyn_flamescowl_103506(Creature* creature) : ScriptedAI(creature) { SayHi = false; }
+
+    void MoveInLineOfSight(Unit* who) override
+    {
+        if (!who || !who->IsInWorld())
+            return;
+        if (!me->IsWithinDist(who, 25.0f, false))
+            return;
+
+        Player* player = who->GetCharmerOrOwnerPlayerOrPlayerItself();
+
+        if (!player)
+            return;
+        me->GetMotionMaster()->MoveFollow(player, PET_FOLLOW_DIST, me->GetFollowAngle());
+        if (!SayHi)
+        {
+            SayHi = true;
+            //summon one door
+            Talk(0, player);
+        }
+    }
+
+    void sQuestAccept(Player* player, Quest const* quest) override
+    {
+        if (quest->GetQuestId() == QUEST_THE_SIXTH)
+        {
+            Talk(1, player);
+            me->DespawnOrUnsummon(5000);
+        }
+    }
+private:
+    bool SayHi;
+};
 
 void AddSC_class_hall_warlock()
 {
+    RegisterCreatureAI(npc_ritssyn_flamescowl_103506);
 }
