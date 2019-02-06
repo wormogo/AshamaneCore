@@ -303,6 +303,84 @@ public:
     }
 };
 
+enum ChoicesAndKillcredits
+{
+    DRUID_CHOICE                            = 247,
+    DRUID_ARTIFACT_QUEST_KILLCREDIT         = 101296,
+    HUNTER_CHOICE                           = 240,
+    HUNTER_ARTIFACT_QUEST_KILLCREDIT        = 104634,
+    ROGUE_CHOICE                            = 280,
+    ROGUE_ARTIFACT_QUEST_KILLCREDIT         = 105953,
+    PALADIN_CHOICE                          = 235,
+    PALADIN_ARTIFACT_QUEST_KILLCREDIT       = 90369,
+    DEATH_KNIGHT_CHOICE                     = 253,
+    DEATH_KNIGHT_ARTIFACT_QUEST_KILLCREDIT  = 101441,
+    PRIEST_CHOICE                           = 248,
+    PRIEST_ARTIFACT_QUEST_KILLCREDIT        = 100583,
+    DEMON_HUNTER_CHOICE                     = 255,
+    DEMON_HUNTER_ARTIFACT_QUEST_KILLCREDIT  = 105177,
+    MAGE_CHOICE                             = 265,
+    MAGE_ARTIFACT_QUEST_KILLCREDIT          = 103037,
+    WARLOCK_CHOICE                          = 245,
+    WARLOCK_ARTIFACT_QUEST_KILLCREDIT       = 101095,
+    WARRIOR_CHOICE                          = 236,
+    WARRIOR_ARTIFACT_QUEST_KILLCREDIT       = 100583,
+    SHAMAN_CHOICE                           = 266,
+    SHAMAN_ARTIFACT_QUEST_KILLCREDIT        = 96527,
+    MONK_CHOICE                             = 242,
+    MONK_ARTIFACT_QUEST_KILLCREDIT          = 100438,
+};
+
+class player_artifact_choice : public PlayerScript
+{
+public:
+    player_artifact_choice() : PlayerScript("player_artifact_choice") { }
+ 
+    void OnCompleteQuestChoice(Player* player, uint32 choiceId, uint32 /*responseId*/)
+    {
+        switch (choiceId)
+        {
+            case DRUID_CHOICE:
+                player->KilledMonsterCredit(DRUID_ARTIFACT_QUEST_KILLCREDIT);
+                break;
+            case HUNTER_CHOICE:
+                player->KilledMonsterCredit(HUNTER_ARTIFACT_QUEST_KILLCREDIT);
+                break;
+            case ROGUE_CHOICE:
+                player->KilledMonsterCredit(ROGUE_ARTIFACT_QUEST_KILLCREDIT);
+                break;
+            case PALADIN_CHOICE:
+                player->KilledMonsterCredit(PALADIN_ARTIFACT_QUEST_KILLCREDIT);
+                break;
+            case DEATH_KNIGHT_CHOICE:
+                player->KilledMonsterCredit(DEATH_KNIGHT_ARTIFACT_QUEST_KILLCREDIT);
+                break;
+            case PRIEST_CHOICE:
+                player->KilledMonsterCredit(PRIEST_ARTIFACT_QUEST_KILLCREDIT);
+                break;
+            case DEMON_HUNTER_CHOICE:
+                player->KilledMonsterCredit(DEMON_HUNTER_ARTIFACT_QUEST_KILLCREDIT);
+                break;
+            case MAGE_CHOICE:
+                player->KilledMonsterCredit(MAGE_ARTIFACT_QUEST_KILLCREDIT);
+                break;
+            case WARLOCK_CHOICE:
+                player->KilledMonsterCredit(WARLOCK_ARTIFACT_QUEST_KILLCREDIT);
+                break;
+            case WARRIOR_CHOICE:
+                player->KilledMonsterCredit(WARRIOR_ARTIFACT_QUEST_KILLCREDIT);
+                break;
+            case SHAMAN_CHOICE:
+                player->KilledMonsterCredit(SHAMAN_ARTIFACT_QUEST_KILLCREDIT);
+                break;
+            case MONK_CHOICE:
+                player->KilledMonsterCredit(MONK_ARTIFACT_QUEST_KILLCREDIT);
+                break;
+        }
+ 
+    }
+};
+
 void AddSC_dalaran_legion()
 {
     new OnLegionArrival();
@@ -314,4 +392,5 @@ void AddSC_dalaran_legion()
     new zone_legion_dalaran_underbelly();
     new npc_hunter_talua();
     new npc_great_eagle();
+    new player_artifact_choice();
 }

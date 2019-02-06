@@ -801,6 +801,7 @@ struct PlayerChoiceResponse
     std::string Answer;
     std::string Description;
     std::string Confirmation;
+    int32 QuestId;
     Optional<PlayerChoiceResponseReward> Reward;
 };
 

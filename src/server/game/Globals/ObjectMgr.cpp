@@ -10491,7 +10491,7 @@ void ObjectMgr::LoadPlayerChoices()
 
     } while (choices->NextRow());
 
-    if (QueryResult responses = WorldDatabase.Query("SELECT ChoiceId, ResponseId, ChoiceArtFileId, Header, Answer, Description, Confirmation FROM playerchoice_response ORDER BY `Index` ASC"))
+    if (QueryResult responses = WorldDatabase.Query("SELECT ChoiceId, ResponseId, ChoiceArtFileId, Header, Answer, Description, Confirmation, QuestId FROM playerchoice_response ORDER BY `Index` ASC"))
     {
         do
         {
@@ -10516,6 +10516,7 @@ void ObjectMgr::LoadPlayerChoices()
             response.Answer             = fields[4].GetString();
             response.Description        = fields[5].GetString();
             response.Confirmation       = fields[6].GetString();
+            response.QuestId            = fields[7].GetInt32();
             ++responseCount;
 
         } while (responses->NextRow());
