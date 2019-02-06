@@ -1815,7 +1815,7 @@ public:
             if (player->GetSkillValue(SKILL_RIDING) < 75)
                 return SPELL_FAILED_APPRENTICE_RIDING_REQUIREMENT;
 
-            SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(player->IsInWater() ? DRUID_AQUATIC_FORM : DRUID_STAG_FORM);
+            SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(player->IsInWater() ? SPELL_DRUID_FORM_AQUATIC : SPELL_DRUID_FORM_STAG);
             return spellInfo->CheckLocation(player->GetMapId(), player->GetZoneId(), player->GetAreaId(), player);
         }
 
@@ -1831,12 +1831,12 @@ public:
 
         bool Validate(SpellInfo const* /*spellInfo*/) override
         {
-            return ValidateSpellInfo({ DRUID_STAG_FORM, DRUID_AQUATIC_FORM, DRUID_FLIGHT_FORM, DRUID_SWIFT_FLIGHT_FORM });
+            return ValidateSpellInfo({ SPELL_DRUID_FORM_STAG, SPELL_DRUID_FORM_AQUATIC, SPELL_DRUID_FORM_FLIGHT, SPELL_DRUID_FORM_SWIFT_FLIGHT });
         }
 
         bool Load() override
         {
-            return GetCaster()->IsPlayer();
+            return GetCaster()->GetTypeId() == TYPEID_PLAYER;
         }
 
         void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
@@ -1845,11 +1845,11 @@ public:
 
             Player* player = GetTarget()->ToPlayer();
             if (player->IsInWater()) // Aquatic form
-                triggeredSpellId = DRUID_AQUATIC_FORM;
-            else if (player->GetSkillValue(SKILL_RIDING) >= 225 && CheckLocationForForm(DRUID_FLIGHT_FORM) == SPELL_CAST_OK) // Flight form
-                triggeredSpellId = player->getLevel() >= 71 ? DRUID_SWIFT_FLIGHT_FORM : DRUID_FLIGHT_FORM;
+                triggeredSpellId = SPELL_DRUID_FORM_AQUATIC;
+            else if (player->GetSkillValue(SKILL_RIDING) >= 225 && CheckLocationForForm(SPELL_DRUID_FORM_FLIGHT) == SPELL_CAST_OK) // Flight form
+                triggeredSpellId = player->getLevel() >= 71 ? SPELL_DRUID_FORM_SWIFT_FLIGHT : SPELL_DRUID_FORM_FLIGHT;
             else // Stag form (riding skill already checked in CheckCast)
-                triggeredSpellId = DRUID_STAG_FORM;
+                triggeredSpellId = SPELL_DRUID_FORM_STAG;
 
             player->AddAura(triggeredSpellId, player);
         }
@@ -1857,16 +1857,16 @@ public:
         void AfterRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
         {
             // No need to check remove mode, it's safe for auras to remove each other in AfterRemove hook.
-            GetTarget()->RemoveAura(DRUID_STAG_FORM);
-            GetTarget()->RemoveAura(DRUID_AQUATIC_FORM);
-            GetTarget()->RemoveAura(DRUID_FLIGHT_FORM);
-            GetTarget()->RemoveAura(DRUID_SWIFT_FLIGHT_FORM);
+            GetTarget()->RemoveAura(SPELL_DRUID_FORM_STAG);
+            GetTarget()->RemoveAura(SPELL_DRUID_FORM_AQUATIC);
+            GetTarget()->RemoveAura(SPELL_DRUID_FORM_FLIGHT);
+            GetTarget()->RemoveAura(SPELL_DRUID_FORM_SWIFT_FLIGHT);
         }
 
         void Register() override
         {
             OnEffectApply += AuraEffectApplyFn(spell_dru_travel_form_dummy_AuraScript::OnApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
-            OnEffectRemove += AuraEffectRemoveFn(spell_dru_travel_form_dummy_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+            AfterEffectRemove += AuraEffectRemoveFn(spell_dru_travel_form_dummy_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
         }
 
     private:
@@ -1905,12 +1905,12 @@ public:
 
         bool Validate(SpellInfo const* /*spellInfo*/) override
         {
-            return ValidateSpellInfo({ DRUID_STAG_FORM, DRUID_AQUATIC_FORM, DRUID_FLIGHT_FORM, DRUID_SWIFT_FLIGHT_FORM });
+            return ValidateSpellInfo({ SPELL_DRUID_FORM_STAG, SPELL_DRUID_FORM_AQUATIC, SPELL_DRUID_FORM_FLIGHT, SPELL_DRUID_FORM_SWIFT_FLIGHT });
         }
 
         bool Load() override
         {
-            return GetCaster()->IsPlayer();
+            return GetCaster()->GetTypeId() == TYPEID_PLAYER;
         }
 
         void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
@@ -1925,12 +1925,11 @@ public:
             // Check what form is appropriate
             Player* player = GetTarget()->ToPlayer();
             if (player->IsInWater()) // Aquatic form
-                triggeredSpellId = DRUID_AQUATIC_FORM;
-            else if (player->GetSkillValue(SKILL_RIDING) >= 225 && CheckLocationForForm(DRUID_FLIGHT_FORM) == SPELL_CAST_OK) // Flight form
-                triggeredSpellId = player->GetSkillValue(SKILL_RIDING) >= 300 ? DRUID_SWIFT_FLIGHT_FORM : DRUID_FLIGHT_FORM;
-            else if (CheckLocationForForm(DRUID_STAG_FORM) == SPELL_CAST_OK) // Stag form
-                triggeredSpellId = DRUID_STAG_FORM;
-
+                triggeredSpellId = SPELL_DRUID_FORM_AQUATIC;
+            else if (player->GetSkillValue(SKILL_RIDING) >= 225 && CheckLocationForForm(SPELL_DRUID_FORM_FLIGHT) == SPELL_CAST_OK) // Flight form
+                triggeredSpellId = player->GetSkillValue(SKILL_RIDING) >= 300 ? SPELL_DRUID_FORM_SWIFT_FLIGHT : SPELL_DRUID_FORM_FLIGHT;
+            else if (CheckLocationForForm(SPELL_DRUID_FORM_STAG) == SPELL_CAST_OK) // Stag form
+                triggeredSpellId = SPELL_DRUID_FORM_STAG;
             // If chosen form is current aura, just don't remove it.
             if (triggeredSpellId == m_scriptSpellId)
                 PreventDefaultAction();
