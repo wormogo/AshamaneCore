@@ -65,6 +65,158 @@ enum Actions
     ACTION_CAST_DEVOUR      = 3,
 };
 
+
+using CreatureList = std::list<Creature*>;
+
+class boss_naltira : public CreatureScript
+{
+    public:
+        boss_naltira() : CreatureScript("boss_naltira")
+        {}
+
+        struct boss_naltira_AI : public BossAI
+        {
+            explicit boss_naltira_AI(Creature* creature) : BossAI(creature, DATA_NALTIRA)
+            {}
+
+            void EnterCombat(Unit* /**/) override
+            {
+                _EnterCombat();
+                instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me);
+                SummonSpiders();
+                events.ScheduleEvent(EVENT_MANAFANG, Seconds(30));
+                events.ScheduleEvent(EVENT_BLINK_STRIKES, Seconds(15));
+            }
+
+            void EnterEvadeMode(EvadeReason why) override
+            {
+                instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);
+                BossAI::EnterEvadeMode(why);
+            }
+
+            void JustDied(Unit* /**/) override
+            {
+                _JustDied();
+                instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);
+            }
+
+            void SummonSpiders()
+            {
+                CreatureList dummys;
+
+                me->GetCreatureListWithEntryInGrid(dummys, NPC_SLC_GENERIC_MOP);
+
+                for (auto & it : dummys)
+                {
+                    Position pos = it->GetPosition();
+                    pos.m_positionZ -= 5.f;
+                    auto* spider = DoSummon(NPC_VICIOUS_MANAFANG, pos, 10 * IN_MILLISECONDS, TEMPSUMMON_CORPSE_DESPAWN);
+
+                    if (spider)
+                    {
+                        spider->CastSpell(it, SPELL_ARCANE_WEB_BEAM, true);
+                        spider->GetAI()->SetGUID(it->GetGUID(), DATA_SPIDER_BEAM);
+                    }
+                }
+            }
+
+            void SetGUID(ObjectGuid guid, int32 id) override
+            {
+                if (id == DATA_TANGLED_WEB_TARGET_1)
+                    _targetOneGuid = guid;
+                else if (id == DATA_TANGLED_WEB_TARGET_2)
+                    _targetTwoGuid = guid;
+            }
+
+            ObjectGuid GetGUID(int32 id) const override
+            {
+                if (id == DATA_TANGLED_WEB_TARGET_1)
+                    return _targetOneGuid;
+                else if (id == DATA_TANGLED_WEB_TARGET_2)
+                    return _targetTwoGuid;
+
+                return ObjectGuid::Empty;
+            }
+
+            void ExecuteEvent(uint32 eventId) override
+            {
+          //    me->GetSpellHistory()->ResetAllCooldowns();
+                switch (eventId)
+                {
+                    case EVENT_MANAFANG:
+                    {
+                        CreatureList spiders;
+
+                        me->GetCreatureListWithEntryInGrid(spiders, NPC_VICIOUS_MANAFANG);
+
+                        if (!spiders.empty())
+                        {
+                            Creature* spider = nullptr;
+
+                            while (!spider)
+                            {
+                                spider = Trinity::Containers::SelectRandomContainerElement(spiders);
+
+                                if (spider && !spider->HasReactState(REACT_AGGRESSIVE))
+                                    spider->GetAI()->DoAction(ACTION_ACTIVATE_SPIDER);
+                                else
+                                    spider = nullptr;
+                            }
+                        }
+
+                        events.ScheduleEvent(EVENT_MANAFANG, Seconds(20));
+                        break;
+                    }
+
+                    case EVENT_BLINK_STRIKES:
+                    {
+                        _victimGUID = me->GetVictim()->GetGUID();
+
+                        if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, NonMeleeTargetSelector(me, true)))
+                            DoCast(target, SPELL_BLINK_STRIKES, true);
+                        else
+                            DoCastVictim(SPELL_BLINK_STRIKES, true);
+                        
+                        events.ScheduleEvent(EVENT_BLINK_STRIKES_TANK, IN_MILLISECONDS);
+                        events.ScheduleEvent(EVENT_BLINK_STRIKES, Seconds(30));
+                        events.ScheduleEvent(EVENT_NETHER_VENOM, Seconds(10));
+                        break;
+                    }
+
+                    case EVENT_BLINK_STRIKES_TANK:
+                    {
+                        if (Unit* target = ObjectAccessor::GetPlayer(*me, _victimGUID))
+                            DoCast(target, SPELL_BLINK_STRIKES, true);
+
+                        break;
+                    }
+
+                    case EVENT_TANGLED_WEB:
+                    {
+                        DoCast(me, SPELL_TANGLED_WEB);
+                        break;
+                    }
+
+                    case EVENT_NETHER_VENOM:
+                    {
+                        DoCast(me, SPELL_NETHER_VENOM_AOE);
+                        events.ScheduleEvent(EVENT_TANGLED_WEB, Seconds(6));
+                        break;
+                    }
+                }
+            }
+
+            private:
+                ObjectGuid _targetOneGuid, _targetTwoGuid;
+                ObjectGuid _victimGUID;
+        };
+
+        CreatureAI* GetAI(Creature* creature) const override
+        {
+            return new boss_naltira_AI(creature);
+        }
+};
+
 class npc_arc_vicious_manafang : public CreatureScript
 {
     public:
@@ -526,6 +678,7 @@ class at_arc_nether_venom : public AreaTriggerEntityScript
 
 void AddSC_boss_naltira()
 {
+    new boss_naltira();
     new npc_arc_vicious_manafang();
     new spell_naltira_blink_strikes();
     new spell_naltira_blink_strikes_dmg();

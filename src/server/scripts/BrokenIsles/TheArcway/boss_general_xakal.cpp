@@ -424,6 +424,71 @@ class spell_xakal_fel_fissure : public SpellScriptLoader
         }
 };
 
+class at_arc_fel_fissure : public AreaTriggerEntityScript
+{
+    public:
+        at_arc_fel_fissure() : AreaTriggerEntityScript("at_arc_fel_fissure")
+        {}
+
+        struct at_arc_fel_fissure_AI : public AreaTriggerAI
+        {
+            at_arc_fel_fissure_AI(AreaTrigger* at) : AreaTriggerAI(at)
+            {
+            }
+
+            void OnInitialize()
+            {
+                _borned = false;
+                _activated = false;
+                _timerBorn = 0;
+               // _caster = at->GetCaster();
+            }
+
+            void OnUnitEnter(Unit* unit) override
+            {
+                if (!unit)
+                    return;
+                
+                if (unit->GetTypeId() != TYPEID_PLAYER)
+                    return;
+                
+                if (!_borned)
+                    return;
+
+                if (!_activated)
+                {
+                    _activated = true;
+                    _caster->CastSpell(_caster, SPELL_FEL_FISSURE_SPIKE, true);
+                    _caster->GetAI()->DoAction(ACTION_RUNE_ACTIVATED);
+                    _caster->CastSpell(_caster, SPELL_FEL_ERUPTION, true);
+                    //at->Remove();
+                }
+            }
+
+            void OnUpdate(uint32 diff) override
+            {
+                if (_borned)
+                    return;
+
+                _timerBorn += diff;
+
+                if (_timerBorn >= 5 * IN_MILLISECONDS && !_borned)
+                    _borned = true;
+            }
+
+            private:
+                uint32 _timerBorn;
+                bool _activated;
+                bool _borned;
+                Unit* _caster;
+        };
+
+        AreaTriggerAI* GetAI(AreaTrigger* at) const override
+        {
+            return new at_arc_fel_fissure_AI(at);
+        }
+};
+
 class at_arc_wake_of_shadow : public AreaTriggerEntityScript
 {
     public:
@@ -464,6 +529,8 @@ class at_arc_wake_of_shadow : public AreaTriggerEntityScript
         }
 };
 
+
+
 void AddSC_boss_general_xakal()
 {
     new boss_general_xakal();
@@ -472,4 +539,5 @@ void AddSC_boss_general_xakal()
     new spell_xakal_fel_fissure();
     new spell_arc_bombardment();
     new at_arc_wake_of_shadow();
+    new at_arc_fel_fissure();
 }
