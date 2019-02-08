@@ -529,8 +529,6 @@ class at_arc_wake_of_shadow : public AreaTriggerEntityScript
         }
 };
 
-
-
 void AddSC_boss_general_xakal()
 {
     new boss_general_xakal();

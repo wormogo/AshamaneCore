@@ -3637,9 +3637,9 @@ public:
 
 		void HandleHitTarget(SpellEffIndex /*eff*/)
 		{
-			bool crit = GetHitMask() & PROC_HIT_CRITICAL;
-            if (crit)
-			GetCaster()->ModifyPower(POWER_SOUL_SHARDS, 1);
+			//bool crit = GetHitMask() & PROC_HIT_CRITICAL;
+           // if (crit)
+			//GetCaster()->ModifyPower(POWER_SOUL_SHARDS, 1);
 		}
 
 		void Register() override
