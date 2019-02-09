@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017-2018 AshamaneProject <https://github.com/AshamaneProject>
  * Copyright (C) 2008-2017 TrinityCore <http://www.trinitycore.org/>
  *
@@ -18,6 +18,52 @@
 
 #include "ScriptMgr.h"
 
+enum
+{
+    NPC_KORVAS_BLOODTHORN_99343 = 99343,
+
+    ///DH Quest
+    QUEST_CALL_OF_THE_ILLIDARI_39261 = 39261,
+    QUEST_CALL_OF_THE_ILLIDARI_39047 = 39047,
+};
+
+struct npc_korvas_bloodthorn_99343 : public ScriptedAI
+{
+    npc_korvas_bloodthorn_99343(Creature* creature) : ScriptedAI(creature) { SayHi = false; }
+
+    void MoveInLineOfSight(Unit* who) override
+    {
+        if (!who || !who->IsInWorld())
+            return;
+        if (!me->IsWithinDist(who, 25.0f, false))
+            return;
+
+        Player* player = who->GetCharmerOrOwnerPlayerOrPlayerItself();
+
+        if (!player)
+            return;
+        me->GetMotionMaster()->MoveFollow(player, PET_FOLLOW_DIST, me->GetFollowAngle());
+        if (!SayHi)
+        {
+            SayHi = true;
+            Talk(0, player);
+        }
+    }
+
+    void sQuestAccept(Player* player, Quest const* quest) override
+    {
+        if (quest->GetQuestId() == QUEST_CALL_OF_THE_ILLIDARI_39261 || quest->GetQuestId() == QUEST_CALL_OF_THE_ILLIDARI_39047)
+        {
+            Talk(1, player);
+            me->DespawnOrUnsummon(5000);
+        }
+    }
+private:
+    bool SayHi;
+};
+
+
 void AddSC_class_hall_dh()
 {
+    RegisterCreatureAI(npc_korvas_bloodthorn_99343);
 }
