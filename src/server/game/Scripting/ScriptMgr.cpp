@@ -2468,6 +2468,11 @@ void ScriptMgr::OnChargeRecoveryTimeStart(Player* player, uint32 chargeCategoryI
     FOREACH_SCRIPT(PlayerScript)->OnChargeRecoveryTimeStart(player, chargeCategoryId, chargeRecoveryTime);
 }
 
+void ScriptMgr::OnCompleteQuestChoice(Player* player, uint32 choiceId, uint32 responseId)
+{
+    FOREACH_SCRIPT(PlayerScript)->OnCompleteQuestChoice(player, choiceId, responseId);
+}
+
 // Account
 void ScriptMgr::OnAccountLogin(uint32 accountId)
 {
