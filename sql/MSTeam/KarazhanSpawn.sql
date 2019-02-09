@@ -1,5 +1,5 @@
 DELETE FROM `creature` WHERE `map` = 1651;
-INSERT IGNORE INTO `creature` (`id`, `map`, `zoneId`, `areaId`, `spawnMask`, `PhaseGroup`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `VerifiedBuild`) VALUES
+INSERT IGNORE INTO `creature` (`id`, `map`, `zoneId`, `areaId`, `spawnDifficulties`, `PhaseGroup`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `VerifiedBuild`) VALUES
 ( 114350, 1651, 8443, 8443, 3, 0, 0, 0, -4599.056, -2524.583, 2876.593, 1.708567, 7200, 0, 0, 0, 0, 0, 0, 0, 0, 23420), -- 114350 (Area: 8443 - Difficulty: 23) (Auras: 189573 - 189573)
 ( 114844, 0, 8443, 8443, 3, 0, 0, 0, -0.007052065, 0.007241555, 0.02745139, 3.141593, 7200, 10, 0, 0, 0, 1, 0, 0, 0, 23420), -- 114844 (Area: 8443 - Difficulty: 23) (Auras: 46598 - 46598, 29920 - 29920) (possible waypoints or random movement)
 ( 116864, 1651, 8443, 8443, 3, 0, 0, 0, -4691.342, -2323.144, 2895.902, 3.60904, 7200, 10, 0, 0, 0, 1, 0, 0, 0, 23420), -- 116864 (Area: 8443 - Difficulty: 23) (possible waypoints or random movement)
