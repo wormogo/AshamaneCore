@@ -414,6 +414,44 @@ public:
     }
 };
 
+/*######
+## go_echoing_horn_of_the_damned 247041
+######*/
+
+enum EchoingHornOfTheDamned
+{
+    SPELL_HELHEIM_MOVIE = 191559,
+    SPELL_HELHEIM_TRANSPORT = 191558
+};
+
+class go_echoing_horn_of_the_damned : public GameObjectScript
+{
+public:
+    go_echoing_horn_of_the_damned() : GameObjectScript("go_echoing_horn_of_the_damned") { }
+
+    bool OnGossipHello(Player* player, GameObject* go) override
+    {
+        if (go->GetGoType() == GAMEOBJECT_TYPE_GOOBER)
+        {
+            player->CastSpell(player, SPELL_HELHEIM_TRANSPORT, true);
+
+            player->GetScheduler().Schedule(Seconds(4), [](TaskContext context)
+            {
+                GetContextUnit()->CastSpell(GetContextUnit(), SPELL_HELHEIM_MOVIE, true);
+            });
+
+            player->GetScheduler().Schedule(Seconds(5), [](TaskContext context)
+            {
+                if (GetContextUnit()->GetPosition().GetPositionZ() < 515.0f)
+                    GetContextUnit()->NearTeleportTo(GetContextUnit()->GetPosition().GetPositionX(), GetContextUnit()->GetPosition().GetPositionY(), 515.17f, GetContextUnit()->GetPosition().GetOrientation());
+            });
+            
+        }
+            
+        return true;
+    }
+};
+
 void AddSC_maw_of_souls()
 {
     new npc_shroud_hound();
@@ -424,4 +462,5 @@ void AddSC_maw_of_souls()
     new npc_waterlogged_soul_guard();
     new npc_helarjar_champion();
     new npc_skjal_maw();
+    new go_echoing_horn_of_the_damned();
 }

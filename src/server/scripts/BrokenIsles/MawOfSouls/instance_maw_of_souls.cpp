@@ -22,12 +22,33 @@
 #include "PassiveAI.h"
 #include "maw_of_souls.h"
 
+DoorData const doorData[] =
+{ 
+    { GOB_DOOR_HARBARON_DOOR,           DATA_HARBARON_MAW,      DOOR_TYPE_ROOM },
+    { GOB_DOOR_HARBARON_WALL_SOUL_1,    DATA_HARBARON_MAW,      DOOR_TYPE_ROOM },
+    { GOB_DOOR_HARBARON_WALL_SOUL_2,    DATA_HARBARON_MAW,      DOOR_TYPE_ROOM },
+    { GOB_DOOR_HARBARON_COLLISON_1,     DATA_HARBARON_MAW,      DOOR_TYPE_PASSAGE },
+    { GOB_DOOR_HARBARON_COLLISON_2,     DATA_HARBARON_MAW,      DOOR_TYPE_PASSAGE },
+    { GOB_DOOR_SKJAL_WALL_1,            DATA_HARBARON_MAW,      DOOR_TYPE_PASSAGE },
+    { GOB_DOOR_SKJAL_WALL_2,            DATA_HARBARON_MAW,      DOOR_TYPE_PASSAGE },
+};
 struct instance_maw_of_souls : public InstanceScript
 {
     instance_maw_of_souls(InstanceMap* map) : InstanceScript(map)
     {
         SetHeaders(DataHeader);
         SetBossNumber(EncounterCount);
+        LoadDoorData(doorData); 
+    }
+
+    void OnCreatureCreate(Creature* creature) override
+    {
+        InstanceScript::OnCreatureCreate(creature);
+
+        if (instance->IsHeroic())
+            creature->SetBaseHealth(creature->GetMaxHealth() * 2.f);
+        if (instance->IsMythic())
+            creature->SetBaseHealth(creature->GetMaxHealth() * 1.33f);
     }
 
     bool SetBossState(uint32 type, EncounterState state) override
@@ -43,7 +64,9 @@ struct instance_maw_of_souls : public InstanceScript
             {
                 if (state == DONE)
                 {
-                    // Add code for horn GO
+                    // Add code for horn GO GOB_ECHOING_HORN_OF_THE_DAMNED
+                    if (GameObject* horn = GetGameObject(GOB_ECHOING_HORN_OF_THE_DAMNED))
+                        horn->SetGoState(GO_STATE_READY);
                 }
                 break;
             }
@@ -69,3 +92,4 @@ void AddSC_instance_maw_of_souls()
 {
     RegisterInstanceScript(instance_maw_of_souls, 1492);
 }
+
