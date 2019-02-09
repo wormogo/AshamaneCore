@@ -23,8 +23,6 @@ void AddSC_custom_CongratsOnLevel();
 void AddSC_announce_login();
 void AddSC_XpWeekend();
 void AddSC_Boss_Announcer();
-void AddSC_npc_teleport();
-void LoadNpcTele();
 void AddSC_quest_conversation();
 
 void AddCustomScripts()
@@ -36,8 +34,5 @@ void AddCustomScripts()
     AddSC_announce_login();
     AddSC_XpWeekend();
     AddSC_Boss_Announcer();
-    AddSC_npc_teleport();
-    LoadNpcTele();
-
     AddSC_quest_conversation();
 }
