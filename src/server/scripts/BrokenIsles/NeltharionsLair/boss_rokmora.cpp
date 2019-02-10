@@ -46,12 +46,12 @@ public:
 
     enum eTexts
     {
-        TALK_ROKMORA_PHRASE           = 1,
-        TALK_ENTRANCE_PHRASE          = 2,
-        TALK_OBSTRUCTION              = 3,
-        TALK_BARREL                   = 4
+        TALK_ROKMORA_PHRASE              = 1,
+        TALK_ENTRANCE_PHRASE             = 2,
+        TALK_OBSTRUCTION                 = 3,
+        TALK_BARREL                      = 4
     };
-    
+
     enum eEvents
     {
         EVENT_ULAROGG_INITIATE           = 1,
@@ -61,21 +61,21 @@ public:
         EVENT_GO_TO_BARREL               = 5,
         EVENT_SPIRITWALKER_DONT_BARREL   = 6
     };
-    
+
     struct npc_navarogg_rokmora_start_AI : public ScriptedAI
     {
         npc_navarogg_rokmora_start_AI(Creature* creature) : ScriptedAI(creature) { }
-        
+
         InstanceScript* instance;
         EventMap events;
         bool entranceTalkSays = false;
         bool runStarted = false;
-        
+
         void InitializeAI() override
         {
             instance = me->GetInstanceScript();
         }
-        
+
         void MoveInLineOfSight(Unit* who) override
         {
             if (instance)
@@ -86,9 +86,9 @@ public:
                     {
                         Talk(TALK_ENTRANCE_PHRASE);
                         entranceTalkSays = true;
-                        events.ScheduleEvent(EVENT_START_JUMP, 11 * IN_MILLISECONDS);
+                        events.ScheduleEvent(EVENT_START_JUMP, 11s);
                     }
-                    
+
                     if (instance->GetData(DATA_ROKMORA_START_DIALOG) == NOT_STARTED)
                     {
                         if (round(me->GetPositionX()) == round(navaroggRokmoraPos.GetPositionX()) &&
@@ -97,11 +97,12 @@ public:
                         {
                             me->GetMotionMaster()->MoveJump(navaroggRokmoraJumpPos, 30.0f, 30.0f, EVENT_JUMP, true);
                             instance->SetData(DATA_ROKMORA_START_DIALOG, IN_PROGRESS);
-                            events.ScheduleEvent(EVENT_ULAROGG_INITIATE, 6 * IN_MILLISECONDS);
-                            events.ScheduleEvent(EVENT_TALK_ROKMORA, 14 * IN_MILLISECONDS);
+                            events.ScheduleEvent(EVENT_ULAROGG_INITIATE, 6s);
+                            events.ScheduleEvent(EVENT_TALK_ROKMORA, 14s);
                         }
                     }
                 }
+
                 if (instance->GetData(DATA_BARRELS_EVENT) == NOT_STARTED && who->GetTypeId() == TYPEID_PLAYER && !who->ToPlayer()->IsGameMaster() &&
                 instance->GetData(DATA_ROKMORA) == DONE && me->IsWithinDistInMap(who, 40.0f))
                 {
@@ -117,11 +118,11 @@ public:
                     Talk(TALK_OBSTRUCTION);
                     me->SetWalk(false);
                     me->GetMotionMaster()->MovePoint(0, navaroggObstructionPos);
-                    events.ScheduleEvent(EVENT_GO_TO_BARREL, 10 * IN_MILLISECONDS);
+                    events.ScheduleEvent(EVENT_GO_TO_BARREL, 10s);
                 }
             }
         }
-        
+
         void UpdateAI(uint32 diff) override
         {
             events.Update(diff);
@@ -133,7 +134,7 @@ public:
                     if (instance)
                         instance->SetData(DATA_ENTRANCE_START_DIALOG, DONE);
                     
-                    events.ScheduleEvent(EVENT_DESPAWN, 4 * IN_MILLISECONDS);
+                    events.ScheduleEvent(EVENT_DESPAWN, 4s);
                     break;
                 case EVENT_ULAROGG_INITIATE:
                     if (Creature* ularogg_rokmora_starter = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_ULAROGG_ROKMORA_STARTER)))
@@ -153,17 +154,17 @@ public:
                     break;
                 case EVENT_GO_TO_BARREL:
                         Talk(TALK_BARREL);
-                        events.ScheduleEvent(EVENT_SPIRITWALKER_DONT_BARREL, 3500);
+                        events.ScheduleEvent(EVENT_SPIRITWALKER_DONT_BARREL, 4s);
                     break;
                 case EVENT_SPIRITWALKER_DONT_BARREL:
-					if (Creature* spiritwalkerNpc = me->FindNearestCreature(NPC_SPIRITWALKER, 90.0f, true))
+                    if (Creature* spiritwalkerNpc = me->FindNearestCreature(NPC_SPIRITWALKER, 90.0f, true))
                        if (spiritwalkerNpc->IsAIEnabled)
                            spiritwalkerNpc->AI()->DoAction(1);
 
                     instance->SetData(DATA_BARRELS_EVENT, DONE);
                     break;
             }
-            
+
             if (!runStarted && instance->GetData(DATA_ROKMORA_START_DIALOG) == DONE)
             {
                 if (round(me->GetPositionX()) == round(navaroggRokmoraJumpPos.GetPositionX()) &&
@@ -173,7 +174,7 @@ public:
                     me->SetWalk(false);
                     if (Creature* ularogg_rokmora_starter = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_ULAROGG_ROKMORA_STARTER)))
                         me->GetMotionMaster()->MoveFollow(ularogg_rokmora_starter, 5.0f, (float)M_PI/2.f, MOTION_SLOT_ACTIVE);
-                    events.ScheduleEvent(EVENT_DESPAWN, 7 * IN_MILLISECONDS);
+                    events.ScheduleEvent(EVENT_DESPAWN, 7s);
                     runStarted = true;
                 }
             }
@@ -193,16 +194,16 @@ public:
 
     enum eTexts
     {
-        TALK_ENTRANCE_PHRASE          = 1,
-        TALK_CONVERSATION_SAY         = 2,
-        TALK_DONT_BARREL              = 3
+        TALK_ENTRANCE_PHRASE             = 1,
+        TALK_CONVERSATION_SAY            = 2,
+        TALK_DONT_BARREL                 = 3
     };
-    
+
     enum eActions
     {
-        ACTION_BARREL_TALK            = 1,
+        ACTION_BARREL_TALK               = 1,
     };
-    
+
     enum eEvents
     {
         EVENT_SPIRITWALKER_TALK          = 1,
@@ -210,7 +211,7 @@ public:
         EVENT_DESPAWN                    = 3,
         EVENT_TALK_DONT_BARREL           = 4,
     };
-    
+
     struct npc_spiritwalker_ebonhorn_AI : public ScriptedAI
     {
         npc_spiritwalker_ebonhorn_AI(Creature* creature) : ScriptedAI(creature) { }
@@ -221,21 +222,21 @@ public:
         {
             instance = me->GetInstanceScript();
         }
-        
+
         bool conversationSays = false;
         bool obstructed = false;
         bool entranceTalkSays = false;
-        
+
         void DoAction(int32 action) override
         {
             switch(action)
             {
                 case ACTION_BARREL_TALK:
-                    events.ScheduleEvent(EVENT_TALK_DONT_BARREL, 500);
+                    events.ScheduleEvent(EVENT_TALK_DONT_BARREL, 1s);
                     break;
             }
         }
-        
+
         void MoveInLineOfSight(Unit* who) override
         {
             if (instance)
@@ -245,10 +246,10 @@ public:
                     if (instance->GetData(DATA_ENTRANCE_START_DIALOG) == NOT_STARTED && !entranceTalkSays)
                     {
                         entranceTalkSays = true;
-                        events.ScheduleEvent(EVENT_SPIRITWALKER_TALK, 6 * IN_MILLISECONDS);
-                        events.ScheduleEvent(EVENT_START_JUMP, 11 * IN_MILLISECONDS);
+                        events.ScheduleEvent(EVENT_SPIRITWALKER_TALK, 6s);
+                        events.ScheduleEvent(EVENT_START_JUMP, 11s);
                     }
-                    
+
                     if (instance->GetData(DATA_ENTRANCE_START_DIALOG) == DONE && instance->GetData(DATA_ROKMORA_START_DIALOG) == NOT_STARTED && me->GetPositionZ() < 0 && !conversationSays)
                     {
                         conversationSays = true;
@@ -269,7 +270,7 @@ public:
                 }
             }
         }
-        
+
         void UpdateAI(uint32 diff) override
         {
             events.Update(diff);
@@ -278,7 +279,7 @@ public:
             {
                 case EVENT_START_JUMP:
                     me->GetMotionMaster()->MoveJump(startFallingPos, 15.0f, 15.0f, EVENT_JUMP, true);
-                    events.ScheduleEvent(EVENT_DESPAWN, 4 * IN_MILLISECONDS);
+                    events.ScheduleEvent(EVENT_DESPAWN, 4s);
                     break;
                 case EVENT_SPIRITWALKER_TALK:
                     Talk(TALK_ENTRANCE_PHRASE);
@@ -303,13 +304,13 @@ public:
     {
         return new npc_ularogg_rokmora_start_AI(creature);
     }
-    
+
     enum eTexts
     {
         TALK_PHRASE_1                    = 1,
         TALK_PHRASE_2                    = 2
     };
-    
+
     enum eEvents
     {
         EVENT_PHRASE_2                   = 1,
@@ -317,19 +318,19 @@ public:
         EVENT_DATA_DONE                  = 3,
         EVENT_DESPAWN                    = 4
     };
-    
+
     enum eActions
     {
         ACTION_START_DIALOG              = 1
     };
-    
+
     struct npc_ularogg_rokmora_start_AI : public ScriptedAI
     {
         npc_ularogg_rokmora_start_AI(Creature* creature) : ScriptedAI(creature) { }
-        
+
         EventMap events;
         InstanceScript* instance;
-        
+
         void InitializeAI() override
         {
             instance = me->GetInstanceScript();
@@ -341,12 +342,11 @@ public:
             {
                 case ACTION_START_DIALOG:
                     Talk(TALK_PHRASE_1);
-                    events.ScheduleEvent(EVENT_PHRASE_2, 17 * IN_MILLISECONDS);
+                    events.ScheduleEvent(EVENT_PHRASE_2, 17s);
                     break;
             }
         }
-        
-        
+
         void UpdateAI(uint32 diff) override
         {
             events.Update(diff);
@@ -355,17 +355,17 @@ public:
             {
                 case EVENT_PHRASE_2:
                     Talk(TALK_PHRASE_2);
-                    events.ScheduleEvent(EVENT_AWAY, 6 * IN_MILLISECONDS);
-                    events.ScheduleEvent(EVENT_DATA_DONE, 5500);
+                    events.ScheduleEvent(EVENT_AWAY, 6s);
+                    events.ScheduleEvent(EVENT_DATA_DONE, 5s);
                     break;
                 case EVENT_AWAY:
                     me->SetWalk(false);
                     me->GetMotionMaster()->MovePoint(0, ularoggAwayPos);
-                    
+
                     if (Creature* rokmora = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_ROKMORA)))
                        rokmora->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
-                    
-                    events.ScheduleEvent(EVENT_DESPAWN, 7 * IN_MILLISECONDS);
+
+                    events.ScheduleEvent(EVENT_DESPAWN, 7s);
                     break;
                 case EVENT_DATA_DONE:
                     instance->SetData(DATA_ROKMORA_START_DIALOG, DONE);
@@ -387,7 +387,7 @@ public:
     {
         return new boss_rokmora_AI(creature);
     }
-    
+
     enum eTexts
     {
         TALK_AGGRO                        = 0,
@@ -395,39 +395,39 @@ public:
         TALK_DEATH                        = 2,
         TALK_CRYSTALLINE_GROUND           = 3
     };
-    
+
     enum eEvents
     {
-        EVENT_MANAREGEN_TICK             = 1,
-        EVENT_SHATTER                    = 2,
-        EVENT_RAZOR_SHARDS               = 3,
-        EVENT_MANARESET                  = 4,
-        EVENT_CRYSTALLINE_GROUND         = 5,
+        EVENT_MANAREGEN_TICK              = 1,
+        EVENT_SHATTER                     = 2,
+        EVENT_RAZOR_SHARDS                = 3,
+        EVENT_MANARESET                   = 4,
+        EVENT_CRYSTALLINE_GROUND          = 5,
     };
-    
+
     enum eSpells
     {
-        SPELL_SHATTER                    = 188114,
-        SPELL_RAZOR_SHARDS               = 188169,
-        SPELL_CRYSTALLINE_GROUND         = 198024
+        SPELL_SHATTER                     = 188114,
+        SPELL_RAZOR_SHARDS                = 188169,
+        SPELL_CRYSTALLINE_GROUND          = 198024
     };
-    
+
     struct boss_rokmora_AI : public BossAI
     {
         boss_rokmora_AI(Creature* creature) : BossAI(creature, DATA_ROKMORA) { }
-        
+
         EventMap events;
         InstanceScript* instance;
         bool manaRegenerated = false;
         bool firstShardsCasted = false;
         bool firstGroundCasted = false;
-        
+
         void InitializeAI() override
         {
             instance = me->GetInstanceScript();
             me->SetPower(POWER_MANA, 0);
         }
-        
+
         void Reset() override
         {
             _Reset();
@@ -437,49 +437,50 @@ public:
             if (instance)
                 instance->SetData(DATA_ROKMORA, NOT_STARTED);
         }
-        
+
         void EnterCombat(Unit* who) override
         {
             Talk(TALK_AGGRO);
             me->SetInCombatWithZone();
             me->SetPower(POWER_MANA, 0);
             if (instance && instance->instance->GetDifficultyID() >= 2)
-                events.ScheduleEvent(EVENT_CRYSTALLINE_GROUND, IN_MILLISECONDS);
-            
-            events.ScheduleEvent(EVENT_MANAREGEN_TICK, 2 * IN_MILLISECONDS);
-            
+                events.ScheduleEvent(EVENT_CRYSTALLINE_GROUND, 1s);
+
+            events.ScheduleEvent(EVENT_MANAREGEN_TICK, 2s);
+
             if (instance)
             {
                 instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me);
                 instance->SetData(DATA_ROKMORA, IN_PROGRESS);
             }
         }
-        
+
         void JustDied(Unit* /*unit*/) override
         {
             Talk(TALK_DEATH);
-            
+
             if (GameObject* barrier = ObjectAccessor::GetGameObject(*me, instance->GetGuidData(DATA_MYSTIC_BARRIER)))
                 barrier->SetGoState(GO_STATE_ACTIVE);
-            
+
             instance->SetData(DATA_ROKMORA, DONE);
         }
-        
+
         void EnterEvadeMode(EvadeReason) override
         {
             BossAI::EnterEvadeMode();
+
             if (instance)
             {
                 instance->SetData(DATA_ROKMORA, FAIL);
                 instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);
             }
         }
-        
+
         void UpdateAI(uint32 diff) override
         {
             if (!UpdateVictim())
                 return;
-            
+
             events.Update(diff);
 
             switch (events.ExecuteEvent())
@@ -488,7 +489,7 @@ public:
                     if (!manaRegenerated && me->GetPower(POWER_MANA) < me->GetMaxPower(POWER_MANA))
                     {
                         me->SetPower(POWER_MANA, me->GetPower(POWER_MANA)+(me->GetMaxPower(POWER_MANA)*5/100));
-                        
+
                         if (me->GetPower(POWER_MANA) == me->GetMaxPower(POWER_MANA))
                         {
                             manaRegenerated = true;
@@ -502,35 +503,35 @@ public:
                     Talk(TALK_SHATTER);
                     me->CastSpell(me->GetVictim(), SPELL_SHATTER, false);
                     if (!firstShardsCasted)
-                        events.ScheduleEvent(EVENT_RAZOR_SHARDS, 4400);
+                        events.ScheduleEvent(EVENT_RAZOR_SHARDS, 4s);
                     else if (instance->instance->GetDifficultyID() >= 2)
-                        events.ScheduleEvent(EVENT_CRYSTALLINE_GROUND, 4400);
+                        events.ScheduleEvent(EVENT_CRYSTALLINE_GROUND, 4s);
                     else
-                        events.ScheduleEvent(EVENT_MANARESET, 4400);
+                        events.ScheduleEvent(EVENT_MANARESET, 4s);
                     break;
                 case EVENT_RAZOR_SHARDS:
                     me->CastSpell(me->GetVictim(), SPELL_RAZOR_SHARDS, false);
                     if (!firstShardsCasted)
                         firstShardsCasted = true;
-                    
-                    events.ScheduleEvent(EVENT_MANARESET, 3900);
-                    events.ScheduleEvent(EVENT_RAZOR_SHARDS, 30 * IN_MILLISECONDS);
+
+                    events.ScheduleEvent(EVENT_MANARESET, 4s);
+                    events.ScheduleEvent(EVENT_RAZOR_SHARDS, 30s);
                     break;
                 case EVENT_CRYSTALLINE_GROUND:
                     Talk(TALK_CRYSTALLINE_GROUND);
                     me->CastSpell(me->GetVictim(), SPELL_CRYSTALLINE_GROUND, false);
-                     events.ScheduleEvent(EVENT_MANARESET, IN_MILLISECONDS);
+                     events.ScheduleEvent(EVENT_MANARESET, 1s);
                     break;
                 case EVENT_MANARESET:
                     me->SetPower(POWER_MANA, 0);
                     manaRegenerated = false;
-                    events.ScheduleEvent(EVENT_MANAREGEN_TICK, 2 * IN_MILLISECONDS);
+                    events.ScheduleEvent(EVENT_MANAREGEN_TICK, 2s);
                     break;
                 case SPELL_CRYSTALLINE_GROUND:
                     me->CastSpell(me->GetVictim(), SPELL_CRYSTALLINE_GROUND, false);
                     break;
             }
-            
+
             DoMeleeAttackIfReady();
         }
     }; 
@@ -554,13 +555,13 @@ public:
 
     struct mob_blightshard_skitter_AI : public ScriptedAI
     {
-        mob_blightshard_skitter_AI(Creature* creature) : ScriptedAI(creature) {}
-        
+        mob_blightshard_skitter_AI(Creature* creature) : ScriptedAI(creature) { }
+
         void JustDied(Unit* killer) override
         {
             me->CastSpell(killer, SPELL_CHOKING_DUST, false);
         }
-        
+
         void UpdateAI(uint32 diff) override
         {
             if (!UpdateVictim())
@@ -693,13 +694,13 @@ public:
                                     break;
                         }
                     }
-        
+
                     if (_player)
                     {
                         std::list<Unit*> TargetList;
                         Trinity::NearestAttackableUnitInObjectRangeCheck check(_player, _player, 85.0f);
                         Trinity::UnitListSearcher<Trinity::NearestAttackableUnitInObjectRangeCheck> searcher(_player, TargetList, check);
-						Cell::VisitAllObjects(_player, searcher, 85.0f);
+                       Cell::VisitAllObjects(_player, searcher, 85.0f);
 
                         if (!TargetList.empty())
                         {
@@ -752,16 +753,16 @@ public:
     struct npc_empty_barrel_AI : public ScriptedAI
     {
         npc_empty_barrel_AI(Creature* creature) : ScriptedAI(creature) {}
-        
+
         InstanceScript* instance;
-        
+
         void InitializeAI() override
         {
             instance = me->GetInstanceScript();
         }
-        
+
         void OnSpellClick(Unit* clicker, bool& result) override
-        { 
+        {
             if (result && instance)
             {
                 if (instance->GetData(DATA_ROKMORA) == DONE && clicker->ToPlayer())

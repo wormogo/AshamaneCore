@@ -63,12 +63,12 @@ public:
     {
         return new boss_naraxas_AI(creature);
     }
-    
+
     enum eTexts
     {
         TALK_DEVOUTERS_SPAWN                 = 0,
     };
-    
+
     enum eEvents
     {
         EVENT_MANAREGEN_TICK                 = 1,
@@ -90,7 +90,7 @@ public:
         SPELL_SPIKED_TONGUE_VEHICLE          = 205418,
         SPELL_PUTRID_SKIES                   = 198963
     };
-    
+
     struct boss_naraxas_AI : public BossAI
     {
         boss_naraxas_AI(Creature* creature) : BossAI(creature, DATA_NARAXAS) 
@@ -98,7 +98,7 @@ public:
             me->SetReactState(REACT_DEFENSIVE);
             me->AddUnitState(UNIT_STATE_ROOT);
         }
-        
+
         EventMap events;
         InstanceScript* instance;
         bool manaRegenerated = false;
@@ -107,13 +107,13 @@ public:
         TempSummon* wormspeakerDevout1 = nullptr;
         TempSummon* wormspeakerDevout2 = nullptr;
         bool isInSecondPhase = false;
-        
+
         void InitializeAI() override
         {
             instance = me->GetInstanceScript();
             me->SetPower(POWER_MANA, 0);
         }
-        
+
         void Reset() override
         {
             _Reset();
@@ -123,25 +123,25 @@ public:
             if (instance)
                 instance->SetData(DATA_NARAXAS, NOT_STARTED);
         }
-        
+
         void EnterCombat(Unit* who) override
         {
             me->SetInCombatWithZone();
             me->SetPower(POWER_MANA, 0);
             me->RemoveAllAuras();
             
-            events.ScheduleEvent(EVENT_MANAREGEN_TICK, IN_MILLISECONDS);
-            events.ScheduleEvent(EVENT_SUMMON_WORMSPEACKER_DEVOUT, 5 * IN_MILLISECONDS);
-            events.ScheduleEvent(EVENT_RANCID_MAW, 4 * IN_MILLISECONDS);
-            events.ScheduleEvent(EVENT_TOXIC_RETCH, 7 * IN_MILLISECONDS);
-			
+            events.ScheduleEvent(EVENT_MANAREGEN_TICK, 1s);
+            events.ScheduleEvent(EVENT_SUMMON_WORMSPEACKER_DEVOUT, 5s);
+            events.ScheduleEvent(EVENT_RANCID_MAW, 4s);
+            events.ScheduleEvent(EVENT_TOXIC_RETCH, 7s);
+
             if (instance)
             {
                 instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me);
                 instance->SetData(DATA_NARAXAS, IN_PROGRESS);
             }
         }
-        
+
         void MoveInLineOfSight(Unit* who) override
         {
             if (!isInSecondPhase && who != currentDevout && who->ToCreature() && who->ToCreature()->GetEntry() == NPC_WORMSPEACKER_DEVOUT && me->IsWithinDistInMap(who, 5.0f))
@@ -153,18 +153,18 @@ public:
                 who->ToCreature()->DespawnOrUnsummon();
             }
         }
-        
+
         void JustDied(Unit* /*unit*/) override
         {
-			if (GameObject* barrier = ObjectAccessor::GetGameObject(*me, instance->GetGuidData(DATA_BARRIER_NARAXAS)))
-				PhasingHandler::AddPhase(barrier, 3, true);
-            
+            if (GameObject* barrier = ObjectAccessor::GetGameObject(*me, instance->GetGuidData(DATA_BARRIER_NARAXAS)))
+                PhasingHandler::AddPhase(barrier, 3, true);
+
             if (GameObject* naraxasLoot = ObjectAccessor::GetGameObject(*me, instance->GetGuidData(DATA_NARAXAS_LOOT)))
                 naraxasLoot->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_LOCKED | GO_FLAG_NOT_SELECTABLE | GO_FLAG_NODESPAWN);
-            
+
             instance->SetData(DATA_NARAXAS, DONE);
         }
-        
+
         void EnterEvadeMode(EvadeReason) override
         {
             //BossAI::EnterEvadeMode();
@@ -186,44 +186,44 @@ public:
             while(Creature* _devout = me->FindNearestCreature(NPC_WORMSPEACKER_DEVOUT, 100.0f,true))
                 _devout->DespawnOrUnsummon();
         }
-        
+
         void UpdateAI(uint32 diff) override
         {
             if (!UpdateVictim())
                 return;
-            
+
             if (!me->SelectNearestPlayer(ATTACK_DISTANCE) && me->IsInCombat() && !isInSecondPhase)
                 me->CastSpell((Unit*)nullptr, SPELL_PUTRID_SKIES, false);
-            
+
             events.Update(diff);
-            
+
             switch (events.ExecuteEvent())
             {
                 case EVENT_TO_1_PHASE:
                     isInSecondPhase = false;
                     manaRegenerated = false;
                     me->SetPower(POWER_MANA, 0);
-                    events.ScheduleEvent(EVENT_MANAREGEN_TICK, IN_MILLISECONDS);
-                    events.ScheduleEvent(EVENT_SUMMON_WORMSPEACKER_DEVOUT, 5 * IN_MILLISECONDS);
-                    events.ScheduleEvent(EVENT_RANCID_MAW, 4 * IN_MILLISECONDS);
-                    events.ScheduleEvent(EVENT_TOXIC_RETCH, 7 * IN_MILLISECONDS);
+                    events.ScheduleEvent(EVENT_MANAREGEN_TICK, 1s);
+                    events.ScheduleEvent(EVENT_SUMMON_WORMSPEACKER_DEVOUT, 5s);
+                    events.ScheduleEvent(EVENT_RANCID_MAW, 4s);
+                    events.ScheduleEvent(EVENT_TOXIC_RETCH, 7s);
                     break;
                 case EVENT_MANAREGEN_TICK:
                     if (!manaRegenerated && me->GetPower(POWER_MANA) < me->GetMaxPower(POWER_MANA) && !isInSecondPhase)
                     {
-						if (instance)
-						{
-							float manaRegenMod = 4;
-							me->SetPower(POWER_MANA, me->GetPower(POWER_MANA)+(me->GetMaxPower(POWER_MANA)*manaRegenMod/100));
-							
-							if (me->GetPower(POWER_MANA) == me->GetMaxPower(POWER_MANA))
-							{
-								manaRegenerated = true;
-								events.ScheduleEvent(EVENT_SPIKED_TONGUE, 3 * IN_MILLISECONDS);
-							}
-							else
-								events.ScheduleEvent(EVENT_MANAREGEN_TICK, 2 * IN_MILLISECONDS);
-						}
+                        if (instance)
+                        {
+                            float manaRegenMod = 4;
+                            me->SetPower(POWER_MANA, me->GetPower(POWER_MANA)+(me->GetMaxPower(POWER_MANA)*manaRegenMod/100));
+
+                            if (me->GetPower(POWER_MANA) == me->GetMaxPower(POWER_MANA))
+                            {
+                                manaRegenerated = true;
+                                events.ScheduleEvent(EVENT_SPIKED_TONGUE, 3s);
+                            }
+                            else
+                                events.ScheduleEvent(EVENT_MANAREGEN_TICK, 2s);
+                        }
                     }
                     break;
                 case EVENT_SUMMON_WORMSPEACKER_DEVOUT:
@@ -232,14 +232,14 @@ public:
                         Talk(TALK_DEVOUTERS_SPAWN);
                         wormspeakerDevout1 = me->SummonCreature(NPC_WORMSPEACKER_DEVOUT, Position(WormspeakerDevoutPositions[0][0], WormspeakerDevoutPositions[0][1], WormspeakerDevoutPositions[0][2], WormspeakerDevoutPositions[0][3]), TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 25000);
                         wormspeakerDevout2 = me->SummonCreature(NPC_WORMSPEACKER_DEVOUT, Position(WormspeakerDevoutPositions[1][0], WormspeakerDevoutPositions[1][1], WormspeakerDevoutPositions[1][2], WormspeakerDevoutPositions[1][3]), TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 25000);
-                        
+
                         if (wormspeakerDevout1)
                             wormspeakerDevout1->GetMotionMaster()->MoveFollow(me, 5.0f, (float)M_PI/2.f, MOTION_SLOT_ACTIVE);
-                        
+
                         if (wormspeakerDevout2)
                             wormspeakerDevout2->GetMotionMaster()->MoveFollow(me, 5.0f, (float)M_PI/2.f, MOTION_SLOT_ACTIVE);
-                        
-                        events.ScheduleEvent(EVENT_SUMMON_WORMSPEACKER_DEVOUT, urand(25, 30) * IN_MILLISECONDS);
+
+                        events.ScheduleEvent(EVENT_SUMMON_WORMSPEACKER_DEVOUT, 25s, 30s);
                     }
                     break;
                 case EVENT_RANCID_MAW:
@@ -248,14 +248,14 @@ public:
                         me->CastSpell(me, SPELL_RANCID_MAW, false);
                         if (me->GetHealthPct() <= 20)
                             mawRepeating = 6;
-                        events.ScheduleEvent(EVENT_RANCID_MAW, urand(10, 14) * IN_MILLISECONDS);
+                        events.ScheduleEvent(EVENT_RANCID_MAW, 10s, 14s);
                     }
                     break;
                 case EVENT_TOXIC_RETCH:
                     if (!isInSecondPhase)
                     {
                         me->CastSpell(me, SPELL_TOXIC_RETCH, false);
-                        events.ScheduleEvent(EVENT_TOXIC_RETCH, urand(9, 11) * IN_MILLISECONDS);
+                        events.ScheduleEvent(EVENT_TOXIC_RETCH, 9s, 11s);
                     }
                     break;
                 case EVENT_SPIKED_TONGUE:
@@ -263,7 +263,7 @@ public:
                     if (me->GetVictim())
                     {
                         me->CastSpell(me->GetVictim(), SPELL_SPIKED_TONGUE, false);
-                        events.ScheduleEvent(EVENT_PLAYER_DEVOURING, 6100);
+                        events.ScheduleEvent(EVENT_PLAYER_DEVOURING, 6s);
                     }
                     break;
                 case EVENT_PLAYER_DEVOURING:
@@ -273,10 +273,10 @@ public:
                         me->CastSpell(me->GetVictim(), SPELL_DEVOURING, false);
                         me->AddAura(SPELL_DEVOURING_BUFF, me);
                     }
-                    events.ScheduleEvent(EVENT_TO_1_PHASE, 3500);
+                    events.ScheduleEvent(EVENT_TO_1_PHASE, 4s);
                     break;
             }
-            
+
             DoMeleeAttackIfReady();
         }
     }; 
@@ -293,21 +293,19 @@ public:
         return new mob_wormspeaker_devout_AI(creature);
     }
 
-    enum eSpells
-    {
-    };
-    
+    enum eSpells { };
+
     struct mob_wormspeaker_devout_AI : public ScriptedAI
     {
         InstanceScript* instance;
         bool phraseSayd = false;
-        
+
         mob_wormspeaker_devout_AI(Creature* creature) : ScriptedAI(creature) 
         {
             me->SetReactState(REACT_PASSIVE);
             instance = me->GetInstanceScript();
         }
-        
+
         void MoveInLineOfSight(Unit* who) override
         {
             if (!phraseSayd && who->ToCreature() && who->ToCreature()->GetEntry() == NPC_NARAXAS && me->IsWithinDistInMap(who, 7.0f))
@@ -329,7 +327,7 @@ public:
     {
         return new mob_angry_crowd_AI(creature);
     }
-    
+
     struct mob_angry_crowd_AI : public ScriptedAI
     {
         
@@ -350,7 +348,7 @@ public:
     {
         return new mob_emberhusk_dominator_AI(creature);
     }
-    
+
     struct mob_emberhusk_dominator_AI : public ScriptedAI
     {
         

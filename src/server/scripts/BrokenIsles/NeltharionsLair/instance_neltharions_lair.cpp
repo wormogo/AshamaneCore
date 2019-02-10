@@ -36,12 +36,12 @@ struct instance_neltharions_lair : public InstanceScript
         SetHeaders(DataHeader);
         SetBossNumber(EncounterCount);
     }
-        
+
     int32 round(float v)
     { 
         return floor( v + 0.5f); 
     }
-                
+
     ObjectGuid spiritWalkerGUID;
     ObjectGuid navarroggRokmoraStarterGUID;
     ObjectGuid ularoggRokmoraStarterGUID;
@@ -64,7 +64,7 @@ struct instance_neltharions_lair : public InstanceScript
     uint32 naraxasData = 0;
     uint32 centerIdolKilled = 0;
     uint32 dargrulData = 0;
-        
+
     void Initialize()
     {
         SetBossNumber(EncounterCount);
@@ -78,7 +78,7 @@ struct instance_neltharions_lair : public InstanceScript
         naraxasBarrierGUID.Clear();
         naraxasLootGUID.Clear();
     }
-        
+
     void OnGameObjectCreate(GameObject* go)
     {
         switch(go->GetEntry())
@@ -101,7 +101,7 @@ struct instance_neltharions_lair : public InstanceScript
                 break;
         }
     }
-        
+
     void OnCreatureCreate(Creature* creature) override
     {
         switch (creature->GetEntry())
@@ -118,40 +118,39 @@ struct instance_neltharions_lair : public InstanceScript
             case NPC_ROKMORA:
                 rokmoraGUID = creature->GetGUID();
         }
-            
+
         if (creature->GetEntry() == NPC_BELLOWING_IDOL_M_STANCE)
         {
             if (round(creature->GetPositionX()) == round(ularoggRightIdolStartPos.GetPositionX()) &&
                 round(creature->GetPositionY()) == round(ularoggRightIdolStartPos.GetPositionY()) &&
                 round(creature->GetPositionZ()) == round(ularoggRightIdolStartPos.GetPositionZ()))
                 rightIdolGuid = creature->GetGUID();
-                    
+
             if (round(creature->GetPositionX()) == round(ularoggLeftIdolStartPos.GetPositionX()) &&
                 round(creature->GetPositionY()) == round(ularoggLeftIdolStartPos.GetPositionY()) &&
                 round(creature->GetPositionZ()) == round(ularoggLeftIdolStartPos.GetPositionZ()))
                 leftIdolGuid = creature->GetGUID();
-                    
+
             if (round(creature->GetPositionX()) == round(ularoggJumpPos.GetPositionX()) &&
                 round(creature->GetPositionY()) == round(ularoggJumpPos.GetPositionY()) &&
                 round(creature->GetPositionZ()) == round(ularoggJumpPos.GetPositionZ()))
                 centerIdolGuid = creature->GetGUID();
-                    
+
             if (instance->GetDifficultyID() >= 2)
             {
                 if (round(creature->GetPositionX()) == round(ularoggBackIdolStartPos.GetPositionX()) &&
                 round(creature->GetPositionY()) == round(ularoggBackIdolStartPos.GetPositionY()) &&
                 round(creature->GetPositionZ()) == round(ularoggBackIdolStartPos.GetPositionZ()))
                 backIdolGuid = creature->GetGUID();
-                    
+
                 if (round(creature->GetPositionX()) == round(ularoggFrontIdolStartPos.GetPositionX()) &&
                 round(creature->GetPositionY()) == round(ularoggFrontIdolStartPos.GetPositionY()) &&
                 round(creature->GetPositionZ()) == round(ularoggFrontIdolStartPos.GetPositionZ()))
                 frontIdolGuid = creature->GetGUID();
             }
         }
-            
     }
-        
+
     uint32 GetData(uint32 type) const override
     {
         switch (type)
@@ -178,7 +177,7 @@ struct instance_neltharions_lair : public InstanceScript
 
         return 0;
     }
-        
+
     void SetData(uint32 type, uint32 data) override
     {
         switch (type)
@@ -209,7 +208,7 @@ struct instance_neltharions_lair : public InstanceScript
                 break;
         }
     }
-        
+
     void WriteSaveDataMore(std::ostringstream& data) override
     {
         data << startDialogState << ' '
@@ -243,7 +242,7 @@ struct instance_neltharions_lair : public InstanceScript
         data >> temp;
         dargrulData = temp ? DONE : NOT_STARTED;
     }
-        
+
     ObjectGuid GetGuidData(uint32 uiType) const override
     {
         switch(uiType)
@@ -291,7 +290,7 @@ struct instance_neltharions_lair : public InstanceScript
                 return frontIdolGuid;
                 break;
         }
-            
+
         return ObjectGuid::Empty;
     }
 };

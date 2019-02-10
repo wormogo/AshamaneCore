@@ -31,14 +31,14 @@ public:
     {
         return new boss_dargrul_AI(creature);
     }
-    
+
     enum eTexts
     {
-        TALK_AGGRO              = 0,
-        TALK_SPIKES             = 1,
-        TALK_DEATH              = 2,
+        TALK_AGGRO                           = 0,
+        TALK_SPIKES                          = 1,
+        TALK_DEATH                           = 2,
     };
-    
+
     enum eEvents
     {
         EVENT_MANAREGEN_TICK                 = 1,
@@ -49,7 +49,7 @@ public:
         EVENT_MAGMA_WAVE                     = 6,
         EVENT_RESET_MANA                     = 7,
     };
-    
+
     enum eSpells
     {
         SPELL_MAGMA_SCULPTOR                 = 200637,
@@ -58,24 +58,24 @@ public:
         SPELL_CRYSTALL_SPIKES                = 200551,
         SPELL_MAGMA_WAVE                     = 200404,
     };
-    
+
     struct boss_dargrul_AI : public BossAI
     {
         boss_dargrul_AI(Creature* creature) : BossAI(creature, DATA_DARGRUL) 
         {
             me->SetReactState(REACT_DEFENSIVE);
         }
-        
+
         EventMap events;
         InstanceScript* instance;
         bool manaRegenerated = false;
-        
+
         void InitializeAI() override
         {
             instance = me->GetInstanceScript();
             me->SetPower(POWER_MANA, 0);
         }
-        
+
         void Reset() override
         {
             _Reset();
@@ -85,31 +85,31 @@ public:
             if (instance)
                 instance->SetData(DATA_DARGRUL, NOT_STARTED);
         }
-        
+
         void EnterCombat(Unit* who) override
         {
             Talk(TALK_AGGRO);
             me->SetInCombatWithZone();
             me->SetPower(POWER_MANA, 0);
             
-            events.ScheduleEvent(EVENT_MANAREGEN_TICK, IN_MILLISECONDS);
-            events.ScheduleEvent(EVENT_MAGMA_SCULPTOR, 7 * IN_MILLISECONDS);
-            events.ScheduleEvent(EVENT_LANDSLIDE, 12 * IN_MILLISECONDS);
-            events.ScheduleEvent(EVENT_CRYSTALL_SPIKES, 20 * IN_MILLISECONDS);
-			
+            events.ScheduleEvent(EVENT_MANAREGEN_TICK, 1s);
+            events.ScheduleEvent(EVENT_MAGMA_SCULPTOR, 7s);
+            events.ScheduleEvent(EVENT_LANDSLIDE, 12s);
+            events.ScheduleEvent(EVENT_CRYSTALL_SPIKES, 20s);
+
             if (instance)
             {
                 instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me);
                 instance->SetData(DATA_DARGRUL, IN_PROGRESS);
             }
         }
-        
+
         void JustDied(Unit* /*unit*/) override
         {
             Talk(TALK_DEATH);
             instance->SetData(DATA_DARGRUL, DONE);
         }
-        
+
         void EnterEvadeMode(EvadeReason) override
         {
             BossAI::EnterEvadeMode();
@@ -119,42 +119,42 @@ public:
                 instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);
             }
         }
-        
+
         void UpdateAI(uint32 diff) override
         {
             if (!UpdateVictim())
                 return;
-            
+
             events.Update(diff);
-            
+
             switch (events.ExecuteEvent())
             {
                 case EVENT_MANAREGEN_TICK:
                     if (!manaRegenerated && me->GetPower(POWER_MANA) < me->GetMaxPower(POWER_MANA))
                     {
-						if (instance)
-						{
-							float manaRegenMod = 4;
-							me->SetPower(POWER_MANA, me->GetPower(POWER_MANA)+(me->GetMaxPower(POWER_MANA)*manaRegenMod/100));
-							
-							if (me->GetPower(POWER_MANA) == me->GetMaxPower(POWER_MANA))
-							{
-								manaRegenerated = true;
-								events.ScheduleEvent(EVENT_MAGMA_WAVE, 3 * IN_MILLISECONDS);
-							}
-							else
-								events.ScheduleEvent(EVENT_MANAREGEN_TICK, 2 * IN_MILLISECONDS);
-						}
+                        if (instance)
+                        {
+                            float manaRegenMod = 4;
+                            me->SetPower(POWER_MANA, me->GetPower(POWER_MANA)+(me->GetMaxPower(POWER_MANA)*manaRegenMod/100));
+
+                            if (me->GetPower(POWER_MANA) == me->GetMaxPower(POWER_MANA))
+                            {
+                                manaRegenerated = true;
+                                events.ScheduleEvent(EVENT_MAGMA_WAVE, 3s);
+                            }
+                            else
+                                events.ScheduleEvent(EVENT_MANAREGEN_TICK, 2s);
+                        }
                     }
                     break;
                 case EVENT_MAGMA_SCULPTOR:
                     me->CastSpell((Unit*)nullptr, SPELL_MAGMA_SCULPTOR, false);
-                    events.ScheduleEvent(EVENT_MAGMA_SCULPTOR, 60 * IN_MILLISECONDS);
+                    events.ScheduleEvent(EVENT_MAGMA_SCULPTOR, 60s);
                     break;
                 case EVENT_LANDSLIDE:
                     me->CastSpell((Unit*)nullptr, SPELL_LANDSLIDE, false);
-                    events.ScheduleEvent(EVENT_LANDSLIDE, 27 * IN_MILLISECONDS);
-                    events.ScheduleEvent(EVENT_MOLTEN_CRASH, 1500);
+                    events.ScheduleEvent(EVENT_LANDSLIDE, 27s);
+                    events.ScheduleEvent(EVENT_MOLTEN_CRASH, 2s);
                     break;
                 case EVENT_MOLTEN_CRASH:
                     if (me->GetVictim())
@@ -163,19 +163,19 @@ public:
                 case EVENT_CRYSTALL_SPIKES:
                     Talk(TALK_SPIKES);
                     me->CastSpell((Unit*)nullptr, SPELL_CRYSTALL_SPIKES, false);
-                    events.ScheduleEvent(EVENT_CRYSTALL_SPIKES, 20 * IN_MILLISECONDS);
+                    events.ScheduleEvent(EVENT_CRYSTALL_SPIKES, 20s);
                     break;
                 case EVENT_MAGMA_WAVE:
                     me->CastSpell(me, SPELL_MAGMA_WAVE, false);
-                    events.ScheduleEvent(EVENT_RESET_MANA, 7 * IN_MILLISECONDS);
+                    events.ScheduleEvent(EVENT_RESET_MANA, 7s);
                     break;
                 case EVENT_RESET_MANA:
                     me->SetPower(POWER_MANA, 0);
                     manaRegenerated = false;
-                    events.ScheduleEvent(EVENT_MANAREGEN_TICK, 2 * IN_MILLISECONDS);
+                    events.ScheduleEvent(EVENT_MANAREGEN_TICK, 2s);
                     break;
             }
-            
+
             DoMeleeAttackIfReady();
         }
     }; 
@@ -271,7 +271,7 @@ public:
     {
         return new mob_molten_charskin_AI(creature);
     }
-    
+
     struct mob_molten_charskin_AI : public ScriptedAI
     {
         InstanceScript* instance;
@@ -281,7 +281,7 @@ public:
             me->AddAura(209920, me);
             instance = me->GetInstanceScript();
         }
-        
+
         void MoveInLineOfSight(Unit* who) override
         {
             if (who->ToCreature() && who->ToCreature()->GetEntry() == NPC_CRYSTALL_SPIKE && me->IsWithinDistInMap(who, 1.0f) && !me->HasAura(200672))
@@ -290,7 +290,7 @@ public:
                 who->ToCreature()->DespawnOrUnsummon();
             }
         }
-        
+
         uint32 magmaTimer = 2000;
         void UpdateAI(uint32 diff) override
         {
@@ -321,9 +321,9 @@ public:
             if (Player* plr = object->ToPlayer())
                 if (Creature* spike = plr->FindNearestCreature(NPC_CRYSTALL_SPIKE, 5.0f, true))
                     if (Creature* dargrul = plr->FindNearestCreature(NPC_DARGRUL, 300.0f, true))
-						if (dargrul->GetDistance2d(spike) + 1.5f < (dargrul->GetDistance2d(plr)) &&
-							dargrul->GetDistance2d(plr) < (dargrul->GetDistance2d(spike) + 7.0f))
-							return true;
+                        if (dargrul->GetDistance2d(spike) + 1.5f < (dargrul->GetDistance2d(plr)) &&
+                            dargrul->GetDistance2d(plr) < (dargrul->GetDistance2d(spike) + 7.0f))
+                            return true;
             return false;
         }
 
@@ -345,7 +345,7 @@ public:
         {
             targets.remove_if(PlayersNearCrystallSpikeSelector());
         }
-        
+
         void DespawnSpikes()
         {
             if (Unit* caster = GetCaster())
@@ -353,7 +353,7 @@ public:
                 std::list<Unit*> l_TargetList;
                 Trinity::AnyUnitInObjectRangeCheck u_check(caster, 250.0f);
                 Trinity::UnitListSearcher<Trinity::AnyUnitInObjectRangeCheck> l_Searcher(caster, l_TargetList, u_check);
-				Cell::VisitAllObjects(caster, l_Searcher, 250.0f);
+                Cell::VisitAllObjects(caster, l_Searcher, 250.0f);
 
                 if (!l_TargetList.empty())
                     for (Unit* l_Target : l_TargetList)
@@ -377,10 +377,10 @@ public:
 
 void AddSC_boss_dargrul_the_underking()
 {
-	new boss_dargrul();
-	new spell_dargrul_landslide();
-	new spell_dargrul_crystal_spikes();
-	new mob_molten_charskin();
-	new spell_dargrul_magma_wave();
-	new mob_crystall_stalker();
+    new boss_dargrul();
+    new spell_dargrul_landslide();
+    new spell_dargrul_crystal_spikes();
+    new mob_molten_charskin();
+    new spell_dargrul_magma_wave();
+    new mob_crystall_stalker();
 }
