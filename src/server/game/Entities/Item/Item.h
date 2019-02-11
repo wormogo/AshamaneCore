@@ -383,6 +383,7 @@ class TC_GAME_API Item : public Object
         void CopyArtifactDataFromParent(Item* parent);
 
         void GiveArtifactXp(uint64 amount, Item* sourceItem, uint32 artifactCategoryId);
+        void ActivateFishArtifact(uint8 artifactId);
     protected:
         BonusData _bonusData;
 

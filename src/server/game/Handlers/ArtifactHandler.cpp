@@ -35,6 +35,11 @@ void WorldSession::HandleArtifactAddPower(WorldPackets::Artifact::ArtifactAddPow
     if (!artifact)
         return;
 
+    uint8 categoryID = ARTIFACT_CATEGORY_PRIMARY;
+    uint32 artifactID = artifact->GetTemplate()->GetArtifactID();
+    if (ArtifactEntry const* entry = sArtifactStore.LookupEntry(artifactID))
+        categoryID = static_cast<ArtifactCategory>(entry->ArtifactCategoryID);
+
     uint32 currentArtifactTier = artifact->GetModifier(ITEM_MODIFIER_ARTIFACT_TIER);
 
     uint64 xpCost = 0;
@@ -57,6 +62,9 @@ void WorldSession::HandleArtifactAddPower(WorldPackets::Artifact::ArtifactAddPow
 
     if (artifactPowerEntry->Tier > currentArtifactTier)
         return;
+
+    if (categoryID == ARTIFACT_CATEGORY_FISHING)
+        artifact->ActivateFishArtifact(artifactID);
 
     uint32 maxRank = artifactPowerEntry->MaxPurchasableRank;
     if (artifactPowerEntry->Tier < currentArtifactTier)

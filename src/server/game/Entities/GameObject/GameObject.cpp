@@ -1942,6 +1942,26 @@ void GameObject::Use(Unit* user)
                 return;
             }
 
+            uint8 categoryID = 0;
+            if (ItemTemplate const* proto = item->GetTemplate())
+                if (uint32 artifactID = proto->GetArtifactID())
+                    if (ArtifactEntry const* entry = sArtifactStore.LookupEntry(artifactID))
+                        categoryID = entry->ArtifactCategoryID;
+
+            if (GetEntry() == 246520) // Fishing forge
+            {
+                if (categoryID != ARTIFACT_CATEGORY_FISHING)
+                {
+                    player->SendDirectMessage(WorldPackets::Misc::DisplayGameError(GameError::ERR_MUST_EQUIP_ARTIFACT).Write());
+                    return;
+                }
+            }
+            else if (categoryID == ARTIFACT_CATEGORY_FISHING)
+            {
+                player->SendDirectMessage(WorldPackets::Misc::DisplayGameError(GameError::ERR_MUST_EQUIP_ARTIFACT).Write());
+                return;
+            }
+
             WorldPackets::Artifact::ArtifactForgeOpened artifactForgeOpened;
             artifactForgeOpened.ArtifactGUID = item->GetGUID();
             artifactForgeOpened.ForgeGUID = GetGUID();
