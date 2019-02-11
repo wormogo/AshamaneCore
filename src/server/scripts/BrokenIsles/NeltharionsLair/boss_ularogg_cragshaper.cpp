@@ -99,10 +99,10 @@ public:
                                     validPlayers.push_back(_player);
                         }
                     }
-                    
+
                     if (validPlayers.size() == 0)
                         return;
-                    
+
                     uint8 selectPlr = urand(1, validPlayers.size());
                     uint8 i = 0;
                     for (auto validPlr : validPlayers)
@@ -118,7 +118,7 @@ public:
                 }
             }
         }
-        
+
         void Register()
         {
             OnDestinationTargetSelect += SpellDestinationTargetSelectFn(spell_mountain_strike_dest_SpellScript::ModDestHeight, EFFECT_0, TARGET_DEST_DEST_RANDOM);
@@ -140,7 +140,7 @@ public:
     {
         return new boss_ularogg_cragshaper_AI(creature);
     }
-    
+
     enum eTexts
     {
         TALK_AGGRO                        = 0,
@@ -151,27 +151,27 @@ public:
         TALK_MOUNTAIN_STANCE_PHRASE       = 5,
         TALK_KILL                         = 6,
     };
-    
+
     enum eEvents
     {
-        EVENT_MANAREGEN_TICK             = 1,
-        EVENT_BELLOW_OF_THE_DEEPS        = 2,
-        EVENT_STRIKE_OF_THE_MOUNTAIN     = 3,
-        EVENT_SUNDER                     = 4,
-        EVENT_PHASE_2                    = 5,
-        EVENT_START_ATTACK               = 6,
-        EVENT_PHASE_2_INVISIBLE          = 7,
-        EVENT_IDOLS_MOTION               = 8
+        EVENT_MANAREGEN_TICK              = 1,
+        EVENT_BELLOW_OF_THE_DEEPS         = 2,
+        EVENT_STRIKE_OF_THE_MOUNTAIN      = 3,
+        EVENT_SUNDER                      = 4,
+        EVENT_PHASE_2                     = 5,
+        EVENT_START_ATTACK                = 6,
+        EVENT_PHASE_2_INVISIBLE           = 7,
+        EVENT_IDOLS_MOTION                = 8
     };
-    
+
     enum eSpells
     {
-        SPELL_BELLOW_OF_THE_DEEPS        = 193375,
-        SPELL_STRIKE_OF_THE_MOUNTAIN     = 216290,
-        SPELL_SUNDER                     = 198496,
-        SPELL_STANCE_OF_THE_MOUNTAIN     = 198565
+        SPELL_BELLOW_OF_THE_DEEPS         = 193375,
+        SPELL_STRIKE_OF_THE_MOUNTAIN      = 216290,
+        SPELL_SUNDER                      = 198496,
+        SPELL_STANCE_OF_THE_MOUNTAIN      = 198565
     };
-    
+
     struct boss_ularogg_cragshaper_AI : public BossAI
     {
         boss_ularogg_cragshaper_AI(Creature* creature) : BossAI(creature, DATA_ULAROGG_CRAGSHAPER) 
@@ -179,7 +179,7 @@ public:
             me->SetReactState(REACT_PASSIVE);
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
         }
-        
+
         EventMap events;
         InstanceScript* instance;
         bool manaRegenerated = false;
@@ -188,13 +188,13 @@ public:
         bool allowUpdateVictim = false;
         uint8 idolsPoint = 0;
         std::list<Position> idolsPositions;
-        
+
         void InitializeAI() override
         {
             instance = me->GetInstanceScript();
             me->SetPower(POWER_MANA, 0);
         }
-        
+
         void MoveInLineOfSight(Unit* who) override
         {
             if (!isJumpedToCenter && who->GetTypeId() == TYPEID_PLAYER && !who->ToPlayer()->IsGameMaster() && me->IsWithinDistInMap(who, 35.0f))
@@ -207,7 +207,7 @@ public:
                 }
             }
         }
-        
+
         void Reset() override
         {
             _Reset();
@@ -220,48 +220,48 @@ public:
             bool allowUpdateVictim = false;
             uint8 idolsPoint = 0;
             me->SetVisible(true);
-            
+
             if (instance)
             {
                 instance->SetData(DATA_ULAROGG_CRAGSHAPER, NOT_STARTED);
                 instance->SetData(DATA_CENTER_IDOL_KILLED, NOT_STARTED);
             }
         }
-        
+
         void EnterCombat(Unit* who) override
         {
             Talk(TALK_AGGRO);
             me->SetInCombatWithZone();
             me->SetPower(POWER_MANA, 0);
-            
-            events.ScheduleEvent(EVENT_MANAREGEN_TICK, IN_MILLISECONDS);
-            events.ScheduleEvent(EVENT_BELLOW_OF_THE_DEEPS, urand(4, 6) * IN_MILLISECONDS);
-            events.ScheduleEvent(EVENT_SUNDER, 2 * IN_MILLISECONDS);
-            events.ScheduleEvent(EVENT_STRIKE_OF_THE_MOUNTAIN, 10 * IN_MILLISECONDS);
-            
+
+            events.ScheduleEvent(EVENT_MANAREGEN_TICK, 1s);
+            events.ScheduleEvent(EVENT_BELLOW_OF_THE_DEEPS, 4s, 6s);
+            events.ScheduleEvent(EVENT_SUNDER, 2s);
+            events.ScheduleEvent(EVENT_STRIKE_OF_THE_MOUNTAIN, 10s);
+
             if (instance)
             {
                 instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me);
                 instance->SetData(DATA_ULAROGG_CRAGSHAPER, IN_PROGRESS);
             }
         }
-        
+
         void JustDied(Unit* /*unit*/) override
         {
             Talk(TALK_DEATH);
-            
+
             if (GameObject* barrier = ObjectAccessor::GetGameObject(*me, instance->GetGuidData(DATA_BARRIER_ULAROGG)))
                 barrier->SetGoState(GO_STATE_ACTIVE);
-            
+
             instance->SetData(DATA_ULAROGG_CRAGSHAPER, DONE);
         }
-        
+
         void KilledUnit(Unit* victim) override
         {
             if (victim->GetTypeId() == TYPEID_PLAYER)
                 Talk(TALK_KILL);
         }
-        
+
         void EnterEvadeMode(EvadeReason) override
         {
             me->SetPower(POWER_MANA, 0);
@@ -278,12 +278,12 @@ public:
             isJumpedToCenter = false;
             me->SetVisible(true);
         }
-        
+
         int32 round(float v)
         { 
-            return floor( v + 0.5f); 
+            return floor(v + 0.5f); 
         }
-        
+
         void FillIdolsPositions(Creature* leftIdol, Creature* centerIdol, Creature* rightIdol, Creature* backIdol, Creature* frontIdol)
         {
             idolsPositions.clear();
@@ -293,34 +293,34 @@ public:
                     round(leftIdol->GetPositionY()) == round(ularoggIdolsPositions[i][1]) &&
                     round(leftIdol->GetPositionZ()) == round(ularoggIdolsPositions[i][2]))
                     continue;
-                    
+
                 if (round(centerIdol->GetPositionX()) == round(ularoggIdolsPositions[i][0]) &&
                     round(centerIdol->GetPositionY()) == round(ularoggIdolsPositions[i][1]) &&
                     round(centerIdol->GetPositionZ()) == round(ularoggIdolsPositions[i][2]))
                     continue;
-                    
+
                 if (round(rightIdol->GetPositionX()) == round(ularoggIdolsPositions[i][0]) &&
                     round(rightIdol->GetPositionY()) == round(ularoggIdolsPositions[i][1]) &&
                     round(rightIdol->GetPositionZ()) == round(ularoggIdolsPositions[i][2]))
                     continue;
-                    
+
                 if (instance && instance->instance->GetDifficultyID() >= 2 && backIdol && frontIdol)
                 {
                     if (round(backIdol->GetPositionX()) == round(ularoggIdolsPositions[i][0]) &&
                         round(backIdol->GetPositionY()) == round(ularoggIdolsPositions[i][1]) &&
                         round(backIdol->GetPositionZ()) == round(ularoggIdolsPositions[i][2]))
                         continue;
-                        
+
                     if (round(frontIdol->GetPositionX()) == round(ularoggIdolsPositions[i][0]) &&
                         round(frontIdol->GetPositionY()) == round(ularoggIdolsPositions[i][1]) &&
                         round(frontIdol->GetPositionZ()) == round(ularoggIdolsPositions[i][2]))
                         continue;
                 }
-                    
+
                 idolsPositions.push_back(Position(ularoggIdolsPositions[i][0], ularoggIdolsPositions[i][1], ularoggIdolsPositions[i][2], 0.0f));
             }
         }
-        
+
         Position SelectRandomIdolPos(uint8 randomIndex)
         {
             uint8 i = 0;
@@ -332,9 +332,9 @@ public:
             }
             return Position(0.0f, 0.0f, 0.0f, 0.0f);
         }
-        
+
         void UpdateAI(uint32 diff) override
-        {   
+        {
             if (instance && instance->GetData(DATA_CENTER_IDOL_KILLED) == DONE && inSecondPhase)
             {
                 me->GetMotionMaster()->MoveJump(me->GetPositionX(), me->GetPositionY(), me->GetPositionX(), me->GetOrientation(), 55.0f, 55.0f, EVENT_JUMP, true);
@@ -346,17 +346,17 @@ public:
                 inSecondPhase = false;
                 manaRegenerated = false;
                 me->SetPower(POWER_MANA, 0);
-                events.ScheduleEvent(EVENT_MANAREGEN_TICK, IN_MILLISECONDS);
-                events.ScheduleEvent(EVENT_BELLOW_OF_THE_DEEPS, urand(4, 6) * IN_MILLISECONDS);
-                events.ScheduleEvent(EVENT_SUNDER, 2 * IN_MILLISECONDS);
-                events.ScheduleEvent(EVENT_STRIKE_OF_THE_MOUNTAIN, 10 * IN_MILLISECONDS);
+                events.ScheduleEvent(EVENT_MANAREGEN_TICK, 1s);
+                events.ScheduleEvent(EVENT_BELLOW_OF_THE_DEEPS, 4s, 6s);
+                events.ScheduleEvent(EVENT_SUNDER, 2s);
+                events.ScheduleEvent(EVENT_STRIKE_OF_THE_MOUNTAIN, 10s);
             }
-        
+
             if (!UpdateVictim() && allowUpdateVictim)
                 return;
-        
+
             events.Update(diff);
-            
+
             switch (events.ExecuteEvent())
             {
                 case EVENT_MANAREGEN_TICK:
@@ -367,13 +367,13 @@ public:
                             float manaRegenMod = 2.857f;
                             if (instance->instance->GetDifficultyID() == DIFFICULTY_MYTHIC)
                                 manaRegenMod = 4;
-                                
+
                             me->SetPower(POWER_MANA, me->GetPower(POWER_MANA)+(me->GetMaxPower(POWER_MANA)*manaRegenMod/100));
-                            
+
                             if (me->GetPower(POWER_MANA) == me->GetMaxPower(POWER_MANA))
                             {
                                 manaRegenerated = true;
-                                events.ScheduleEvent(EVENT_PHASE_2, 3 * IN_MILLISECONDS);
+                                events.ScheduleEvent(EVENT_PHASE_2, 3s);
                                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
                                 me->SetReactState(REACT_PASSIVE);
                                 me->RemoveAllAuras();
@@ -383,7 +383,7 @@ public:
                                 me->GetMotionMaster()->MoveJump(ularoggJumpPos, 15.0f, 15.0f, EVENT_JUMP, true);
                             }
                             else
-                                events.ScheduleEvent(EVENT_MANAREGEN_TICK, 2 * IN_MILLISECONDS);
+                                events.ScheduleEvent(EVENT_MANAREGEN_TICK, 2s);
                         }
                     }
                     break;
@@ -391,14 +391,14 @@ public:
                     if (!inSecondPhase)
                     {
                         me->CastSpell(me->GetVictim(), SPELL_SUNDER, false);
-                        events.ScheduleEvent(EVENT_SUNDER, urand(6, 10) * IN_MILLISECONDS);
+                        events.ScheduleEvent(EVENT_SUNDER, 6s, 10s);
                     }
                     break;
                 case EVENT_BELLOW_OF_THE_DEEPS:
                     if (!inSecondPhase)
                     {
                         me->CastSpell(me->GetVictim(), SPELL_BELLOW_OF_THE_DEEPS, false);
-                        events.ScheduleEvent(EVENT_BELLOW_OF_THE_DEEPS, urand(6, 10) * IN_MILLISECONDS);
+                        events.ScheduleEvent(EVENT_BELLOW_OF_THE_DEEPS, 6s, 10s);
                     }
                     break;
                 case EVENT_STRIKE_OF_THE_MOUNTAIN:
@@ -407,7 +407,7 @@ public:
                         uint8 randomTalk = urand(TALK_STRIKE_OF_THE_MOUNTAIN, TALK_STRIKE_OF_THE_MOUNTAIN_2);
                         Talk(randomTalk);
                         me->CastSpell(me->GetVictim(), SPELL_STRIKE_OF_THE_MOUNTAIN, false);
-                        events.ScheduleEvent(EVENT_STRIKE_OF_THE_MOUNTAIN, urand(12, 15) * IN_MILLISECONDS);
+                        events.ScheduleEvent(EVENT_STRIKE_OF_THE_MOUNTAIN, 12s, 15s);
                     }
                     break;
                 case EVENT_PHASE_2:
@@ -440,7 +440,7 @@ public:
                     else
                     {
                         me->SetVisible(false);
-                        events.ScheduleEvent(EVENT_IDOLS_MOTION, 3000);
+                        events.ScheduleEvent(EVENT_IDOLS_MOTION, 3s);
                     }
                     break;
                 case EVENT_IDOLS_MOTION:
@@ -449,20 +449,19 @@ public:
                     Creature* rightIdol = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_RIGHT_IDOL));
                     Creature* backIdol = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_BACK_IDOL));
                     Creature* frontIdol = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_FRONT_IDOL));
-                        
+
                     if (centerIdol && leftIdol && rightIdol)
                     {
-                        
                         FillIdolsPositions(leftIdol, centerIdol, rightIdol, backIdol, frontIdol);
                         Position leftIdolPos = SelectRandomIdolPos(urand(0, idolsPositions.size()-1));
-                        
+
                         FillIdolsPositions(leftIdol, centerIdol, rightIdol, backIdol, frontIdol);
                         for (std::list<Position>::iterator idPoss = idolsPositions.begin(); idPoss != idolsPositions.end(); ++idPoss)
                             if (*idPoss == leftIdolPos)
                                 idPoss = idolsPositions.erase(idPoss);
-                        
+
                         Position centerIdolPos = SelectRandomIdolPos(urand(0, idolsPositions.size()-1));
-                        
+
                         FillIdolsPositions(leftIdol, centerIdol, rightIdol, backIdol, frontIdol);
                         for (std::list<Position>::iterator idPoss = idolsPositions.begin(); idPoss != idolsPositions.end(); ++idPoss)
                         {
@@ -472,9 +471,9 @@ public:
                             if (*idPoss == centerIdolPos)
                                 idPoss = idolsPositions.erase(idPoss);
                         }
-                        
+
                         Position rightIdolPos = SelectRandomIdolPos(urand(0, idolsPositions.size()-1));
-                        
+
                         if (instance && instance->instance->GetDifficultyID() >= 2 && backIdol && frontIdol)
                         {
                             FillIdolsPositions(leftIdol, centerIdol, rightIdol, backIdol, frontIdol);
@@ -485,14 +484,13 @@ public:
 
                                 if (*idPoss == centerIdolPos)
                                     idPoss = idolsPositions.erase(idPoss);
-                                
+
                                 if (*idPoss == rightIdolPos)
                                     idPoss = idolsPositions.erase(idPoss);
                             }
-                            
+
                             Position backIdolPos = SelectRandomIdolPos(urand(0, idolsPositions.size()-1));
-                            
-                        
+
                             FillIdolsPositions(leftIdol, centerIdol, rightIdol, backIdol, frontIdol);
                             for (std::list<Position>::iterator idPoss = idolsPositions.begin(); idPoss != idolsPositions.end(); ++idPoss)
                             {
@@ -501,14 +499,14 @@ public:
 
                                 if (*idPoss == centerIdolPos)
                                     idPoss = idolsPositions.erase(idPoss);
-                                
+
                                 if (*idPoss == rightIdolPos)
                                     idPoss = idolsPositions.erase(idPoss);
-                                
+
                                 if (*idPoss == backIdolPos)
                                     idPoss = idolsPositions.erase(idPoss);
                             }
-                            
+
                             Position frontIdolPos = SelectRandomIdolPos(urand(0, idolsPositions.size()-1));
                             frontIdol->GetMotionMaster()->MovePoint(idolsPoint, frontIdolPos);
                             backIdol->GetMotionMaster()->MovePoint(idolsPoint, backIdolPos);
@@ -518,7 +516,7 @@ public:
                         rightIdol->GetMotionMaster()->MovePoint(idolsPoint, rightIdolPos);
                     }
                     ++idolsPoint;
-                    
+
                     if (idolsPoint <= 8)
                         events.ScheduleEvent(EVENT_IDOLS_MOTION, 500);
                     else
@@ -564,11 +562,11 @@ public:
         SPELL_FALLING_DERBIS = 193271,
         SPELL_DERBIS_AURA    = 193267,
     };
-    
+
     struct mob_bellowing_idol_mountain_stance_AI : public ScriptedAI
     {
         InstanceScript* instance;
-        
+
         mob_bellowing_idol_mountain_stance_AI(Creature* creature) : ScriptedAI(creature) 
         {
             me->SetReactState(REACT_PASSIVE);
@@ -581,20 +579,20 @@ public:
             me->SetSpeedRate(MOVE_FLIGHT, allSpeed);
             instance = me->GetInstanceScript();
         }
-        
+
         void JustDied(Unit* /*unit*/) override
         {
             if (instance)
                 if (me->GetGUID() == instance->GetGuidData(DATA_CENTER_IDOL))
                     instance->SetData(DATA_CENTER_IDOL_KILLED, DONE);
         }
-        
+
         uint32 derbisTime = 3000;
         void UpdateAI(uint32 diff) override
-        {   
+        {
             if (instance && instance->GetData(DATA_CENTER_IDOL_KILLED) == DONE)
                 me->DespawnOrUnsummon();
-            
+
             if (me->HasAura(SPELL_DERBIS_AURA))
             {
                 if (derbisTime <= diff)
@@ -612,10 +610,10 @@ public:
                                         validPlayers.push_back(_player);
                             }
                         }
-                        
+
                         if (validPlayers.size() == 0)
                             return;
-                        
+
                         uint8 selectPlr = urand(1, validPlayers.size());
                         uint8 i = 0;
                         for (auto validPlr : validPlayers)
@@ -636,7 +634,6 @@ public:
         }
     };
 };
-
 
 // 98081
 class mob_bellowing_idol : public CreatureScript
@@ -664,9 +661,9 @@ public:
         }
 
         uint32 derbisTime = 3000;
-        
+
         void UpdateAI(uint32 diff) override
-        {   
+        {
             if (derbisTime <= diff)
             {
                 if (InstanceScript* instance = me->GetInstanceScript())
@@ -682,10 +679,10 @@ public:
                                     validPlayers.push_back(_player);
                         }
                     }
-                    
+
                     if (validPlayers.size() == 0)
                         return;
-                    
+
                     uint8 selectPlr = urand(1, validPlayers.size());
                     uint8 i = 0;
                     for (auto validPlr : validPlayers)

@@ -106,7 +106,7 @@ public:
 
         void EnterCombat(Unit* unit) override
         {
-            events.ScheduleEvent(EVENT_IMPALING_SHARD, 2 * IN_MILLISECONDS);
+            events.ScheduleEvent(EVENT_IMPALING_SHARD, 2s);
         }
 
         void UpdateAI(uint32 diff) override
@@ -120,7 +120,7 @@ public:
             {
                 if (me->GetVictim())
                     me->CastSpell(me->GetVictim(), SPELL_IMPALING_SHARD, false);
-                events.ScheduleEvent(EVENT_IMPALING_SHARD, urand(8,12) * IN_MILLISECONDS);
+                events.ScheduleEvent(EVENT_IMPALING_SHARD, 8s, 12s);
             }
 
             DoMeleeAttackIfReady();
@@ -144,7 +144,7 @@ public:
         {
             me->SetVisible(false);
         }
-        
+
         void MoveInLineOfSight(Unit* who) override
         {
             if (me->GetMapId() == 1458 && who->GetTypeId() == TYPEID_PLAYER && !who->ToPlayer()->IsGameMaster() && me->IsWithinDistInMap(who, 150.0f))
@@ -158,7 +158,7 @@ public:
                     who->SetSpeedRate(MOVE_RUN, allSpeed);
                     who->SetSpeedRate(MOVE_SWIM, allSpeed);
                     who->SetSpeedRate(MOVE_FLIGHT, allSpeed);
-                    
+
                     std::vector<uint32> destinations;
                     destinations.push_back(TAXI_NODE_FALLING_END_POINT);
                     destinations.push_back(TAXI_NODE_FALLING_START_POINT);
@@ -166,7 +166,7 @@ public:
                     who->ToPlayer()->SaveToDB();
                     who->ToPlayer()->ContinueTaxiFlight();
                 }
-                
+
                 if (who->GetPositionZ() < 112 && who->HasAura(SPELL_FALLING_VISUAL))
                 {
                     who->RemoveAura(SPELL_FALLING_VISUAL);
@@ -179,7 +179,6 @@ public:
                     who->ToPlayer()->m_taxi.ClearTaxiDestinations();
                     who->ToPlayer()->SaveToDB();
                 }
-                
             }
         }
     };
@@ -201,7 +200,7 @@ public:
         {
             me->SetVisible(false);
         }
-        
+
         void MoveInLineOfSight(Unit* who) override
         {
             if (me->GetMapId() == 1458 && me->GetAreaId() ==  8339 && who->GetTypeId() == TYPEID_PLAYER && !who->ToPlayer()->IsGameMaster() && me->IsWithinDistInMap(who, 20.0f))
@@ -249,8 +248,8 @@ public:
 
         void EnterCombat(Unit* unit) override
         {
-            events.ScheduleEvent(EVENT_BONE_CHOMP, 2 * IN_MILLISECONDS);
-            events.ScheduleEvent(EVENT_STONE_GAZE, 6 * IN_MILLISECONDS);
+            events.ScheduleEvent(EVENT_BONE_CHOMP, 2s);
+            events.ScheduleEvent(EVENT_STONE_GAZE, 6s);
         }
 
         void UpdateAI(uint32 diff) override
@@ -265,11 +264,11 @@ public:
                 case EVENT_BONE_CHOMP:
                     if (me->GetVictim())
                         me->CastSpell(me->GetVictim(), SPELL_BONE_CHOMP, false);
-                    events.ScheduleEvent(EVENT_BONE_CHOMP, urand(11, 13) * IN_MILLISECONDS);
+                    events.ScheduleEvent(EVENT_BONE_CHOMP, 11s, 13s);
                     break;
                 case EVENT_STONE_GAZE:
                     me->CastSpell(me->GetVictim(), SPELL_STONE_GAZE, false);
-                    events.ScheduleEvent(EVENT_STONE_GAZE, urand(14, 16) * IN_MILLISECONDS);
+                    events.ScheduleEvent(EVENT_STONE_GAZE, 14s, 16s);
                     break;
             }
 
@@ -307,9 +306,9 @@ public:
 
         void EnterCombat(Unit* unit) override
         {
-            events.ScheduleEvent(EVENT_CRUSH, 4 * IN_MILLISECONDS);
+            events.ScheduleEvent(EVENT_CRUSH, 4s);
         }
-        
+
         void UpdateAI(uint32 diff) override
         {
             if (!UpdateVictim())
@@ -321,7 +320,7 @@ public:
             {
                 case EVENT_CRUSH:
                     me->CastSpell(me->GetVictim(), SPELL_CRUSH, false);
-                    events.ScheduleEvent(EVENT_CRUSH, urand(14, 16) * IN_MILLISECONDS);
+                    events.ScheduleEvent(EVENT_CRUSH, 14s, 16s);
                     break;
             }
 
@@ -343,13 +342,13 @@ public:
 
     enum eEvents
     {
-        EVENT_SUBMERGE = 1,
+        EVENT_SUBMERGE    = 1,
         EVENT_VISCID_BILE = 2,
     };
 
     enum eSpells
     {
-        SPELL_SUBMERGE = 183433,
+        SPELL_SUBMERGE    = 183433,
         SPELL_VISCID_BILE = 183465,
         SPELL_RANCID_OOZE = 226385,
     };
@@ -362,14 +361,14 @@ public:
 
         void EnterCombat(Unit* unit) override
         {
-            events.ScheduleEvent(EVENT_SUBMERGE, 2 * IN_MILLISECONDS);
+            events.ScheduleEvent(EVENT_SUBMERGE, 2s);
         }
-        
+
         void JustDied(Unit* killer) override
         {
             me->CastSpell(killer, SPELL_RANCID_OOZE, false);
         }
-        
+
         void UpdateAI(uint32 diff) override
         {
             if (!UpdateVictim())
@@ -381,8 +380,8 @@ public:
             {
                 case EVENT_SUBMERGE:
                     me->CastSpell(me->GetVictim(), SPELL_SUBMERGE, false); // need script
-                    events.ScheduleEvent(EVENT_VISCID_BILE, 9 * IN_MILLISECONDS);
-                    events.ScheduleEvent(EVENT_SUBMERGE, urand(17, 19) * IN_MILLISECONDS);
+                    events.ScheduleEvent(EVENT_VISCID_BILE, 9s);
+                    events.ScheduleEvent(EVENT_SUBMERGE, 17s, 19s);
                     break;
                 case EVENT_VISCID_BILE:
                     me->CastSpell(me->GetVictim(), SPELL_VISCID_BILE, false);
@@ -408,13 +407,13 @@ public:
     enum eEvents
     {
         EVENT_PIERCING_SHARDS = 1,
-        EVENT_FRACTURE = 2
+        EVENT_FRACTURE        = 2
     };
 
     enum eSpells
     {
         SPELL_PIERCING_SHARDS = 226296,
-        SPELL_FRACTURE = 193505,
+        SPELL_FRACTURE        = 193505,
     };
 
     struct mob_vileshard_hulk_AI : public ScriptedAI
@@ -422,7 +421,7 @@ public:
         mob_vileshard_hulk_AI(Creature* creature) : ScriptedAI(creature) {}
 
         EventMap events;
-        
+
         uint32 firstShardsCounter = 0;
         uint32 _milliseconds = 0;
 
@@ -431,10 +430,10 @@ public:
             if (Creature* drudge = me->FindNearestCreature(NPC_UNDERSTONE_DRUDGE, 80.0f, true))
                 sCreatureTextMgr->SendChat(drudge, 1);
             
-            events.ScheduleEvent(EVENT_PIERCING_SHARDS, 5 * IN_MILLISECONDS);
-            events.ScheduleEvent(EVENT_FRACTURE, 10 * IN_MILLISECONDS);
+            events.ScheduleEvent(EVENT_PIERCING_SHARDS, 5s);
+            events.ScheduleEvent(EVENT_FRACTURE, 10s);
         }
-        
+
         void UpdateAI(uint32 diff) override
         {
             if (!UpdateVictim())
@@ -447,7 +446,7 @@ public:
                 case EVENT_PIERCING_SHARDS:
                     me->CastSpell(me->GetVictim(), SPELL_PIERCING_SHARDS, false);
                     ++firstShardsCounter;
-                    _milliseconds = urand(12000, 14000);
+                    _milliseconds = urand(12, 14) * IN_MILLISECONDS;
                     if (InstanceScript* instance = me->GetInstanceScript())
                         if (instance->instance->GetDifficultyID() >= DIFFICULTY_HEROIC && (firstShardsCounter % 2 != 0))
                             _milliseconds = 2500;
@@ -455,7 +454,7 @@ public:
                     break;
                 case EVENT_FRACTURE:
                     me->CastSpell(me->GetVictim(), SPELL_FRACTURE, false);
-                    events.ScheduleEvent(EVENT_FRACTURE, urand(14, 16) * IN_MILLISECONDS);
+                    events.ScheduleEvent(EVENT_FRACTURE, 14s, 16s);
                     break;
             }
 
@@ -483,16 +482,16 @@ public:
     struct mob_understone_drudge_AI : public ScriptedAI
     {
         mob_understone_drudge_AI(Creature* creature) : ScriptedAI(creature) {}
-        
+
         bool phraseSays;
-        
+
         void MoveInLineOfSight(Unit* who) override
         {
             if (!phraseSays && who->GetTypeId() == TYPEID_PLAYER && !who->ToPlayer()->IsGameMaster() && me->IsWithinDistInMap(who, 8.0f))
             {
                 Talk(TALK_ATTACK);
                 phraseSays = true;
-            }    
+            }
         }
     };
 };
@@ -526,9 +525,9 @@ public:
 
         void EnterCombat(Unit* unit) override
         {
-            events.ScheduleEvent(EVENT_AVALANCHE, 5 * IN_MILLISECONDS);
+            events.ScheduleEvent(EVENT_AVALANCHE, 5s);
         }
-        
+
         void UpdateAI(uint32 diff) override
         {
             if (!UpdateVictim())
@@ -540,7 +539,7 @@ public:
             {
                 case EVENT_AVALANCHE:
                     me->CastSpell((Unit*)nullptr, SPELL_AVALANCHE, false);
-                    events.ScheduleEvent(EVENT_AVALANCHE, urand(8, 12) * IN_MILLISECONDS);
+                    events.ScheduleEvent(EVENT_AVALANCHE, 8s, 12s);
                     break;
             }
 
@@ -581,10 +580,10 @@ public:
 
         void EnterCombat(Unit* unit) override
         {
-            events.ScheduleEvent(EVENT_RETREAT, 5 * IN_MILLISECONDS);
-            events.ScheduleEvent(EVENT_JUGGED_DISK, 7 * IN_MILLISECONDS);
+            events.ScheduleEvent(EVENT_RETREAT, 5s);
+            events.ScheduleEvent(EVENT_JUGGED_DISK, 7s);
         }
-        
+
         void UpdateAI(uint32 diff) override
         {
             if (!UpdateVictim())
@@ -596,12 +595,12 @@ public:
             {
                 case EVENT_RETREAT:
                     me->CastSpell(me, SPELL_RETREAT, false);
-                    events.ScheduleEvent(EVENT_RETREAT, urand(10, 12) * IN_MILLISECONDS);
+                    events.ScheduleEvent(EVENT_RETREAT, 10s, 12s);
                     break;
                 case EVENT_JUGGED_DISK:
                     if (me->GetVictim())
                         me->CastSpell(me->GetVictim(), SPELL_JUGGED_DISK, false);
-                    events.ScheduleEvent(EVENT_JUGGED_DISK, urand(5, 7) * IN_MILLISECONDS);
+                    events.ScheduleEvent(EVENT_JUGGED_DISK, 5s, 7s);
                     break;
             }
 
@@ -640,9 +639,9 @@ public:
 
         void EnterCombat(Unit* unit) override
         {
-            events.ScheduleEvent(EVENT_STONE_SHUTTER, 5 * IN_MILLISECONDS);
+            events.ScheduleEvent(EVENT_STONE_SHUTTER, 5s);
         }
-        
+
         void UpdateAI(uint32 diff) override
         {
             if (!UpdateVictim())
@@ -654,7 +653,7 @@ public:
             {
                 case EVENT_STONE_SHUTTER:
                     me->CastSpell((Unit*)nullptr, SPELL_STONE_SHUTTER, false);
-                    events.ScheduleEvent(EVENT_STONE_SHUTTER, urand(10, 12) * IN_MILLISECONDS);
+                    events.ScheduleEvent(EVENT_STONE_SHUTTER, 10s, 12s);
                     break;
             }
 
@@ -687,15 +686,15 @@ public:
 
     struct mob_blightshard_shaper_AI : public ScriptedAI
     {
-        mob_blightshard_shaper_AI(Creature* creature) : ScriptedAI(creature) {}
+        mob_blightshard_shaper_AI(Creature* creature) : ScriptedAI(creature) { }
 
         EventMap events;
 
         void EnterCombat(Unit* unit) override
         {
-            events.ScheduleEvent(EVENT_STONE_BOLT, 5 * IN_MILLISECONDS);
+            events.ScheduleEvent(EVENT_STONE_BOLT, 5s);
         }
-        
+
         void UpdateAI(uint32 diff) override
         {
             if (!UpdateVictim())
@@ -707,7 +706,7 @@ public:
             {
                 case EVENT_STONE_BOLT:
                     me->CastSpell(me->GetVictim(), SPELL_STONE_BOLT, false);
-                    events.ScheduleEvent(EVENT_STONE_BOLT, urand(10, 12) * IN_MILLISECONDS);
+                    events.ScheduleEvent(EVENT_STONE_BOLT, 10s, 12s);
                     break;
             }
 
@@ -742,16 +741,16 @@ public:
 
     struct mob_stoneclaw_grubmaster_AI : public ScriptedAI
     {
-        mob_stoneclaw_grubmaster_AI(Creature* creature) : ScriptedAI(creature) {}
+        mob_stoneclaw_grubmaster_AI(Creature* creature) : ScriptedAI(creature) { }
 
         EventMap events;
 
         void EnterCombat(Unit* unit) override
         {
-            events.ScheduleEvent(EVENT_LEECH, 5 * IN_MILLISECONDS);
-            events.ScheduleEvent(EVENT_STONE_SHUTTER, 3 * IN_MILLISECONDS);
+            events.ScheduleEvent(EVENT_LEECH, 5s);
+            events.ScheduleEvent(EVENT_STONE_SHUTTER, 3s);
         }
-        
+
         void UpdateAI(uint32 diff) override
         {
             if (!UpdateVictim())
@@ -763,11 +762,11 @@ public:
             {
                 case EVENT_LEECH:
                     me->CastSpell(me->GetVictim(), SPELL_LEECH, false);
-                    events.ScheduleEvent(EVENT_LEECH, urand(10, 12) * IN_MILLISECONDS);
+                    events.ScheduleEvent(EVENT_LEECH, 10s, 12s);
                     break;
                 case EVENT_STONE_SHUTTER:
                     me->CastSpell((Unit*)nullptr, SPELL_STONE_SHUTTER, false);
-                    events.ScheduleEvent(EVENT_STONE_SHUTTER, urand(6, 8) * IN_MILLISECONDS);
+                    events.ScheduleEvent(EVENT_STONE_SHUTTER, 6s, 8s);
                     break;
             }
 

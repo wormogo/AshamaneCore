@@ -20,48 +20,48 @@
 #define DEF_NELTHARIONS_LAIR_H
 #define DataHeader "NL"
 
-uint32 const EncounterCount = 4;
+uint32 const EncounterCount                 = 4;
 
 enum eData
 {
-    DATA_ENTRANCE_START_DIALOG     = 0,
-    DATA_SPIRITWALKER              = 1,
-    DATA_NAVARROGG_ROKMORA_STARTER = 2,
-    DATA_ULAROGG_ROKMORA_STARTER   = 3,
-    DATA_ROKMORA_START_DIALOG      = 4,
-    DATA_ROKMORA                   = 5,
-    DATA_MYSTIC_BARRIER            = 6,
-    DATA_GO_NAVARROGG_OBSTRUCTION  = 7,
-    DATA_BARRELS_EVENT             = 8,
-    DATA_ULAROGG_CRAGSHAPER        = 9,
-    DATA_NARAXAS                   = 10,
-    DATA_RIGHT_IDOL                = 11,
-    DATA_LEFT_IDOL                 = 12,
-    DATA_CENTER_IDOL               = 13,
-    DATA_BACK_IDOL                 = 14,
-    DATA_FRONT_IDOL                = 15,
-    DATA_CENTER_IDOL_KILLED        = 16,
-    DATA_BARRIER_ULAROGG           = 17,
-    DATA_BARRIER_NARAXAS           = 18,
-    DATA_NARAXAS_LOOT              = 19,
-    DATA_DARGRUL                   = 20,
+    DATA_ENTRANCE_START_DIALOG              = 0,
+    DATA_SPIRITWALKER                       = 1,
+    DATA_NAVARROGG_ROKMORA_STARTER          = 2,
+    DATA_ULAROGG_ROKMORA_STARTER            = 3,
+    DATA_ROKMORA_START_DIALOG               = 4,
+    DATA_ROKMORA                            = 5,
+    DATA_MYSTIC_BARRIER                     = 6,
+    DATA_GO_NAVARROGG_OBSTRUCTION           = 7,
+    DATA_BARRELS_EVENT                      = 8,
+    DATA_ULAROGG_CRAGSHAPER                 = 9,
+    DATA_NARAXAS                            = 10,
+    DATA_RIGHT_IDOL                         = 11,
+    DATA_LEFT_IDOL                          = 12,
+    DATA_CENTER_IDOL                        = 13,
+    DATA_BACK_IDOL                          = 14,
+    DATA_FRONT_IDOL                         = 15,
+    DATA_CENTER_IDOL_KILLED                 = 16,
+    DATA_BARRIER_ULAROGG                    = 17,
+    DATA_BARRIER_NARAXAS                    = 18,
+    DATA_NARAXAS_LOOT                       = 19,
+    DATA_DARGRUL                            = 20,
     MAX_DATA
 };
 
 enum eNavarroggMisc
 {
-    SPELL_NAVARROGG_JUMP           = 184483,
-    SPELL_2                        = 209517,
-    GO_NAVARROGG_OBSTRUCTION       = 254854,
-    SPELL_NAVARROGG_INSTAKILL      = 225785
+    SPELL_NAVARROGG_JUMP                    = 184483,
+    SPELL_2                                 = 209517,
+    GO_NAVARROGG_OBSTRUCTION                = 254854,
+    SPELL_NAVARROGG_INSTAKILL               = 225785
 };
 
 enum eGameObjects
 {
-    GO_MYSTIC_BARRIER              = 248871,
-    GO_BARRIER_ULAROGG             = 248765,
-    GO_BARRIER_NARAXAS             = 248851,
-    GO_NARAXAS_LOOT                = 251482,
+    GO_MYSTIC_BARRIER                       = 248871,
+    GO_BARRIER_ULAROGG                      = 248765,
+    GO_BARRIER_NARAXAS                      = 248851,
+    GO_NARAXAS_LOOT                         = 251482,
 };
 
 enum eCreaturesInstance
@@ -86,7 +86,7 @@ enum eCreaturesInstance
 
 enum eSpellsInstance
 {
-    SPELL_FALLING_VISUAL                  = 209888,
+    SPELL_FALLING_VISUAL                    = 209888,
 };
 
 enum Misc
