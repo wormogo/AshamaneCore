@@ -1968,6 +1968,8 @@ class TC_GAME_API Unit : public WorldObject
 
         void GetAreaTriggerList(std::vector<AreaTrigger*> &list, uint32 spellId);
 
+        void EmoteWithDelay(uint32 Delay, uint8 Id);
+
         // Pet Battle
         void SetCurrentPetBattle(uint32 petBattleId) { m_currentPetBattleId = petBattleId; }
         uint32 GetCurrentPetBattle() const { return m_currentPetBattleId; }

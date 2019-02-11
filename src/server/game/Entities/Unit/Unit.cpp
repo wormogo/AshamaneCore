@@ -34,6 +34,7 @@
 #include "CreatureAI.h"
 #include "CreatureAIImpl.h"
 #include "CreatureGroups.h"
+#include "CreatureTextMgr.h"
 #include "Formulas.h"
 #include "GridNotifiersImpl.h"
 #include "Group.h"
@@ -14852,4 +14853,26 @@ void Unit::GetAreaTriggerList(std::vector<AreaTrigger*> &list, uint32 spellId)
             if (AreaTrigger* at = ObjectAccessor::GetAreaTrigger(*this, itr.first))
                 list.push_back(at);
     }
+}
+
+void Unit::EmoteWithDelay(uint32 Delay, uint8 Id)
+{
+    class EmoteWithDelay : public BasicEvent
+    {
+    public:
+        EmoteWithDelay(Unit* _crea, uint8 _id, uint32 const& _delay) : crea(_crea), id(_id), delay(_delay) { }
+
+        bool Execute(uint64 /*execTime*/, uint32 /*diff*/)
+        {
+            sCreatureTextMgr->SendEmote(crea, id);
+            return true;
+        }
+
+    private:
+        Unit* crea;
+        uint8 id;
+        uint32 delay;
+    };
+
+    m_Events.AddEvent(new EmoteWithDelay(this, Id, Delay), m_Events.CalculateTime(Delay));
 }

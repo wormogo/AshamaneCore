@@ -1,0 +1,151 @@
+UPDATE creature SET position_z = 137.008 WHERE guid = 192768;
+UPDATE creature_template SET InhabitType = 4 WHERE entry = 49044;
+DELETE FROM `smart_scripts` WHERE `entryorguid` = 49044 AND `source_type` = 0;
+INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES 
+(49044, 0, 0, 1, 19, 0, 100, 0, 24959, 0, 0, 0, 11, 73524, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, "Agatha - On Quest Accept (24959) - Cast Spell"),
+(49044, 0, 1, 0, 61, 0, 100, 512, 0, 0, 0, 0, 28, 73523, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, "Agatha - On Quest Accept (24959) (Link) - Remove Aura");
+UPDATE creature SET MovementType = 0, spawndist = 0 WHERE guid IN (192771, 192713, 192770);
+UPDATE creature SET MovementType = 2, spawndist = 0, position_x = 1674.95, position_y = 1683.32, position_z = 139.203 WHERE id = 50372;
+UPDATE creature_template SET InhabitType = 3, AIName = "", scriptname = "npc_aradne" WHERE entry = 50372;
+DELETE FROM smart_scripts WHERE entryorguid = 50372 AND source_type = 0;
+DELETE FROM smart_scripts WHERE entryorguid = 50372*100 AND source_type = 9;
+DELETE FROM waypoints WHERE entry = 50372;
+UPDATE creature_template_addon SET path_id = 50372*100 WHERE entry = 50372;
+DELETE FROM waypoint_data WHERE id = 50372*100;
+INSERT INTO waypoint_data(id, point, position_x, position_y, position_z, orientation, delay, move_type) VALUES
+(50372*100, 1, 1674.95, 1683.32, 139.203, 0, 0, 0),
+(50372*100, 2, 1676.98, 1681.87, 138.799, 0, 0, 0),
+(50372*100, 3, 1679.82, 1681.69, 138.267, 0, 0, 0),
+(50372*100, 4, 1681.72, 1683.03, 137.959, 0, 0, 0),
+(50372*100, 5, 1683.93, 1685.34, 137.606, 0, 10000, 0),
+(50372*100, 6, 1686.35, 1686.91, 137.154, 0, 0, 0),
+(50372*100, 7, 1688.19, 1690.18, 136.926, 0, 0, 0),
+(50372*100, 8, 1689.24, 1693.53, 136.947, 0, 0, 0),
+(50372*100, 9, 1691.95, 1695.14, 136.673, 0, 0, 0),
+(50372*100, 10, 1695.06, 1695.14, 136.008, 0, 0, 0),
+(50372*100, 11, 1697.34, 1693.19, 135.244, 0, 0, 0),
+(50372*100, 12, 1698, 1691.2, 135.049, 0, 0, 0),
+(50372*100, 13, 1698.51, 1688.87, 134.864, 0, 10000, 0),
+(50372*100, 14, 1698.55, 1685.78, 134.671, 0, 0, 0),
+(50372*100, 15, 1698.47, 1683.06, 134.616, 0, 0, 0),
+(50372*100, 16, 1697.66, 1680.8, 134.579, 0, 10000, 0),
+(50372*100, 17, 1699.37, 1684.32, 134.532, 0, 0, 0),
+(50372*100, 18, 1702.7, 1690.31, 134.334, 0, 0, 0),
+(50372*100, 19, 1704.96, 1695.01, 134.167, 0, 0, 0),
+(50372*100, 20, 1706.95, 1696.84, 133.934, 0, 0, 0),
+(50372*100, 21, 1707.11, 1700.6, 134.225, 0, 10000, 0),
+(50372*100, 22, 1710.43, 1700.99, 133.2, 0, 0, 0),
+(50372*100, 23, 1716.15, 1701.67, 131.765, 0, 0, 0),
+(50372*100, 24, 1721.19, 1702.27, 130.121, 0, 0, 0),
+(50372*100, 25, 1726.76, 1703.41, 128.53, 0, 0, 0),
+(50372*100, 26, 1730.24, 1703.47, 128.115, 0, 0, 0),
+(50372*100, 27, 1733.31, 1703.32, 128.178, 0, 10000, 0),
+(50372*100, 28, 1726.35, 1702.37, 128.503, 0, 0, 0),
+(50372*100, 29, 1719.89, 1698.69, 130.855, 0, 0, 0),
+(50372*100, 30, 1710.81, 1691.48, 133.626, 0, 0, 0),
+(50372*100, 31, 1703.63, 1685.48, 134.024, 0, 0, 0),
+(50372*100, 32, 1697.91, 1681.32, 134.569, 0, 10000, 0),
+(50372*100, 33, 1698.1, 1683.77, 134.69, 0, 0, 0),
+(50372*100, 34, 1698.15, 1688.19, 134.898, 0, 10000, 0),
+(50372*100, 35, 1699.09, 1691.26, 134.879, 0, 0, 0),
+(50372*100, 36, 1701.96, 1695.36, 134.619, 0, 0, 0),
+(50372*100, 37, 1705.86, 1696.63, 134.068, 0, 0, 0),
+(50372*100, 38, 1706.74, 1700.46, 134.263, 0, 10000, 0),
+(50372*100, 39, 1700.76, 1698.66, 135.131, 0, 0, 0),
+(50372*100, 40, 1696.39, 1697.44, 135.9, 0, 0, 0),
+(50372*100, 41, 1691.82, 1695.35, 136.723, 0, 0, 0),
+(50372*100, 42, 1687.56, 1692.08, 137.147, 0, 0, 0),
+(50372*100, 43, 1686.83, 1690.55, 137.241, 0, 0, 0);
+UPDATE creature_template SET unit_flags = 33554688, modelid1 = 25268, modelid2 = 0, AIName = "", ScriptName = "npc_deathknell_grave_target" WHERE entry = 50373;
+DELETE FROM smart_scripts WHERE entryorguid = 50373 AND source_type = 0;
+UPDATE creature SET MovementType = 0, spawndist = 0 WHERE id = 50373;
+DELETE FROM conditions WHERE SourceEntry = 93446 AND SourceTypeOrReferenceId = 13;
+INSERT INTO conditions (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES
+(13, 1, 93446, 0, 0, 31, 0, 3, 50373, 0, 0, 0, 0, '', 'Raise Undead target Deathknell Grave Target');
+UPDATE creature_template SET AIName = "", ScriptName = "npc_risen_dead" WHERE entry = 50374;
+DELETE FROM smart_scripts WHERE entryorguid = 50374 AND source_type = 0;
+DELETE FROM smart_scripts WHERE entryorguid IN (50374*100, 50374*100+1, 50374*100+2) AND source_type = 9;
+DELETE FROM waypoints WHERE entry IN (5037400, 5037401);
+DELETE FROM creature_text WHERE CreatureID = 50374;
+INSERT INTO creature_text (CreatureID, GroupID, ID, Text, Type, Language, Probability, Emote, Duration, Sound, Comment, BroadcastTextID) VALUES
+(50374, 0, 0, "What... what's happening to me? Why have you done this to me?", 12, 0, 100, 6, 0, 0, "Risen Dead", 50194),
+(50374, 1, 0, "I should be dead and to death I will return!", 12, 0, 100, 5, 0, 0, "Risen Dead", 50195),
+(50374, 2, 0, "I never asked for this! Leave me alone!", 12, 0, 100, 5, 0, 0, "Risen Dead", 50201),
+(50374, 3, 0, "What magic is this that turns back the hand of death?", 12, 0, 100, 6, 0, 0, "Risen Dead", 50197),
+(50374, 4, 0, "If the Banshee Queen has offered me this chance, I will gladly serve.", 12, 0, 100, 1, 0, 0, "Risen Dead", 50200),
+(50374, 5, 0, "This is Lady Sylvanas's doing?", 12, 0, 100, 6, 0, 0, "Risen Dead", 50196),
+(50374, 6, 0, "What use has the Dark Lady for me?", 12, 0, 100, 6, 0, 0, "Risen Dead", 50199),
+(50374, 7, 0, "I... I don't remember... Why have you done this?", 12, 0, 100, 6, 0, 0, "Risen Dead", 50198),
+(50374, 8, 0, "%s becomes enraged!", 16, 0, 100, 0, 0, 0, "Risen Dead", 7798);
+DELETE FROM creature WHERE guid = 193848 AND id = 50414;
+DELETE FROM waypoint_data WHERE id IN (50374*100, (50374*100)+1);
+INSERT INTO waypoint_data (id, point, position_x, position_y, position_z, orientation, delay, move_type) VALUES
+(50374*100, 1, 1702, 1677.55, 134.298, 0, 0, 1),
+(50374*100, 2, 1693.66, 1670.64, 134.032, 0, 0, 1),
+(50374*100, 3, 1686.21, 1661.74, 133.171, 0, 0, 1),
+(50374*100, 4, 1681.66, 1655.15, 136.316, 0, 0, 1),
+(50374*100, 5, 1676.76, 1643.16, 139.253, 0, 0, 1),
+(50374*100, 6, 1669.11, 1631.08, 139.495, 0, 0, 1),
+(50374*100, 7, 1664.203, 1620.63, 140.526, 0, 0, 1),
+((50374*100)+1, 1, 1695.44, 1672.29, 133.945, 0, 0, 0),
+((50374*100)+1, 2, 1691.08, 1660.22, 131.406, 0, 0, 0),
+((50374*100)+1, 3, 1709.56, 1643.45, 124.713, 0, 0, 0),
+((50374*100)+1, 4, 1723.48, 1633.31, 120.426, 0, 0, 0);
+UPDATE creature_template SET AIName = "", ScriptName = "npc_undertaker_mordo" WHERE entry = 1568;
+DELETE FROM smart_scripts WHERE entryorguid = 1568 AND source_type = 0;
+UPDATE creature_template SET AIName = "" WHERE entry = 50414;
+DELETE FROM smart_scripts WHERE entryorguid = 50414 AND source_type = 0;
+DELETE FROM smart_scripts WHERE entryorguid = 50414*100 AND source_type = 9;
+DELETE FROM waypoints WHERE entry IN (50414, 504140);
+DELETE FROM waypoint_data WHERE id IN (50414*100, (50414*100)+1);
+INSERT INTO waypoint_data (id, point, position_x, position_y, position_z, orientation, delay, move_type) VALUES
+(50414*100, 1, 1694.16, 1677.08, 134.786, 0, 0, 0),
+(50414*100, 2, 1691.29, 1675.84, 135.295, 0, 0, 0),
+((50414*100)+1, 1, 1691.29, 1675.85, 135.295, 0, 0, 0),
+((50414*100)+1, 2, 1690.59, 1661.87, 131.92, 0, 0, 0),
+((50414*100)+1, 3, 1719.38, 1633.98, 121.065, 0, 0, 0);
+UPDATE creature_template SET InhabitType = 4 WHERE entry = 49129;
+UPDATE creature SET MovementType = 2, spawndist = 0 WHERE guid = 192757;
+UPDATE creature_template_addon SET path_id = 192757*100 WHERE entry = 49129;
+DELETE FROM waypoint_data WHERE id IN (192757*100, 3250850);
+INSERT INTO waypoint_data (id, point, position_x, position_y, position_z, orientation, delay, move_type) VALUES
+(192757*100, 1, 1725.01, 1667.63, 137.94, 0, 0, 0),
+(192757*100, 2, 1710.03, 1656.84, 140.835, 0, 0, 0),
+(192757*100, 3, 1698.03, 1652.92, 146.397, 0, 0, 0),
+(192757*100, 4, 1702.94, 1634.51, 140.377, 0, 0, 0),
+(192757*100, 5, 1716.34, 1617.19, 134.848, 0, 0, 0),
+(192757*100, 6, 1731.1, 1618.59, 133.88, 0, 0, 0),
+(192757*100, 7, 1747.64, 1639.03, 128.976, 0, 0, 0),
+(192757*100, 8, 1746.05, 1657.5, 131.738, 0, 0, 0),
+(192757*100, 9, 1744.97, 1676.7, 139.807, 0, 0, 0),
+(192757*100, 10, 1737.38, 1689.39, 142.346, 0, 0, 0),
+(192757*100, 11, 1721.84, 1699.9, 145.727, 0, 0, 0),
+(192757*100, 12, 1702.88, 1701.67, 147.952, 0, 0, 0),
+(192757*100, 13, 1684.23, 1697.14, 151.702, 0, 0, 0),
+(192757*100, 14, 1679.76, 1677.61, 157.186, 0, 0, 0),
+(192757*100, 15, 1688.75, 1665.62, 152.315, 0, 0, 0),
+(192757*100, 16, 1706.31, 1666.57, 144.594, 0, 0, 0),
+(192757*100, 17, 1721.01, 1675.69, 138.709, 0, 0, 0);
+UPDATE creature_template SET InhabitType = 4 WHERE entry = 49128;
+UPDATE creature SET MovementType = 2, spawndist = 0 WHERE guid = 192760;
+UPDATE creature_template_addon SET path_id = 192760*100 WHERE entry = 49128;
+DELETE FROM waypoint_data WHERE id = 192760*100;
+INSERT INTO waypoint_data (id, point, position_x, position_y, position_z, orientation, delay, move_type) VALUES
+(192760*100, 1, 1757.78, 1593.55, 116.917, 0, 0, 0),
+(192760*100, 2, 1758.89, 1604.89, 127.626, 0, 0, 0),
+(192760*100, 3, 1754.94, 1620.19, 131.002, 0, 0, 0),
+(192760*100, 4, 1741.96, 1635.04, 141.067, 0, 0, 0),
+(192760*100, 5, 1722.93, 1649.94, 144.151, 0, 0, 0),
+(192760*100, 6, 1703.4, 1655.41, 156.222, 0, 0, 0),
+(192760*100, 7, 1683.45, 1647.61, 158.232, 0, 0, 0),
+(192760*100, 8, 1678.86, 1635.12, 154.974, 0, 0, 0),
+(192760*100, 9, 1681.15, 1625.05, 153.188, 0, 0, 0),
+(192760*100, 10, 1699.46, 1616.94, 146.098, 0, 0, 0),
+(192760*100, 11, 1701.61, 1601.05, 142.797, 0, 0, 0),
+(192760*100, 12, 1697.91, 1578.1, 144.346, 0, 0, 0),
+(192760*100, 13, 1705.4, 1557.76, 143.995, 0, 0, 0),
+(192760*100, 14, 1719.17, 1551.01, 136.678, 0, 0, 0),
+(192760*100, 15, 1736.93, 1555, 129.218, 0, 0, 0),
+(192760*100, 16, 1746.94, 1565.07, 123.072, 0, 0, 0),
+(192760*100, 17, 1755.16, 1577.36, 119.816, 0, 0, 0);
+UPDATE creature_template SET ScriptName = "npc_mindless_zombie" WHERE entry = 1501;
