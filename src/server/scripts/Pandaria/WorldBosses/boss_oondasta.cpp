@@ -25,23 +25,42 @@
 #include "SpellAuraEffects.h"
 #include "Player.h"
 
+enum eTexts
+{
+    SAY_INTRO_01                = 0,      // How dare you interupt our preparations! The Zandalari will not be stopped! Not this time!
+    SAY_INTRO_02                = 1,      // Destroy them! I command you! No, stop, STOP!
+
+    SAY_INTRO_END               = 0       // Oondasta eats Dohaman.
+};
+
 enum eSpells
 {
-    SPELL_CRUSH             = 137504,
-    SPELL_ALPHA_MALE        = 138391, // Boss Passive Aura. Triggers 138390 Tank Threat Multiplier.
-    SPELL_FRILL_BLAST       = 137505,
-    SPELL_GROWING_FURY      = 137502,
-    SPELL_PIERCING_ROAR     = 137457,
-    SPELL_SPIRITFIRE_BEAM   = 137511  // Or 137508??
+    SPELL_CRUSH                 = 137504,
+    SPELL_ALPHA_MALE            = 138391, // Boss Passive Aura. Triggers 138390 Tank Threat Multiplier.
+    SPELL_FRILL_BLAST           = 137505,
+    SPELL_GROWING_FURY          = 137502,
+    SPELL_PIERCING_ROAR         = 137457,
+    SPELL_SPIRITFIRE_BEAM       = 137511, // Or 137508??
+
+    SPELL_KILL_DOHAMAN          = 138859
 };
 
 enum eEvents
 {
-    EVENT_CRUSH             = 1,// 60s from start. Every 25 - 30s.
-    EVENT_FRILL_BLAST,          // 40s from start. Every 25 - 30s.
-    EVENT_GROWING_FURY,         // Every 30s.
-    EVENT_PIERCING_ROAR,        // 20s from start. Every 25 - 30s.
-    EVENT_SPIRITFIRE_BEAM       // 15s from start. Every 25 - 30s.
+    EVENT_CRUSH                 = 1, // 60s from start. Every 25 - 30s.
+    EVENT_FRILL_BLAST,               // 40s from start. Every 25 - 30s.
+    EVENT_GROWING_FURY,              // Every 30s.
+    EVENT_PIERCING_ROAR,             // 20s from start. Every 25 - 30s.
+    EVENT_SPIRITFIRE_BEAM,           // 15s from start. Every 25 - 30s.
+
+    EVENT_INTRO_01,
+    EVENT_INTRO_02,
+    EVENT_INTRO_END
+};
+
+enum eCreatures
+{
+    NPC_DOHAMAN_THE_BEAST_LORD  = 69926
 };
 
 // Oondasta - 69161
@@ -52,9 +71,12 @@ class boss_oondasta : public CreatureScript
 
         struct boss_oondastaAI : public ScriptedAI
         {
-            boss_oondastaAI(Creature* creature) : ScriptedAI(creature) { }
+            boss_oondastaAI(Creature* creature) : ScriptedAI(creature), summons(me) { }
 
             EventMap _events;
+            EventMap _introEvents;
+            SummonList summons;
+            bool _introEnd;
 
             void InitializeAI() override
             {
@@ -64,24 +86,46 @@ class boss_oondasta : public CreatureScript
 
             void Reset() override
             {
-                //me->ReenableEvadeMode();
+                _introEnd = false;
+
                 me->RemoveAurasDueToSpell(SPELL_CRUSH);
                 me->RemoveAura(SPELL_GROWING_FURY);
 
                 _events.Reset();
+                _introEvents.Reset();
+                summons.DespawnAll();
 
                 if (!me->HasAura(SPELL_ALPHA_MALE))
                     me->AddAura(SPELL_ALPHA_MALE, me);
+
+                if (!_introEnd)
+                {
+                    me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
+
+                    me->SummonCreature(NPC_DOHAMAN_THE_BEAST_LORD, 6038.54f, 1110.18f, 55.88f, 2.975316f, TEMPSUMMON_MANUAL_DESPAWN);
+                }
+            }
+
+            void MoveInLineOfSight(Unit* who)
+            {
+                if (!_introEnd && me->IsWithinDistInMap(who, 50.0f) && who->GetTypeId() == TYPEID_PLAYER && who->IsAlive())
+                {
+                    if (Creature* dohaman_the_beast_lord = me->FindNearestCreature(NPC_DOHAMAN_THE_BEAST_LORD, 50.0f, true))
+                        me->SetFacingToObject(dohaman_the_beast_lord);
+
+                    _introEvents.ScheduleEvent(EVENT_INTRO_01, 2s);
+                    _introEnd = true;
+                }
             }
 
             void EnterCombat(Unit* /*who*/) override
             {
-                _events.ScheduleEvent(EVENT_SPIRITFIRE_BEAM, 15000);
-                _events.ScheduleEvent(EVENT_PIERCING_ROAR, 20000);
-                _events.ScheduleEvent(EVENT_FRILL_BLAST, 40000);
-                _events.ScheduleEvent(EVENT_CRUSH, 60000);
+                _events.ScheduleEvent(EVENT_SPIRITFIRE_BEAM, 15s);
+                _events.ScheduleEvent(EVENT_PIERCING_ROAR, 20s);
+                _events.ScheduleEvent(EVENT_FRILL_BLAST, 40s);
+                _events.ScheduleEvent(EVENT_CRUSH, 60s);
 
-                _events.ScheduleEvent(EVENT_GROWING_FURY, 30000); // Soft Enrage.
+                _events.ScheduleEvent(EVENT_GROWING_FURY, 30s);
             }
 
             void EnterEvadeMode(EvadeReason /*why*/) override
@@ -93,6 +137,17 @@ class boss_oondasta : public CreatureScript
                 me->GetMotionMaster()->MoveTargetedHome();
             }
 
+            void JustDied(Unit* /*killer*/)
+            {
+                summons.DespawnAll();
+            }
+
+            void JustSummoned(Creature* summon)
+            {
+                summons.Summon(summon);
+                summon->setActive(true);
+            }
+
             void JustReachedHome() override
             {
                 if (!me->HasAura(SPELL_ALPHA_MALE))
@@ -101,6 +156,42 @@ class boss_oondasta : public CreatureScript
 
             void UpdateAI(uint32 diff) override
             {
+                _introEvents.Update(diff);
+
+                while (uint32 eventId = _introEvents.ExecuteEvent())
+                {
+                    switch (eventId)
+                    {
+                        case EVENT_INTRO_01:
+                            if (Creature* dohaman_the_beast_lord = me->FindNearestCreature(NPC_DOHAMAN_THE_BEAST_LORD, 50.0f, true))
+                                dohaman_the_beast_lord->AI()->Talk(SAY_INTRO_01);
+
+                            _introEvents.ScheduleEvent(EVENT_INTRO_02, 8s);
+                            break;
+                        case EVENT_INTRO_02:
+                            if (Creature* dohaman_the_beast_lord = me->FindNearestCreature(NPC_DOHAMAN_THE_BEAST_LORD, 50.0f, true))
+                            {
+                                dohaman_the_beast_lord->SetFacingToObject(me);
+                                dohaman_the_beast_lord->AI()->Talk(SAY_INTRO_02);
+                            }
+
+                            me->HandleEmoteCommand(391);
+                            _introEvents.ScheduleEvent(EVENT_INTRO_END, 6s);
+                            break;
+                        case EVENT_INTRO_END:
+                            if (Creature* dohaman_the_beast_lord = me->FindNearestCreature(NPC_DOHAMAN_THE_BEAST_LORD, 50.0f, true))
+                            {
+                                me->SetFacingToObject(dohaman_the_beast_lord);
+                                dohaman_the_beast_lord->CastSpell(dohaman_the_beast_lord, SPELL_KILL_DOHAMAN, true);
+                            }
+
+                            me->AI()->Talk(SAY_INTRO_END);
+                            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
+                            me->SetReactState(REACT_AGGRESSIVE);
+                            break;
+                    }
+                }
+
                 if (!UpdateVictim())
                     return;
 
@@ -113,24 +204,24 @@ class boss_oondasta : public CreatureScript
                 {
                     case EVENT_CRUSH:
                         DoCastVictim(SPELL_CRUSH);
-                        _events.ScheduleEvent(EVENT_CRUSH, urand(25000, 30000));
+                        _events.ScheduleEvent(EVENT_CRUSH, 25s, 30s);
                         break;
                     case EVENT_FRILL_BLAST:
                         DoCast(me, SPELL_FRILL_BLAST);
-                        _events.ScheduleEvent(EVENT_FRILL_BLAST, urand(25000, 30000));
+                        _events.ScheduleEvent(EVENT_FRILL_BLAST, 25s, 30s);
                         break;
                     case EVENT_PIERCING_ROAR:
                         DoCast(me, SPELL_PIERCING_ROAR);
-                        _events.ScheduleEvent(EVENT_PIERCING_ROAR, urand(25000, 30000));
+                        _events.ScheduleEvent(EVENT_PIERCING_ROAR, 25s, 30s);
                         break;
                     case EVENT_SPIRITFIRE_BEAM:
                         if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, NonTankTargetSelector(me)))
                             DoCast(target, SPELL_SPIRITFIRE_BEAM);
-                        _events.ScheduleEvent(EVENT_SPIRITFIRE_BEAM, urand(25000, 30000));
+                        _events.ScheduleEvent(EVENT_SPIRITFIRE_BEAM, 25s, 30s);
                         break;
-                    case EVENT_GROWING_FURY: // Soft Enrage.
+                    case EVENT_GROWING_FURY:
                         DoCast(me, SPELL_GROWING_FURY);
-                        _events.ScheduleEvent(EVENT_GROWING_FURY, 30000);
+                        _events.ScheduleEvent(EVENT_GROWING_FURY, 30s);
                         break;
                     default:
                         break;
