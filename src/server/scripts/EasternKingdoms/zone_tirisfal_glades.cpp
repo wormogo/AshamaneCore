@@ -495,7 +495,12 @@ public:
         {
             me->RemoveAllAuras();
             _crazed = false;
-            events.ScheduleEvent(1, 28s, 57s);
+
+            if (!_crazed)
+            {
+                _crazed = true;
+                events.ScheduleEvent(1, 28s, 57s);
+            }
         }
 
         void UpdateAI(const uint32 diff)
@@ -514,25 +519,17 @@ public:
                             {
                                 case 1:
                                 {
-                                    if (!_crazed)
-                                    {
-                                        me->SetFacingToObject(player);
-                                        me->CastSpell(me, SPELL_ENRAGE, true);
-                                        me->SetWalk(false);
-                                        me->GetMotionMaster()->MoveFollow(player, 1.0f, 0.0f);
-                                        _crazed = true;
-                                    }
+                                    me->SetFacingToObject(player);
+                                    me->CastSpell(me, SPELL_ENRAGE, true);
+                                    me->SetWalk(false);
+                                    me->GetMotionMaster()->MoveFollow(player, 1.0f, 0.0f);
                                     events.ScheduleEvent(2, 4s, 6s);
                                     break;
                                 }
                                 case 2:
                                 {
-                                    if (_crazed)
-                                    {
-                                        me->GetMotionMaster()->Clear();
-                                        me->RemoveAllAuras();
-                                        _crazed = false;
-                                    }
+                                    me->GetMotionMaster()->Clear();
+                                    me->RemoveAllAuras();
                                     events.ScheduleEvent(1, 28s, 57s);
                                     break;
                                 }
@@ -558,5 +555,5 @@ void AddSC_tirisfal_glades()
     new npc_deathknell_grave_target();
     new npc_risen_dead();
     new npc_undertaker_mordo();
-    //new npc_mindless_zombie();
+    new npc_mindless_zombie();
 }
