@@ -496,7 +496,7 @@ public:
             me->RemoveAllAuras();
             _crazed = false;
 
-            if (!_crazed)
+            if (!_crazed && roll_chance_i(20))
             {
                 _crazed = true;
                 events.ScheduleEvent(1, 28s, 57s);
@@ -530,7 +530,6 @@ public:
                                 {
                                     me->GetMotionMaster()->Clear();
                                     me->RemoveAllAuras();
-                                    events.ScheduleEvent(1, 28s, 57s);
                                     break;
                                 }
                             }
