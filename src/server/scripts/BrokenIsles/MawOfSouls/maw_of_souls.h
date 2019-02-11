@@ -42,7 +42,6 @@ enum MOSCreatureIds
 
     // Triggers
 };
-
 enum GameObjects
 {
     GOB_DOOR_HARBARON_DOOR = 246888,
@@ -54,7 +53,7 @@ enum GameObjects
     GOB_DOOR_SKJAL_WALL_1 = 265476,
     GOB_DOOR_SKJAL_WALL_2 = 265476,//
 
-    GOB_ECHOING_HORN_OF_THE_DAMNED = 247041, //´«ËÍºÅ½Ç
+    GOB_ECHOING_HORN_OF_THE_DAMNED = 247041, //���ͺŽ�
 };
 
 template<class AI>

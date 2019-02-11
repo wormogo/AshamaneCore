@@ -39,7 +39,8 @@ enum Spells
 
 enum Auras
 {
-    AURA_BANE_SELF      = 193460
+    AURA_BANE_SELF      = 193460,
+    AURA_KNEELING       = 197227
 };
 
 enum Adds
@@ -105,6 +106,8 @@ struct boss_ymiron_maw : public BossAI
     {
         BossAI::EnterCombat(who);
         Talk(YELL_ENTER_COMBAT);
+        if (me->HasAura(AURA_KNEELING))
+            me->RemoveAurasDueToSpell(AURA_KNEELING);
     }
 
     void JustDied(Unit* killer) override
