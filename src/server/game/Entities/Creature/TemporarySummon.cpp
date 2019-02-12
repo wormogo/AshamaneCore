@@ -333,6 +333,21 @@ void Minion::RemoveFromWorld()
     TempSummon::RemoveFromWorld();
 }
 
+bool Minion::IsHati() const
+{
+    switch (GetEntry())
+    {
+    case ENTRY_HATI_1:
+    case ENTRY_HATI_2:
+    case ENTRY_HATI_3:
+    case ENTRY_HATI_4:
+    case ENTRY_HATI_5:
+        return true;
+    default:
+        return false;
+    }
+}
+
 bool Minion::IsGuardianPet() const
 {
     return IsPet() || (m_Properties && m_Properties->Control == SUMMON_CATEGORY_PET);

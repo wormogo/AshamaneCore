@@ -662,6 +662,26 @@ void InstanceScript::DoSendNotifyToInstance(char const* format, ...)
     }
 }
 
+// Add phase on all players in instance
+void InstanceScript::DoAddPhaseOnPlayers(uint32 phase)
+{
+    Map::PlayerList const& playerList = instance->GetPlayers();
+    if (!playerList.isEmpty())
+        for (Map::PlayerList::const_iterator i = playerList.begin(); i != playerList.end(); ++i)
+            if (Player* player = i->GetSource())
+                PhasingHandler::AddPhase(player, phase, true);
+}
+
+// Remove phase on all players in instance
+void InstanceScript::DoRemovePhaseOnPlayers(uint32 phase)
+{
+    Map::PlayerList const& playerList = instance->GetPlayers();
+    if (!playerList.isEmpty())
+        for (Map::PlayerList::const_iterator i = playerList.begin(); i != playerList.end(); ++i)
+            if (Player* player = i->GetSource())
+                PhasingHandler::RemovePhase(player, phase, true);
+}
+
 // Update Achievement Criteria for all players in instance
 void InstanceScript::DoUpdateCriteria(CriteriaTypes type, uint32 miscValue1 /*= 0*/, uint32 miscValue2 /*= 0*/, Unit* unit /*= NULL*/)
 {

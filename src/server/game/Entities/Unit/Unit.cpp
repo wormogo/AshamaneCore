@@ -10541,6 +10541,37 @@ SpellSchoolMask Unit::GetMeleeDamageSchoolMask() const
     return SPELL_SCHOOL_MASK_NORMAL;
 }
 
+Creature * Unit::GetHati() const
+{
+    ObjectGuid pet_guid = GetHatiGUID();
+    if (!pet_guid.IsEmpty())
+    {
+        if (Creature* pet = ObjectAccessor::GetCreatureOrPetOrVehicle(*this, pet_guid))
+            if (pet->IsHati())
+                return (Creature*)pet;
+
+        TC_LOG_FATAL("entities.unit", "Unit::GetHati: Hati %s not exist.", pet_guid.ToString().c_str());
+        const_cast<Unit*>(this)->SetHatiGUID(ObjectGuid::Empty);
+    }
+
+    return NULL;
+}
+
+bool Unit::IsHati() const
+{
+    switch (GetEntry())
+    {
+    case ENTRY_HATI_1:
+    case ENTRY_HATI_2:
+    case ENTRY_HATI_3:
+    case ENTRY_HATI_4:
+    case ENTRY_HATI_5:
+        return true;
+    default:
+        return false;
+    }
+}
+
 ObjectGuid Unit::GetCharmerOrOwnerGUID() const
 {
     return !GetCharmerGUID().IsEmpty() ? GetCharmerGUID() : GetOwnerGUID();

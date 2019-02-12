@@ -838,6 +838,13 @@ void HotfixDatabaseConnection::DoPrepareStatements()
     PrepareStatement(HOTFIX_SEL_RESEARCH_BRANCH, "SELECT ID, Name, ItemId, CurrencyId, ResearchFieldId, TextureFileId, BigTextureFileId FROM research_branch ORDER BY Id DESC", CONNECTION_SYNCH);
     PREPARE_LOCALE_STMT(HOTFIX_SEL_RESEARCH_BRANCH, "SELECT ID, Name_lang FROM research_branch_locale WHERE locale = ?", CONNECTION_SYNCH);
 
+    // RelicSlotTierRequirement.db2
+    PrepareStatement(HOTFIX_SEL_RELIC_SLOT_TIER_REQUIREMENT, "SELECT ID, PlayerConditionID, RelicIndex, RelicTier FROM relic_slot_tier_requirement"
+        " ORDER BY ID DESC", CONNECTION_SYNCH);
+
+    // RelicTalent.db2
+    PrepareStatement(HOTFIX_SEL_RELIC_TALENT, "SELECT ID, ArtifactPowerID, ArtifactPowerLabel, Type, PVal, Flags FROM relic_talent ORDER BY ID DESC", CONNECTION_SYNCH);
+
     // ResearchProject.db2
     PrepareStatement(HOTFIX_SEL_RESEARCH_PROJECT, "SELECT Name, Description, SpellId, ResearchBranchId, Rarity, NumSockets, ID, TextureFileId, RequiredWeight "
         "FROM research_project ORDER BY Id DESC", CONNECTION_SYNCH);

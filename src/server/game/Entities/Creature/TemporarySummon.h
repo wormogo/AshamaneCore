@@ -36,7 +36,14 @@ enum PetEntry
     PET_ABOMINATION     = 106848,
 
     // Shaman pet
-    PET_SPIRIT_WOLF     = 29264
+    PET_SPIRIT_WOLF     = 29264,
+	
+	// Hunter Pet
+    PET_HATI_1          = 100324,
+    PET_HATI_2          = 106548,
+    PET_HATI_3          = 106549,
+    PET_HATI_4          = 106550,
+    PET_HATI_5          = 106551,
 };
 
 struct SummonPropertiesEntry;
@@ -75,7 +82,13 @@ enum PetEntries
     ENTRY_NIUZAO                  = 73967,
     ENTRY_CHI_JI                  = 100868,
     // Druid Pet/Minion
-    ENTRY_TREANT                  = 1964
+    ENTRY_TREANT                  = 1964,
+   // Hunter Pet/minion
+    ENTRY_HATI_1                  = 100324,
+    ENTRY_HATI_2                  = 106548,
+    ENTRY_HATI_3                  = 106549,
+    ENTRY_HATI_4                  = 106550,
+    ENTRY_HATI_5                  = 106551,
 };
 
 class TC_GAME_API TempSummon : public Creature
@@ -133,6 +146,9 @@ class TC_GAME_API Minion : public TempSummon
 
         // Shaman pet
         bool IsSpiritWolf() const { return GetEntry() == PET_SPIRIT_WOLF; } // Spirit wolf from feral spirits
+
+        // Hunter pet
+        bool IsHati() const;
 
         bool IsGuardianPet() const;
         bool IsWarlockMinion() const;

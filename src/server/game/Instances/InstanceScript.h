@@ -282,6 +282,12 @@ class TC_GAME_API InstanceScript : public ZoneScript
         // Start movie for all players in instance
         void DoStartMovie(uint32 movieId);
 
+	// Add phase on all players in instance
+        void DoAddPhaseOnPlayers(uint32 phase);
+
+        // Remove phase on all players in instance
+        void DoRemovePhaseOnPlayers(uint32 phase);
+
         // Return wether server allow two side groups or not
         bool ServerAllowsTwoSideGroups();
 

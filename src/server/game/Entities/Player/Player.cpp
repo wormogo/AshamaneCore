@@ -12498,6 +12498,9 @@ Item* Player::EquipItem(uint16 pos, Item* pItem, bool update)
     UpdateCriteria(CRITERIA_TYPE_EQUIP_ITEM, pItem->GetEntry());
     UpdateCriteria(CRITERIA_TYPE_EQUIP_EPIC_ITEM, pItem->GetEntry(), slot);
 
+    // hook for player on itemlevel change
+    sScriptMgr->OnPlayerItemLevelChange(this);
+ 
     return pItem;
 }
 
@@ -13805,6 +13808,9 @@ void Player::SwapItem(uint16 src, uint16 dst)
 
     AutoUnequipOffhandIfNeed();
     UpdateAverageItemLevel();
+    // hook for player on itemlevel change
+    sScriptMgr->OnPlayerItemLevelChange(this);
+
 }
 
 void Player::AddItemToBuyBackSlot(Item* pItem)
@@ -27365,6 +27371,7 @@ void Player::UnsummonPetTemporaryIfAny()
     }
 
     RemovePet(pet, PET_SAVE_DISMISS);
+    sScriptMgr->OnPlayerUnsummonPetTemporary(this);
 }
 
 void Player::ResummonPetTemporaryUnSummonedIfAny()
@@ -27386,6 +27393,7 @@ void Player::ResummonPetTemporaryUnSummonedIfAny()
         delete NewPet;
 
     m_temporaryUnsummonedPetNumber = 0;
+    sScriptMgr->OnPlayerResummonPetTemporary(this);
 }
 
 bool Player::IsPetNeedBeTemporaryUnsummoned() const
@@ -29598,6 +29606,11 @@ uint32 Player::GetRoleBySpecializationId(uint32 specializationId)
             return spec->Role;
 
     return ROLE_DAMAGE;
+}
+
+bool Player::isInTankSpec() const
+{
+    return GetRoleBySpecializationId(ROLE_TANK);
 }
 
 void Player::SendSpellCategoryCooldowns() const

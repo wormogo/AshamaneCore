@@ -4276,6 +4276,40 @@ struct RandPropPointsLoadInfo
     }
 };
 
+struct RelicSlotTierRequirementLoadInfo
+{
+    static DB2LoadInfo const* Instance()
+    {
+        static DB2FieldMeta const fields[] =
+        {
+            { true, FT_INT, "ID" },
+            { true, FT_INT, "PlayerConditionID" },
+            { false, FT_BYTE, "RelicIndex" },
+            { false, FT_BYTE, "RelicTier" },
+        };
+        static DB2LoadInfo const loadInfo(&fields[0], std::extent<decltype(fields)>::value, RelicSlotTierRequirementMeta::Instance(), HOTFIX_SEL_RELIC_SLOT_TIER_REQUIREMENT);
+        return &loadInfo;
+    }
+};
+
+struct RelicTalentLoadInfo
+{
+    static DB2LoadInfo const* Instance()
+    {
+        static DB2FieldMeta const fields[] =
+        {
+            { true, FT_INT, "ID" },
+            { false, FT_SHORT, "ArtifactPowerID" },
+            { false, FT_BYTE, "ArtifactPowerLabel" },
+            { true, FT_INT, "Type" },
+            { true, FT_INT, "PVal" },
+            { true, FT_INT, "Flags" },
+        };
+        static DB2LoadInfo const loadInfo(&fields[0], std::extent<decltype(fields)>::value, RelicTalentMeta::Instance(), HOTFIX_SEL_RELIC_TALENT);
+        return &loadInfo;
+    }
+};
+
 struct RewardPackLoadInfo
 {
     static DB2LoadInfo const* Instance()

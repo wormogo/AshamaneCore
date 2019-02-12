@@ -2496,6 +2496,26 @@ struct RandPropPointsEntry
     uint32 Good[5];
 };
 
+// FileOptions: Index, None
+struct RelicSlotTierRequirementEntry
+{
+    int32       ID;
+    int32       PlayerConditionID;
+    uint8       RelicIndex;
+    uint8       RelicTier;
+};
+
+// FileOptions: Index, None
+struct RelicTalentEntry
+{
+    int32       ID;
+    uint16      ArtifactPowerID;
+    uint8       ArtifactPowerLabel;
+    int32       Type;
+    int32       PVal;
+    int32       Flags;
+};
+
 struct RewardPackEntry
 {
     uint32 ID;
