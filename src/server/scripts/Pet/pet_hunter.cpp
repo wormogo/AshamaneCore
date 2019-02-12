@@ -20,16 +20,20 @@
  * Scriptnames of files in this file should be prefixed with "npc_pet_hun_".
  */
 
+#include "PetAI.h"
 #include "ScriptMgr.h"
 #include "CreatureAIImpl.h"
 #include "ScriptedCreature.h"
 #include "TemporarySummon.h"
+#include "Log.h"
 
 enum HunterSpells
 {
     SPELL_HUNTER_CRIPPLING_POISON       = 30981, // Viper
     SPELL_HUNTER_DEADLY_POISON_PASSIVE  = 34657, // Venomous Snake
-    SPELL_HUNTER_MIND_NUMBING_POISON    = 25810  // Viper
+    SPELL_HUNTER_MIND_NUMBING_POISON   = 25810,  // Viper
+
+    SPELL_HUNTER_BROKENOUND            = 211117,
 };
 
 enum HunterCreatures
@@ -141,7 +145,44 @@ class npc_pet_hunter_snake_trap : public CreatureScript
         }
 };
 
+class npc_pet_hunter_hati : public CreatureScript
+{
+public:
+    npc_pet_hunter_hati() : CreatureScript("npc_pet_hunter_hati") { }
+
+    struct npc_pet_hunter_hatiAI : public PetAI
+    {
+        npc_pet_hunter_hatiAI(Creature* creature) : PetAI(creature) { Initialize(); }
+
+        void JustDied(Unit* /*killer*/) override
+        {
+            if (Player* player = me->GetCharmerOrOwnerPlayerOrPlayerItself())
+                player->CastSpell(player, SPELL_HUNTER_BROKENOUND, true);            
+        }
+
+        void Initialize()
+        {
+            hasmasterofbeasts = false;
+            TC_LOG_ERROR("server.worldserver", "====================npc_pet_hunter_hati  Initialize entry=%u  ====================== ", me->GetEntry());
+            me->InitCharmInfo();
+            if (Player* player = me->GetCharmerOrOwnerPlayerOrPlayerItself())
+            {
+                player->SetHatiGUID(me->GetGUID());
+            }
+
+        }
+
+        bool hasmasterofbeasts;
+    };
+
+    CreatureAI* GetAI(Creature* creature) const override
+    {
+        return new npc_pet_hunter_hatiAI(creature);
+    }
+};
+
 void AddSC_hunter_pet_scripts()
 {
     new npc_pet_hunter_snake_trap();
+    new npc_pet_hunter_hati();
 }

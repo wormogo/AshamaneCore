@@ -20,6 +20,7 @@
 #include "Containers.h"
 #include "ObjectAccessor.h"
 #include "Pet.h"
+#include "Log.h"
 #include "Player.h"
 #include "ScriptedCreature.h"
 #include "ScriptMgr.h"
@@ -63,6 +64,14 @@ enum SpellIds
     SPELL_WARLOCK_TEAR_CHAOS_BARRAGE                = 187394,
     SPELL_WARLOCK_TEAR_CHAOS_BOLT                   = 215279,
     SPELL_WARLOCK_TEAR_SHADOW_BOLT                  = 196657,
+    SPELL_HUNTER_HATIS_BOND                         = 197344,
+    SPELL_HUNTER_STORMBOUND                         = 197388,
+    SPELL_HUNTER_BROKENOUND                         = 211117,
+    SPELL_HUNTER_BESTIAL_WRATH                      = 19574,
+    SPELL_HUNTER_TITANS_THUNDER                     = 207068,
+    SPELL_HUNTER_TITANS_THUNDER_TRIGGER             = 207081,
+    SPELL_HUNTER_TITANS_THUNDER_AURA                = 207094,
+    SPELL_HUNTER_TITANS_THUNDER_DAMAGE              = 218635,
     SPELL_PALADIN_TYR_DELIVERANCE_HEAL              = 200654,
     SPELL_PRIEST_SPHERE_OF_INSANITY                 = 194179,
     SPELL_PRIEST_SPHERE_OF_INSANITY_AURA            = 194230,
@@ -909,6 +918,355 @@ public:
     }
 };
 
+// 197344 - hatis-bond
+class aura_artifact_hunter_hatis_bond : public AuraScript
+{
+    PrepareAuraScript(aura_artifact_hunter_hatis_bond);
+     void HandleApply(AuraEffect const* /*aurEffect*/, AuraEffectHandleModes /*mode*/)
+    {
+        Player* player = GetCaster()->ToPlayer();
+        if (!player)
+            return;
+		
+		if (Creature* hati = player->GetHati())
+            hati->DespawnOrUnsummon();
+        if (player->GetPet() && !player->GetHati() && !player->HasAura(SPELL_HUNTER_BROKENOUND))
+            player->CastSpell(player, SPELL_HUNTER_STORMBOUND, true);
+        /*		
+         std::list<Creature*> clists = player->FindNearestCreatures(100324, 20.0f);
+        for (Creature* target : clists)
+            if (target->GetCharmerOrOwnerGUID() == player->GetGUID())
+                target->DespawnOrUnsummon();
+         if (player->GetPet() && !player->GetSummonedCreatureByEntry(100324) && !player->HasAura(SPELL_HUNTER_BROKENOUND))
+            player->CastSpell(player, SPELL_HUNTER_STORMBOUND, true);
+		*/
+        //if (Creature* hatis = player->GetSummonedCreatureByEntry(100324))
+        //{
+        //    player->SetHatiGUID(hatis->GetGUID());
+            //if (!hatis->IsPet())
+            //   hatis->AddUnitTypeMask(UNIT_MASK_PET);
+            //if (!hatis->IsHunterPet())
+            //    hatis->AddUnitTypeMask(UNIT_MASK_HUNTER_PET);
+
+            //if (hatis->IsAIEnabled && hatis->ToPet())
+            //{
+
+
+             //   TC_LOG_ERROR("server.worldserver", "====================(hatis->IsAIEnabled && hatis->ToPet()====================== ");
+                /*
+                hatis->ToPet()->ClearUnitState(UNIT_STATE_FOLLOW);
+                if (hatis->ToPet()->GetVictim())
+                    hatis->ToPet()->AttackStop();
+                hatis->GetMotionMaster()->Clear();
+                hatis->ToPet()->GetCharmInfo()->SetIsCommandAttack(true);
+                hatis->ToPet()->GetCharmInfo()->SetIsAtStay(false);
+                hatis->ToPet()->GetCharmInfo()->SetIsReturning(false);
+                hatis->ToPet()->GetCharmInfo()->SetIsFollowing(false);
+                */
+                //caster->ToCreature()->AI()->AttackStart(target);
+            //}
+        //}
+    }
+     void HandleRemove(AuraEffect const* /*aurEffect*/, AuraEffectHandleModes /*mode*/)
+    {
+        Player* player = GetCaster()->ToPlayer();
+        if (!player)
+            return;
+        if (Creature* hati = player->GetHati())
+            hati->DespawnOrUnsummon();
+        /*
+        std::list<Creature*> clists = player->FindNearestCreatures(100324, 20.0f);
+        for (Creature* target : clists)
+            if (target->GetCharmerOrOwnerGUID() == player->GetGUID())
+                target->DespawnOrUnsummon();*/
+    }
+     void Register() override
+    {
+        OnEffectApply += AuraEffectApplyFn(aura_artifact_hunter_hatis_bond::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        OnEffectRemove += AuraEffectRemoveFn(aura_artifact_hunter_hatis_bond::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+ // 211117 - broken-bond
+class aura_artifact_hunter_broken_bond : public AuraScript
+{
+    PrepareAuraScript(aura_artifact_hunter_broken_bond);
+     void HandleApply(AuraEffect const* /*aurEffect*/, AuraEffectHandleModes /*mode*/)
+    {
+        int32 dur = 30000;
+        if (Aura* aur = GetCaster()->GetAura(SPELL_HUNTER_BROKENOUND ))
+            if (dur)
+                aur->SetDuration(dur);
+         Player* player = GetCaster()->ToPlayer();
+        if (!player)
+            return;
+        if (Creature* hati = player->GetHati())
+            hati->DespawnOrUnsummon();
+    }
+     void HandleRemove(AuraEffect const* /*aurEffect*/, AuraEffectHandleModes /*mode*/)
+    {       
+        Player* player = GetCaster()->ToPlayer();
+        if (!player)
+            return;
+         if (Creature* hati = player->GetHati())
+            hati->DespawnOrUnsummon();
+        if (player->GetPet() && !player->GetHati() && !player->HasAura(SPELL_HUNTER_BROKENOUND))
+            player->CastSpell(player, SPELL_HUNTER_STORMBOUND, true);
+    }
+     void Register() override
+    {
+        OnEffectApply += AuraEffectApplyFn(aura_artifact_hunter_broken_bond::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        OnEffectRemove += AuraEffectRemoveFn(aura_artifact_hunter_broken_bond::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+ class playerscript_hunter_summon_pet_trigger : public PlayerScript
+{
+public:
+    playerscript_hunter_summon_pet_trigger() : PlayerScript("playerscript_hunter_summon_pet_trigger") { skipupdate = false; }
+     void RemoveHati(Player* player)
+    {
+        if (player->getClass() == CLASS_HUNTER)
+        {
+			if (Creature* hati = player->GetHati())
+                hati->DespawnOrUnsummon();
+            /*
+            std::list<Creature*> clists = player->FindNearestCreatures(100324, 20.0f);
+            for (Creature* target : clists)
+                if (target->GetCharmerOrOwnerGUID() == player->GetGUID())
+                    target->DespawnOrUnsummon();
+				*/
+        }      
+    }
+     void AddHati(Player* player)
+    {
+        if (player->getClass() == CLASS_HUNTER && player->HasAura(SPELL_HUNTER_HATIS_BOND) && !player->HasAura(SPELL_HUNTER_BROKENOUND))
+            if (player->GetPet() && !player->GetHati())
+                player->CastSpell(player, SPELL_HUNTER_STORMBOUND, true);
+        /*    if (player->GetPet() && !player->GetSummonedCreatureByEntry(100324))
+            {
+                player->CastSpell(player, SPELL_HUNTER_STORMBOUND, true);
+                if (Creature* hatis = player->GetSummonedCreatureByEntry(100324))
+                {
+                 
+                    if (hatis->IsAIEnabled && hatis->ToPet())
+                    {
+                        hatis->ToPet()->ClearUnitState(UNIT_STATE_FOLLOW);
+                        if (hatis->ToPet()->GetVictim())
+                            hatis->ToPet()->AttackStop();
+                        hatis->GetMotionMaster()->Clear();
+                        hatis->ToPet()->GetCharmInfo()->SetIsCommandAttack(true);
+                        hatis->ToPet()->GetCharmInfo()->SetIsAtStay(false);
+                        hatis->ToPet()->GetCharmInfo()->SetIsReturning(false);
+                        hatis->ToPet()->GetCharmInfo()->SetIsFollowing(false);
+                        //caster->ToCreature()->AI()->AttackStart(target);
+                    }
+                    
+                }
+            }*/
+        skipupdate = false;           
+    }
+     void OnUnsummonPetTemporary(Player* player) 
+    {
+        skipupdate = true;
+        RemoveHati(player);
+    }
+     void OnResummonPetTemporary(Player* player)
+	{       
+        AddHati(player);
+    }
+
+    void OnItemLevelChange(Player* player)	 
+    {
+        skipupdate = true;
+        RemoveHati(player);
+        AddHati(player);
+    }
+     void OnSuccessfulSpellCast(Player* player, Spell* spell)
+    {
+        switch (spell->GetSpellInfo()->Id)
+        {
+        case 982:
+        ///Call Pet
+        case 883:
+        case 83242:
+        case 83243:
+        case 83244:
+        case 83245:
+            RemoveHati(player);
+            AddHati(player);
+            break;
+        case 2641:
+            RemoveHati(player);
+            break;
+			case SPELL_HUNTER_BESTIAL_WRATH:
+            if (Creature* hati = player->GetHati())
+                hati->CastSpell(hati, 186254, true);
+            break;
+        }
+    }
+     void OnLogin(Player* player, bool /*firstLogin*/)
+    {
+        RemoveHati(player);
+    }
+     void OnUpdate(Player* player, uint32 diff)
+    {
+        if (checkTimer <= diff)
+        {
+            if(!skipupdate)
+                AddHati(player);
+            checkTimer = 4000;
+        }
+        else checkTimer -= diff;
+    }
+    uint32 checkTimer = 4000;
+    bool skipupdate;
+};
+
+/*
+SPELL_HUNTER_TITANS_THUNDER                     = 207068,
+SPELL_HUNTER_TITANS_THUNDER_TRIGGER             = 207081,
+SPELL_HUNTER_TITANS_THUNDER_AURA                = 207094,
+SPELL_HUNTER_TITANS_THUNDER_DAMAGE              = 218635,
+*/
+///SPELL_HUNTER_TITANS_THUNDER 207068
+class spell_arti_hun_titans_thunder : public SpellScript
+{
+    PrepareSpellScript(spell_arti_hun_titans_thunder);
+
+    void HandleAfterCast()
+    {
+        if (Player* player = GetCaster()->ToPlayer())
+        {
+            if (Pet* pet = player->GetPet())
+                pet->CastSpell(pet, SPELL_HUNTER_TITANS_THUNDER_AURA, true);
+                    
+            if (Creature* hati = player->GetHati())
+                hati->CastSpell(hati, SPELL_HUNTER_TITANS_THUNDER_AURA, true);
+                    
+        } 
+    }
+    
+    void Register()
+    {
+        AfterCast += SpellCastFn(spell_arti_hun_titans_thunder::HandleAfterCast);
+    }
+};
+///SPELL_HUNTER_TITANS_THUNDER_AURA (On Pet) 207094 
+class aura_arti_hun_titans_thunder : public AuraScript
+{
+    PrepareAuraScript(aura_arti_hun_titans_thunder);
+    uint32 waitTime = 0;
+    void OnUpdate(uint32 diff)
+    {
+        if (waitTime > diff)
+        {
+            waitTime -= diff;
+            return;
+        }
+        waitTime = 1000;
+        Unit* caster = GetCaster();
+        Unit* target = caster->GetVictim();
+        if (target)
+            caster->CastSpell(target, SPELL_HUNTER_TITANS_THUNDER_DAMAGE, true);
+    }
+
+    void OnTick(const AuraEffect* aurEff)
+    {     
+        Unit* caster = GetCaster();
+        Unit* target = caster->GetVictim();
+        if(target)
+            caster->CastSpell(target, SPELL_HUNTER_TITANS_THUNDER_DAMAGE, true);
+    }
+
+    void Register() override
+    {
+        OnAuraUpdate += AuraUpdateFn(aura_arti_hun_titans_thunder::OnUpdate);
+        //OnEffectPeriodic += AuraEffectPeriodicFn(aura_arti_hun_titans_thunder::OnTick, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+    }
+};
+//239042
+class aura_concordance_of_the_legionfall : public AuraScript
+{
+    PrepareAuraScript(aura_concordance_of_the_legionfall);
+    enum Spells
+    {
+        SPELL_VERSATILITY = 243096,
+        SPELL_STRENGTH    = 242583,
+        SPELL_AGILITY     = 242584,
+        SPELL_INTELLECT   = 242586,
+    };
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        if (eventInfo.GetSpellInfo()->Id == 239042)
+            return true;
+
+        return false;
+    }
+
+    void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& /*eventInfo*/)
+    {
+        PreventDefaultAction();
+
+        if (Unit* caster = GetCaster())
+        {
+            switch (caster->ToPlayer()->GetSpecializationId())
+            {
+            case TALENT_SPEC_MAGE_ARCANE:
+            case TALENT_SPEC_MAGE_FIRE: 
+            case TALENT_SPEC_MAGE_FROST:
+            case TALENT_SPEC_PRIEST_DISCIPLINE:
+            case TALENT_SPEC_PRIEST_HOLY: 
+            case TALENT_SPEC_PRIEST_SHADOW:
+            case TALENT_SPEC_SHAMAN_RESTORATION:
+            case TALENT_SPEC_SHAMAN_ELEMENTAL:
+            case TALENT_SPEC_WARLOCK_AFFLICTION:
+            case TALENT_SPEC_WARLOCK_DEMONOLOGY:
+            case TALENT_SPEC_WARLOCK_DESTRUCTION:
+            case TALENT_SPEC_DRUID_RESTORATION:
+            case TALENT_SPEC_DRUID_BALANCE:
+            case TALENT_SPEC_PALADIN_HOLY:
+            case TALENT_SPEC_MONK_BATTLEDANCER:
+                caster->CastSpell(caster, SPELL_INTELLECT, true);
+                break;
+            case TALENT_SPEC_WARRIOR_ARMS: 
+            case TALENT_SPEC_WARRIOR_FURY:
+            case TALENT_SPEC_DEATHKNIGHT_FROST:
+            case TALENT_SPEC_DEATHKNIGHT_UNHOLY:
+            case TALENT_SPEC_PALADIN_RETRIBUTION:
+                caster->CastSpell(caster, SPELL_STRENGTH, true);
+                break;
+            case TALENT_SPEC_HUNTER_BEASTMASTER:
+            case TALENT_SPEC_HUNTER_MARKSMAN: 
+            case TALENT_SPEC_HUNTER_SURVIVAL:            
+            case TALENT_SPEC_ROGUE_ASSASSINATION:
+            case TALENT_SPEC_ROGUE_COMBAT:
+            case TALENT_SPEC_ROGUE_SUBTLETY:
+            case TALENT_SPEC_DEMON_HUNTER_HAVOC:
+            case TALENT_SPEC_DRUID_CAT:
+            case TALENT_SPEC_SHAMAN_ENHANCEMENT:
+            case TALENT_SPEC_MONK_MISTWEAVER:
+                caster->CastSpell(caster, SPELL_AGILITY, true);
+                break; 
+            case TALENT_SPEC_DEMON_HUNTER_VENGEANCE:
+            case TALENT_SPEC_WARRIOR_PROTECTION:
+            case TALENT_SPEC_PALADIN_PROTECTION:
+            case TALENT_SPEC_DRUID_BEAR:
+            case TALENT_SPEC_DEATHKNIGHT_BLOOD:
+            case TALENT_SPEC_MONK_BREWMASTER:
+                caster->CastSpell(caster, SPELL_VERSATILITY, true);
+                break;
+            default:
+                break;
+            }          
+        }
+    }
+
+    void Register() override
+    {
+        //DoCheckProc += AuraCheckProcFn(aura_concordance_of_the_legionfall::CheckProc);
+        OnEffectProc += AuraEffectProcFn(aura_concordance_of_the_legionfall::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+    }
+};
+
 void AddSC_artifact_spell_scripts()
 {
     RegisterSpellScript(spell_arti_dru_new_moon);
@@ -932,6 +1290,12 @@ void AddSC_artifact_spell_scripts()
     new spell_arti_pri_thrive;
     new spell_arti_pri_sphere_of_insanity_summon;
     new spell_arti_pri_sphere_of_insanity;
+    RegisterAuraScript(aura_artifact_hunter_hatis_bond);
+    RegisterAuraScript(aura_artifact_hunter_broken_bond);
+    new playerscript_hunter_summon_pet_trigger();
+    RegisterSpellScript(spell_arti_hun_titans_thunder);
+    RegisterAuraScript(aura_arti_hun_titans_thunder);
+    RegisterAuraScript(aura_concordance_of_the_legionfall);
 
     /// AreaTrigger scripts
     RegisterAreaTriggerAI(at_dh_fury_of_the_illidari);

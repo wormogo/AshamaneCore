@@ -148,5 +148,5 @@ void AddSC_priest_pet_scripts()
 {
     new npc_pet_pri_lightwell();
     new npc_pet_pri_shadowfiend();
-	new npc_pri_psyfiend();
+    new npc_pri_psyfiend();
 }
