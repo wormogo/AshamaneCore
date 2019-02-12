@@ -730,7 +730,7 @@ class PlayerScript_mardum_spec_choice : public PlayerScript
 public:
     PlayerScript_mardum_spec_choice() : PlayerScript("PlayerScript_mardum_spec_choice") {}
 
-    void OnPlayerChoiceResponse(Player* player, uint32 choiceID, uint32 responseID) override
+    void OnCompleteQuestChoice(Player* player, uint32 choiceID, uint32 responseID)
     {
         if (choiceID != PLAYER_CHOICE_DH_SPEC_SELECTION)
             return;
@@ -885,6 +885,144 @@ class spell_mardum_back_to_black_temple : public SpellScript
     }
 };
 
+class go_q38727 : public GameObjectScript
+{
+public:
+    go_q38727() : GameObjectScript("go_q38727") { }
+
+    bool OnGossipHello(Player* player, GameObject* go) override
+    {
+        uint32 credit1 = 0;
+        uint32 credit2 = 0;
+
+        switch (go->GetEntry())
+        {
+        case 243965:
+            credit1 = 93762;
+            credit2 = 96692;
+            if (player->GetQuestObjectiveData(38727, credit1))
+                return true;
+
+            if (Creature* t = go->FindNearestCreature(93762, 50.0f))
+            {
+                //t->AddToHideList(player->GetGUID());
+                t->DestroyForPlayer(player);
+            }
+
+            if (Creature* targ = player->SummonCreature(93762, 1800.39f, 1569.82f, 87.04f, 2.61f, TEMPSUMMON_MANUAL_DESPAWN))
+            {
+                //  targ->AddPlayerInPersonnalVisibilityList(player->GetGUID());
+                targ->DespawnOrUnsummon(20000);
+            }
+
+            if (Creature* targ = go->SummonCreature(96503, 1838.30f, 1527.21f, 87.45f, 2.20f, TEMPSUMMON_MANUAL_DESPAWN))
+            {
+                //  targ->AddPlayerInPersonnalVisibilityList(player->GetGUID());
+                targ->GetMotionMaster()->MovePath(10267118, false);
+                targ->DespawnOrUnsummon(10000);
+            }
+            if (Creature* targ = go->SummonCreature(96561, 1850.74f, 1533.68f, 91.67f, 2.45f, TEMPSUMMON_MANUAL_DESPAWN))
+            {
+                // targ->AddPlayerInPersonnalVisibilityList(player->GetGUID());
+                targ->GetMotionMaster()->MovePoint(0, 1832.96f, 1548.18f, 88.65f);
+                targ->DespawnOrUnsummon(10000);
+            }
+            if (Creature* targ = go->SummonCreature(96503, 1856.08f, 1554.44f, 94.00f, 2.88f, TEMPSUMMON_MANUAL_DESPAWN))
+            {
+                //  targ->AddPlayerInPersonnalVisibilityList(player->GetGUID());
+                targ->GetMotionMaster()->MovePath(10267119, false);
+                targ->DespawnOrUnsummon(10000);
+            }
+            if (Creature* targ = go->SummonCreature(96503, 1848.49f, 1579.76f, 89.97f, 3.55f, TEMPSUMMON_MANUAL_DESPAWN))
+            {
+                // targ->AddPlayerInPersonnalVisibilityList(player->GetGUID());
+                targ->GetMotionMaster()->MovePath(10267120, false);
+                targ->DespawnOrUnsummon(10000);
+            }
+            break;
+        case 243968:
+        {
+            credit1 = 96732;
+            credit2 = 96734;
+            if (player->GetQuestObjectiveData(38727, credit1))
+                return true;
+
+            if (Creature* t = go->FindNearestCreature(96732, 50.0f))
+            {
+               // t->AddToHideList(player->GetGUID());
+                t->DestroyForPlayer(player);
+            }
+
+            if (Creature* targ = player->SummonCreature(96732, 1382.39f, 1452.39f, 37.0f, 1.22061f, TEMPSUMMON_MANUAL_DESPAWN))
+            {
+                // targ->AddPlayerInPersonnalVisibilityList(player->GetGUID());
+                targ->DespawnOrUnsummon(6000);
+            }
+            if (Creature* targ = player->SummonCreature(96562, 1342.57f, 1421.92f, 39.34f, 0.33f, TEMPSUMMON_MANUAL_DESPAWN))
+            {
+                // targ->AddPlayerInPersonnalVisibilityList(player->GetGUID());
+                //  targ->CastSpell(targ, 114943);
+                targ->GetMotionMaster()->MovePath(10267114, false);
+                targ->DespawnOrUnsummon(9000);
+            }
+            if (Creature* targ = player->SummonCreature(96562, 1350.38f, 1410.88f, 39.14f, 0.87f, TEMPSUMMON_MANUAL_DESPAWN))
+            {
+                //  targ->AddPlayerInPersonnalVisibilityList(player->GetGUID());
+                //   targ->CastSpell(targ, 114943);
+                targ->GetMotionMaster()->MovePath(10267115, false);
+                targ->DespawnOrUnsummon(9000);
+            }
+            if (Creature* targ = player->SummonCreature(96562, 1354.43f, 1402.99f, 39.50f, 0.96f, TEMPSUMMON_MANUAL_DESPAWN))
+            {
+                // targ->AddPlayerInPersonnalVisibilityList(player->GetGUID());
+                //  targ->CastSpell(targ, 114943);
+                targ->GetMotionMaster()->MovePath(10267116, false);
+                targ->DespawnOrUnsummon(9000);
+            }
+        }
+        break;
+        case 243967:
+        {
+            credit1 = 96731;
+            credit2 = 96733;
+
+            if (player->GetQuestObjectiveData(38727, credit1))
+                return true;
+
+            if (Creature* t = go->FindNearestCreature(96731, 100.0f))
+            {
+                //t->AddToHideList(player->GetGUID());
+                t->DestroyForPlayer(player);
+            }
+
+            if (Creature* targ = player->SummonCreature(96731, 1524.58f, 1248.48f, 70.8699f, 1.72f, TEMPSUMMON_MANUAL_DESPAWN))
+            {
+                //  targ->AddPlayerInPersonnalVisibilityList(player->GetGUID());
+                targ->GetMotionMaster()->MovePath(10267117, false);
+                targ->DespawnOrUnsummon(12000);
+            }
+            if (Creature* targ = player->SummonCreature(96563, 1538.09f, 1212.63f, 71.13f, 2.07f, TEMPSUMMON_MANUAL_DESPAWN))
+            {
+                // targ->AddPlayerInPersonnalVisibilityList(player->GetGUID());
+                targ->DespawnOrUnsummon(12000);
+                targ->CastSpell(targ, 191537);
+            }
+            if (Creature* targ = player->SummonCreature(96564, 1524.91f, 1212.91f, 71.02f, 1.38f, TEMPSUMMON_MANUAL_DESPAWN))
+            {
+                // targ->AddPlayerInPersonnalVisibilityList(player->GetGUID());
+                targ->DespawnOrUnsummon(12000);
+                targ->CastSpell(targ, 191537);
+            }
+        }
+        break;
+        }
+
+        player->KilledMonsterCredit(credit1);
+        player->KilledMonsterCredit(credit2); //Hack. Special event.
+        return false;
+    }
+};
+
 void AddSC_zone_mardum()
 {
     new PlayerScript_mardum_welcome_scene_trigger();
@@ -921,4 +1059,5 @@ void AddSC_zone_mardum()
     new npc_mardum_kayn_sunfury_end();
     new go_mardum_the_keystone();
     RegisterSpellScript(spell_mardum_back_to_black_temple);
+    new go_q38727();
 }

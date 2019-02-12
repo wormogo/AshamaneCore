@@ -1706,6 +1706,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         TalentSpecialization GetSpecializationId() const { return (TalentSpecialization)GetUInt32Value(PLAYER_FIELD_CURRENT_SPEC_ID); }
         uint32 GetRoleForGroup() const;
         static uint32 GetRoleBySpecializationId(uint32 specializationId);
+        bool isInTankSpec() const;
 
         bool ResetTalents(bool noCost = false);
         void ResetPvpTalents();

@@ -273,7 +273,7 @@ void WorldSession::HandleArtifactAddRelicTalent(WorldPackets::Artifact::Artifact
 {
         //ClientToServer: CMSG_ARTIFACT_ADD_RELIC_TALENT (0x31A8) Length: 31 ConnIdx: 2 Time: 05/20/2018 23:38:39.813 Number: 2207
             //ArtifactGUID: HighType: Item; SubType: 0; ItemUnkPart1: 0; ItemUnkPart2: 150994944; Low: 34304044863; RealmdID: 1929; ServerID: 4194304; Map: 0 (Eastern Kingdoms); Full: 0x0C1E24000000000040000007FCAE2F3F
-            //GameObjectGUID: HighType: GameObject; SubType: 0; Low: 8258587; RealmdID: 1467; ServerID: 26822; Map: 1669; Entry: 273273 (Òèãåëü ñâåòà Ïóñòîòû); Full: 0x2C16ECD0A10ADE400068C600007E041B
+            //GameObjectGUID: HighType: GameObject; SubType: 0; Low: 8258587; RealmdID: 1467; ServerID: 26822; Map: 1669; Entry: 273273 (������ ����� �������); Full: 0x2C16ECD0A10ADE400068C600007E041B
             //TalentIndex: 2
             //SlotIndex: 0
         

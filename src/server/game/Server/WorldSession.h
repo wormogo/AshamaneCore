@@ -90,6 +90,7 @@ namespace WorldPackets
         class ArtifactSetAppearance;
         class ConfirmArtifactRespec;
         class ArtifactAddRelicTalent;
+        class ArtifactAttuneSocketedRelic;
     }
 
     namespace AuctionHouse
@@ -1809,6 +1810,7 @@ class TC_GAME_API WorldSession
         void HandleArtifactSetAppearance(WorldPackets::Artifact::ArtifactSetAppearance& artifactSetAppearance);
         void HandleConfirmArtifactRespec(WorldPackets::Artifact::ConfirmArtifactRespec& confirmArtifactRespec);
         void HandleArtifactAddRelicTalent(WorldPackets::Artifact::ArtifactAddRelicTalent& packet);
+ 	void HandleArtifactAttuneSocketedRelic(WorldPackets::Artifact::ArtifactAttuneSocketedRelic& artifactAttuneSocketedRelic);
 
         // Scenario
         void HandleQueryScenarioPOI(WorldPackets::Scenario::QueryScenarioPOI& queryScenarioPOI);
