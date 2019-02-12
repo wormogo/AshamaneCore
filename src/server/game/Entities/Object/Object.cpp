@@ -3097,6 +3097,13 @@ void WorldObject::MovePosition(Position &pos, float dist, float angle)
     pos.SetOrientation(GetOrientation());
 }
 
+Position WorldObject::GetNearPositionAlternate(float dist, float angle)
+{
+    Position pos = GetPositionAlternate();
+    MovePosition(pos, dist, angle);
+    return pos;
+}
+
 // @todo: replace with WorldObject::UpdateAllowedPositionZ
 float NormalizeZforCollision(WorldObject* obj, float x, float y, float z)
 {

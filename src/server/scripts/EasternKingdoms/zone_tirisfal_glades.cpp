@@ -17,6 +17,7 @@
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
+#include "ScriptedGossip.h"
 
 enum eTirisfalGlades
 {
@@ -39,6 +40,12 @@ enum eTirisfalGlades
 
     QUEST_THE_SHADOW_GRAVE       = 28608,
     SPELL_SUMMON_DARNELL         = 91576,
+
+    AREA_THE_DEATHKNELL_GRAVES   = 5692,
+    AREA_SHADOW_GRAVE            = 2117,
+
+    ITEM_THICK_EMBALMING_FLUID   = 64582,
+    ITEM_CORPSE_STITCHING_TWINE  = 64581,
 };
 
 class npc_aradne : public CreatureScript
@@ -548,6 +555,356 @@ public:
     }
 };
 
+class npc_darnell : public CreatureScript
+{
+public:
+    npc_darnell() : CreatureScript("npc_darnell") { }
+
+    bool OnGossipHello(Player* player, Creature* creature)
+    {
+        CloseGossipMenuFor(player);
+        player->KilledMonsterCredit(creature->GetEntry());
+        return true;
+    }
+
+    enum ePlaceDescription
+    {
+        Unknown = 0,
+        Outsite,
+        Entrance,
+        Stairs1,
+        Stairs2,
+        Ground,
+    };
+
+    struct npc_darnellAI : public ScriptedAI
+    {
+        npc_darnellAI(Creature *c) : ScriptedAI(c) { }
+
+        void Reset()
+        {
+            m_timer = urand(30, 45) * IN_MILLISECONDS;
+            m_phase = 0;
+            m_modus = 0;
+
+            if (Unit* npc = me->GetCharmerOrOwner())
+            {
+                if (m_player = npc->ToPlayer())
+                {
+                    if (m_player->GetQuestStatus(QUEST_THE_SHADOW_GRAVE) == QUEST_STATUS_INCOMPLETE)
+                    {
+                        m_modus = 1;
+                        m_phase = 1;
+                        m_timer = 1000;
+                        m_counter = 0;
+                        m_path = 0;
+                        m_FoundGround = false;
+                        m_ItemsFound = false;
+                        m_OldPosition = m_player->GetPositionAlternate();
+                        m_player_pos = m_player->GetPositionAlternate();
+                        m_player_area = m_player->GetAreaId();
+                        Talk(0, m_player);
+                    }
+                }
+            }
+        }
+
+        void MovementInform(uint32 type, uint32 id)
+        {
+            if (!CheckPlayerValid())
+                return;
+
+            if (type == POINT_MOTION_TYPE)
+                m_arrived = true;
+        }
+
+        void MoveInLineOfSight(Unit* who)
+        {
+            if (who->GetGUID() != m_player->GetGUID())
+                return;
+
+            m_player_pos = who->GetPositionAlternate();
+            m_player_area = who->GetAreaId();
+
+            if (m_modus == 1 && me->GetMotionMaster()->GetCurrentMovementGeneratorType() != FOLLOW_MOTION_TYPE)
+                if (m_arrived)
+                    if (me->GetDistance(m_player) < 4.0f)
+                        me->GetMotionMaster()->MoveFollow(m_player, 0.0f, 0.0f);
+        }
+
+        void UpdateAI(const uint32 diff)
+        {
+            if (!CheckPlayerValid())
+                return;
+
+            if (m_timer <= diff)
+            {
+                m_timer = 1000;
+                DoWork();
+            }
+            else m_timer -= diff;
+        }
+
+        void DoWork()
+        {
+            if (m_FoundGround)
+            {
+                SearchOnGround();
+                return;
+            }
+
+            switch (GetPlaceDescription())
+            {
+                case ePlaceDescription::Outsite:
+                    InviteToFollow();
+                    break;
+                case ePlaceDescription::Entrance:
+                    InviteToFollowDeeper1();
+                    break;
+                case ePlaceDescription::Stairs1:
+                    InviteToFollowDeeper2();
+                    break;
+                case ePlaceDescription::Stairs2:
+                    InviteToFollowToGround();
+                    break;
+                case ePlaceDescription::Ground:
+                    SearchOnGround();
+                    break;
+            }
+        }
+
+        void InviteToFollow()
+        {
+            m_counter++;
+            if (GetMovedPlayerDistance() > 1.0f)
+                m_counter = 0;
+
+            if (m_counter >= 10)
+            {
+                Talk(1, m_player);
+                me->GetMotionMaster()->MovePoint(1, 1665.368896f, 1662.722656f, 141.850983f);
+                m_path = 1;
+                m_arrived = false;
+                m_counter = 0;
+            }
+        }
+
+        void InviteToFollowDeeper1()
+        {
+            m_counter++;
+            if (GetMovedPlayerDistance() > 1.0f)
+                m_counter = 0;
+
+            if (m_counter >= 10)
+            {
+                Talk(2);
+                me->GetMotionMaster()->MovePoint(2, 1642.761963f, 1662.547729f, 132.477753f);
+                m_path = 2;
+                m_arrived = false;
+                m_counter = 0;
+            }
+        }
+
+        void InviteToFollowDeeper2()
+        {
+            m_counter++;
+            if (GetMovedPlayerDistance() > 1.0f)
+                m_counter = 0;
+
+            if (m_counter >= 10)
+            {
+                Talk(2);
+                me->GetMotionMaster()->MovePoint(3, 1642.498779f, 1677.809937f, 126.932129f);
+                m_path = 3;
+                m_arrived = false;
+                m_counter = 0;
+            }
+        }
+
+        void InviteToFollowToGround()
+        {
+            m_counter++;
+            if (GetMovedPlayerDistance() > 1.0f)
+                m_counter = 0;
+
+            if (m_counter >= 10)
+            {
+                Talk(2);
+                me->GetMotionMaster()->MovePoint(4, 1656.714478f, 1678.538330f, 120.718788f);
+                m_path = 4;
+                m_arrived = false;
+                m_counter = 0;
+            }
+        }
+
+        void SearchOnGround()
+        {
+            if (CheckPlayerFoundItems())
+            {
+                if (m_ItemsFound == false)
+                {
+                    m_ItemsFound = true;
+                    Talk(9);
+                    m_timer = 10000;
+                    return;
+                }
+                else
+                    return;
+            }
+
+            switch (m_modus)
+            {
+                case 2:
+                    MoveToCenter();
+                    break;
+                case 3:
+                    MoveToRandomCorner();
+                    break;
+                case 4:
+                    SearchingOnCorner();
+                    break;
+                case 5:
+                    break;
+                default:
+                    m_modus = 2;
+                    break;
+            }
+        }
+
+        void MoveToCenter()
+        {
+            if (m_path != 8)
+            {
+                me->GetMotionMaster()->MovePoint(8, 1664.128052f, 1679.201294f, 120.530205f);
+                m_arrived = false;
+                m_path = 8;
+            }
+            else if (m_arrived == false) { }
+            else
+            {
+                m_modus = 3;
+            }
+        }
+
+        void MoveToRandomCorner()
+        {
+            if (m_path == 8)
+            {
+                switch (urand(1, 4))
+                {
+                    case 1:
+                        me->GetMotionMaster()->MovePoint(4, 1663.849609f, 1694.495239f, 120.719284f);
+                        m_arrived = false;
+                        m_path = 4;
+                        break;
+                    case 2:
+                        me->GetMotionMaster()->MovePoint(5, 1672.939331f, 1668.029541f, 120.719307f);
+                        m_arrived = false;
+                        m_path = 5;
+                        break;
+                    case 3:
+                        me->GetMotionMaster()->MovePoint(6, 1656.963379f, 1667.456299f, 120.719093f);
+                        m_arrived = false;
+                        m_path = 6;
+                        break;
+                    case 4:
+                        me->GetMotionMaster()->MovePoint(7, 1656.098999f, 1688.312866f, 120.719093f);
+                        m_arrived = false;
+                        m_path = 7;
+                        break;
+                }
+            }
+            else if (m_arrived == false) { }
+            else
+            {
+                m_modus = 4;
+            }
+        }
+
+        void SearchingOnCorner()
+        {
+            Talk(urand(3, 8), m_player);
+            m_timer = 6000;
+            m_modus = 2;
+        }
+
+        bool CheckPlayerFoundItems()
+        {
+            if (m_player->HasItemCount(ITEM_THICK_EMBALMING_FLUID) && m_player->HasItemCount(ITEM_CORPSE_STITCHING_TWINE))
+                return true;
+
+            return false;
+        }
+
+        bool CheckPlayerValid()
+        {
+            if (!m_player->IsInWorld() ||
+                m_player->isDead() ||
+                m_player->GetQuestStatus(QUEST_THE_SHADOW_GRAVE) != QUEST_STATUS_INCOMPLETE ||
+                (m_player->GetAreaId() != AREA_THE_DEATHKNELL_GRAVES && m_player->GetAreaId() != AREA_SHADOW_GRAVE))
+            {
+                me->DespawnOrUnsummon();
+                return false;
+            }
+
+            return true;
+        }
+
+        ePlaceDescription GetPlaceDescription()
+        {
+            switch (m_player_area)
+            {
+                case AREA_THE_DEATHKNELL_GRAVES:
+                    return ePlaceDescription::Outsite;
+                case AREA_SHADOW_GRAVE:
+                {
+                    if (m_player_pos.GetPositionZ() < 123.0)
+                    {
+                        m_FoundGround = true;
+                        return ePlaceDescription::Ground;
+                    }
+
+                    if (m_player_pos.GetPositionZ() < 127.0)
+                        return ePlaceDescription::Stairs2;
+
+                    if (m_player_pos.GetPositionZ() < 133.0)
+                        return ePlaceDescription::Stairs1;
+
+                    return ePlaceDescription::Entrance;
+                }
+                default:
+                    return ePlaceDescription::Unknown;
+            }
+        }
+
+        float GetMovedPlayerDistance()
+        {
+            float dist = m_player->GetDistance(m_OldPosition);
+            m_OldPosition = m_player->GetPositionAlternate();
+            return dist;
+        }
+
+    private:
+        bool m_arrived;
+        uint32 m_counter;
+        Position m_OldPosition;
+        Position m_player_pos;
+        uint32 m_player_area;
+        uint8 m_path;
+        uint8 m_modus;
+        uint32 m_timer;
+        uint32 m_phase;
+        Player* m_player;
+        bool m_FoundGround;
+        bool m_ItemsFound;
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_darnellAI(pCreature);
+    }
+};
+
 void AddSC_tirisfal_glades()
 {
     new npc_aradne();
@@ -555,4 +912,5 @@ void AddSC_tirisfal_glades()
     new npc_risen_dead();
     new npc_undertaker_mordo();
     new npc_mindless_zombie();
+    new npc_darnell();
 }
