@@ -193,18 +193,21 @@ INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_
 (49230*100, 9, 2, 0, 0, 0, 100, 0, 0, 0, 0, 0, 41, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Marshal Redpath - On Script - Despawn");
 -- UPDATE npc_text SET BroadcastTextID0 = 49343 WHERE ID = 17566;
 -- UPDATE npc_text SET BroadcastTextID0 = 49344 WHERE ID = 17567;
+UPDATE creature SET position_x = 1816.2699, position_y = 1589.7817, position_z = 96.536, orientation = 6.1166 WHERE guid = 192714;
+UPDATE creature SET position_x = 1685.6896, position_y = 1647.7761, position_z = 137.354, orientation = 1.6925 WHERE guid = 192713;
 UPDATE creature SET position_x = 1708.0999, position_y = 1644.4699, position_z = 126.151, orientation = 5.5768 WHERE guid = 192770;
+UPDATE creature SET position_x = 1689.6483, position_y = 1674.8232, position_z = 135.612, orientation = 0.1570 WHERE guid = 192771;
 DELETE FROM smart_scripts WHERE entryorguid IN (-192770, -192714);
 INSERT INTO smart_scripts (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES
-(-192770, 0, 0, 0, 60, 0, 100, 0, 1000, 1000, 1000, 1000, 45, 0, 1, 0, 0, 0, 0, 11, 49337, 8, 0, 0, 0, 0, 0, 'Generic Bunny - PRK - On Update (1000 - 1000) - Set Data 0 1 To Creature ID: 49337'),
-(-192714, 0, 0, 0, 60, 0, 100, 0, 1000, 1000, 1000, 1000, 45, 0, 2, 0, 0, 0, 0, 11, 49337, 5, 0, 0, 0, 0, 0, 'Generic Bunny - PRK - On Update (1000 - 1000) - Set Data 0 2 To Creature ID: 49337');
+(-192770, 0, 0, 0, 1, 0, 100, 0, 1000, 1000, 1000, 1000, 45, 1, 1, 0, 0, 0, 0, 11, 49337, 8, 0, 0, 0, 0, 0, 'Generic Bunny - PRK - On Update OOC (1000 - 1000) - Set Data 1 1 To Creature ID: 49337'),
+(-192714, 0, 0, 0, 1, 0, 100, 0, 1000, 1000, 1000, 1000, 45, 2, 2, 0, 0, 0, 0, 11, 49337, 5, 0, 0, 0, 0, 0, 'Generic Bunny - PRK - On Update OOC (1000 - 1000) - Set Data 2 2 To Creature ID: 49337');
 DELETE FROM waypoints WHERE entry = 49337;
 DELETE FROM smart_scripts WHERE entryorguid = 49337 AND source_type = 0;
 DELETE FROM smart_scripts WHERE entryorguid IN (49337*100, (49337*100)+1, (49337*100)+2) AND source_type = 9;
 INSERT INTO smart_scripts (entryorguid, source_type, id, link, event_type, event_phase_mask, event_chance, event_flags, event_param1, event_param2, event_param3, event_param4, action_type, action_param1, action_param2, action_param3, action_param4, action_param5, action_param6, target_type, target_param1, target_param2, target_param3, target_x, target_y, target_z, target_o, comment) VALUES
-(49337, 0, 0, 4, 54, 0, 100, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Darnell - On Just Summoned - Say Text Line 0"),
-(49337, 0, 1, 0, 38, 0, 100, 1, 0, 1, 0, 0, 80, 49337*100, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Darnell - On Data Set 0 1 - Start Script"),
-(49337, 0, 2, 0, 38, 0, 100, 1, 0, 2, 0, 0, 80, (49337*100)+1, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Darnell - On Data Set 0 2 - Start Script (No Repeat)"),
+(49337, 0, 0, 4, 54, 0, 100, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Darnell - On Just Summoned - Say Text Line 0 (No Repeat)"),
+(49337, 0, 1, 0, 38, 0, 100, 1, 1, 1, 0, 0, 80, 49337*100, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Darnell - On Data Set 1 1 - Start Script (No Repeat)"),
+(49337, 0, 2, 0, 38, 0, 100, 1, 2, 2, 0, 0, 80, (49337*100)+1, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Darnell - On Data Set 2 2 - Start Script (No Repeat)"),
 (49337, 0, 3, 4, 54, 0, 100, 1, 0, 0, 0, 0, 80, (49337*100)+2, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Darnell - On Just Summoned - Start Script (No Repeat)"),
 (49337, 0, 4, 0, 61, 0, 100, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Darnell - On Just Summoned (Link) - Set React State (Passive)"),
 (49337*100, 9, 0, 0, 0, 0, 100, 0, 3000, 3000, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Darnell - On Script - Say Text Line 1"),
@@ -229,7 +232,11 @@ DELETE FROM `smart_scripts` WHERE `entryorguid` = 49340 AND `source_type` = 0;
 INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES 
 (49340, 0, 0, 1, 75, 0, 100, 513, 0, 49337, 3, 0, 86, 91945, 2, 19, 49337, 20, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Corpse - On Distance Creature (49337) - Cross Cast Spell"),
 (49340, 0, 1, 0, 61, 0, 100, 512, 0, 0, 0, 0, 11, 46598, 2, 0, 0, 0, 0, 19, 49337, 20, 0, 0, 0, 0, 0, "Corpse - On Distance Creature (49337) (Link) - Cast Spell");
+DELETE FROM creature_queststarter WHERE quest = 26800 AND id = 49340;
+DELETE FROM conditions WHERE SourceEntry = 49337 AND SourceTypeOrReferenceId = 22;
 INSERT INTO conditions (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES
-(22, 1, 49337, 0, 0, 8, 0, 25089, 0, 0, 1, 0, 0, '', 'SAI only when player has not rewarded quest'),
-(22, 4, 49337, 0, 0, 8, 0, 26800, 0, 0, 1, 0, 0, '', 'SAI only when player has not rewarded quest');
+(22, 1, 49337, 0, 0, 9, 0, 26800, 0, 0, 1, 0, 0, '', 'SAI only when player has not take quest (26800)'),
+-- (22, 2, 49337, 0, 0, 8, 0, 25089, 0, 0, 1, 0, 0, '', 'SAI only when player has not rewarded quest (25089)'),
+-- (22, 3, 49337, 0, 0, 8, 0, 25089, 0, 0, 1, 0, 0, '', 'SAI only when player has not rewarded quest (25089)'),
+(22, 4, 49337, 0, 0, 9, 0, 26800, 0, 0, 0, 0, 0, '', 'SAI only when player has take quest (26800)');
 -- 91935
