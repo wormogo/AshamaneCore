@@ -826,6 +826,15 @@ class TC_GAME_API PlayerScript : public UnitScript
         virtual void OnChargeRecoveryTimeStart(Player* /*player*/, uint32 /*chargeCategoryId*/, int32& /*chargeRecoveryTime*/) { }
 
         virtual void OnCompleteQuestChoice(Player* /*player*/, uint32 /*choiceId*/, uint32 /*responseId*/) { }
+
+	// Called when a player UnsummonPetTemporary
+        virtual void OnUnsummonPetTemporary(Player* /*player*/) { }
+
+        // Called when a player ResummonPetTemporary
+        virtual void OnResummonPetTemporary(Player* /*player*/) { }
+		
+	// Called when a player Itemlevel changed
+        virtual void OnItemLevelChange(Player* /*player*/) { }
 };
 
 class TC_GAME_API AccountScript : public ScriptObject
@@ -1263,6 +1272,9 @@ class TC_GAME_API ScriptMgr
         void OnCooldownStart(Player* player, SpellInfo const* spellInfo, uint32 itemId, int32& cooldown, uint32& categoryId, int32& categoryCooldown);
         void OnChargeRecoveryTimeStart(Player* player, uint32 chargeCategoryId, int32& chargeRecoveryTime);
         void OnCompleteQuestChoice(Player* player, uint32 choiceId, uint32 responseId);
+	void OnPlayerUnsummonPetTemporary(Player* player);
+        void OnPlayerResummonPetTemporary(Player* player);
+	void OnPlayerItemLevelChange(Player* player);
 
     public: /* AccountScript */
 

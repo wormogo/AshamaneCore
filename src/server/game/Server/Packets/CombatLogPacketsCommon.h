@@ -53,6 +53,7 @@ namespace WorldPackets
             {
                 TYPE_PLAYER_TO_PLAYER               = 1, // NYI
                 TYPE_CREATURE_TO_PLAYER_DAMAGE      = 2,
+                TYPE_PLAYER_TO_PLAYER_HEALING       = 8,
                 TYPE_PLAYER_TO_CREATURE_DAMAGE      = 3,
                 TYPE_CREATURE_TO_CREATURE_DAMAGE    = 4
             };

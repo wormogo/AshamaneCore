@@ -2473,10 +2473,25 @@ void ScriptMgr::OnCompleteQuestChoice(Player* player, uint32 choiceId, uint32 re
     FOREACH_SCRIPT(PlayerScript)->OnCompleteQuestChoice(player, choiceId, responseId);
 }
 
+void ScriptMgr::OnPlayerUnsummonPetTemporary(Player* player)
+{
+    FOREACH_SCRIPT(PlayerScript)->OnUnsummonPetTemporary(player);
+}
+
+ void ScriptMgr::OnPlayerResummonPetTemporary(Player* player)
+{
+    FOREACH_SCRIPT(PlayerScript)->OnResummonPetTemporary(player);
+}
+
 // Account
 void ScriptMgr::OnAccountLogin(uint32 accountId)
 {
     FOREACH_SCRIPT(AccountScript)->OnAccountLogin(accountId);
+}
+
+void ScriptMgr::OnPlayerItemLevelChange(Player* player)
+{
+    FOREACH_SCRIPT(PlayerScript)->OnItemLevelChange(player);
 }
 
 void ScriptMgr::OnFailedAccountLogin(uint32 accountId)
