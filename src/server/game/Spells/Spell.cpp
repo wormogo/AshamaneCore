@@ -1409,7 +1409,7 @@ void Spell::SelectImplicitCasterDestTargets(SpellEffIndex effIndex, SpellImplici
 				}
 				case 7592: // Dalaran : The Violet Hold
 				{
-					if(m_caster->IsWithinDist2d(-931.03f, 4324.63f, 20.0f) || m_caster->IsWithinDist2d(-890.96f, 4321.35f, 20.0f) || m_caster->IsWithinDist2d(-981.21f, 4389.05f, 20.0f) ||                                                 m_caster->IsWithinDist2d(-967.59f, 4353.53f, 20.0f)) 
+					if(m_caster->IsWithinDist2d(-931.03f, 4324.63f, 20.0f) || m_caster->IsWithinDist2d(-890.96f, 4321.35f, 20.0f) || m_caster->IsWithinDist2d(-981.21f, 4389.05f, 20.0f) || m_caster->IsWithinDist2d(-967.59f, 4353.53f, 20.0f)) 
 						liquidLevel = 733.50f;
 					break;
 				}
@@ -1421,7 +1421,7 @@ void Spell::SelectImplicitCasterDestTargets(SpellEffIndex effIndex, SpellImplici
 				}
 				case 7594: // Dalaran : The UnderBelly
 				{
-					if(m_caster->IsWithinDist2d(-723.74f, 4378.54f, 5.0f) || m_caster->IsWithinDist2d(-714.95f, 4395.90f, 5.0f) || m_caster->IsWithinDist2d(-737.77f, 4392.29f, 10.0f) ||                                                   m_caster->IsWithinDist2d(-726.81f, 4405.69f, 8.0f) || m_caster->IsWithinDist2d(-715.84f, 4406.43f, 10.0f)) // Must be near water
+					if(m_caster->IsWithinDist2d(-723.74f, 4378.54f, 5.0f) || m_caster->IsWithinDist2d(-714.95f, 4395.90f, 5.0f) || m_caster->IsWithinDist2d(-737.77f, 4392.29f, 10.0f) || m_caster->IsWithinDist2d(-726.81f, 4405.69f, 8.0f) || m_caster->IsWithinDist2d(-715.84f, 4406.43f, 10.0f)) // Must be near water
 						liquidLevel = 654.60f;
 					break;
 				}
