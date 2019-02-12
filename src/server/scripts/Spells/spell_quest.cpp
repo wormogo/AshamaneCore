@@ -29,6 +29,7 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "SpellScript.h"
+#include "ObjectMgr.h"
 #include "SpellAuraEffects.h"
 #include "Vehicle.h"
 
@@ -2754,6 +2755,68 @@ public:
     }
 };
 
+enum FirmamentStoneSpell
+{
+    SPELL_FIRMAMENT_1 = 184735,
+	SPELL_FIRMAMENT_2 = 184737,
+	SPELL_FIRMAMENT_3 = 184738,
+};
+
+
+class spell_gen_firmament_stone_dummy : public SpellScriptLoader
+{
+    public:
+        spell_gen_firmament_stone_dummy() : SpellScriptLoader("spell_gen_firmament_stone_dummy") { }
+
+        class spell_gen_firmament_stone_dummy_SpellScript : public SpellScript
+        {
+            PrepareSpellScript(spell_gen_firmament_stone_dummy_SpellScript);
+
+            bool Validate(SpellInfo const* /*spellInfo*/) override
+            {
+                return ValidateSpellInfo({ SPELL_FIRMAMENT_1, SPELL_FIRMAMENT_2, SPELL_FIRMAMENT_3 });
+            }
+
+
+            void HandleDummy(SpellEffIndex /*effIndex*/)
+            {
+			    if(GetCaster()->ToPlayer())
+					if(Player* plr = GetCaster()->ToPlayer())
+					{
+							Quest const* qInfo = sObjectMgr->GetQuestTemplate(38559);
+							if (qInfo && plr->GetQuestStatus(38559) == QUEST_STATUS_INCOMPLETE)
+							{
+								if(plr->GetQuestObjectiveData(qInfo, 0) == 0)
+								{
+									plr->CastSpell(plr, SPELL_FIRMAMENT_1, true);
+								}
+								else if (plr->GetQuestObjectiveData(qInfo, 0) == 1 && plr->GetQuestObjectiveData(qInfo, 1) == 0)
+								{
+									plr->CastSpell(plr, SPELL_FIRMAMENT_2, true);
+								}
+								else if (plr->GetQuestObjectiveData(qInfo, 1) == 1 && plr->GetQuestObjectiveData(qInfo, 2) == 0)
+								{
+									plr->CastSpell(plr, SPELL_FIRMAMENT_3, true);
+									plr->GetSceneMgr().PlaySceneByPackageId(1401, 17);
+								}
+									
+							}
+					
+					}
+            }
+
+            void Register() override
+            {
+                OnEffectHit += SpellEffectFn(spell_gen_firmament_stone_dummy_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+            }
+        };
+
+        SpellScript* GetSpellScript() const override
+        {
+            return new spell_gen_firmament_stone_dummy_SpellScript();
+        }
+};
+
 void AddSC_quest_spell_scripts()
 {
     new spell_q55_sacred_cleansing();
@@ -2823,4 +2886,5 @@ void AddSC_quest_spell_scripts()
     new spell_q11306_mixing_vrykul_blood();
     new spell_q11306_failed_mix_43376();
     new spell_q11306_failed_mix_43378();
+    new spell_gen_firmament_stone_dummy();
 }
