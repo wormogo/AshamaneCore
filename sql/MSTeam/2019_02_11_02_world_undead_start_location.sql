@@ -1,11 +1,11 @@
--- Quests: 24959, 28608, 26799, 28652, 24960
+-- Quests: 24959, 28608, 26799, 28652, 24960, 25089, 26800
 UPDATE creature SET position_z = 137.008 WHERE guid = 192768;
 UPDATE creature_template SET InhabitType = 4 WHERE entry = 49044;
 DELETE FROM `smart_scripts` WHERE `entryorguid` = 49044 AND `source_type` = 0;
 INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES 
 (49044, 0, 0, 1, 19, 0, 100, 0, 24959, 0, 0, 0, 11, 73524, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, "Agatha - On Quest Accept (24959) - Cast Spell"),
 (49044, 0, 1, 0, 61, 0, 100, 512, 0, 0, 0, 0, 28, 73523, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, "Agatha - On Quest Accept (24959) (Link) - Remove Aura");
-UPDATE creature SET MovementType = 0, spawndist = 0 WHERE guid IN (192771, 192713, 192770, 192714, 192712);
+UPDATE creature SET MovementType = 0, spawndist = 0 WHERE guid IN (192771, 192713, 192770, 192714, 192712, 192625);
 UPDATE creature SET MovementType = 2, spawndist = 0, position_x = 1674.95, position_y = 1683.32, position_z = 139.203 WHERE id = 50372;
 UPDATE creature_template SET InhabitType = 3, AIName = "", scriptname = "npc_aradne" WHERE entry = 50372;
 DELETE FROM smart_scripts WHERE entryorguid = 50372 AND source_type = 0;
@@ -171,9 +171,9 @@ INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_
 (49231*100, 9, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 72, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, "Valdred Moray - On Script - Close Gossip"),
 (49231*100, 9, 1, 0, 0, 0, 100, 0, 0, 0, 0, 0, 85, 91876, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, "Valdred Moray - On Script - Cast Spell 'Summon Valdred'"),
 (49231*100, 9, 2, 0, 0, 0, 100, 0, 0, 0, 0, 0, 41, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Valdred Moray - On Script - Despawn");
-UPDATE npc_text SET BroadcastTextID0 = 49349 WHERE ID = 17570;
-UPDATE npc_text SET BroadcastTextID0 = 49348 WHERE ID = 17569;
-UPDATE npc_text SET BroadcastTextID0 = 49350 WHERE ID = 17571;
+-- UPDATE npc_text SET BroadcastTextID0 = 49349 WHERE ID = 17570;
+-- UPDATE npc_text SET BroadcastTextID0 = 49348 WHERE ID = 17569;
+-- UPDATE npc_text SET BroadcastTextID0 = 49350 WHERE ID = 17571;
 DELETE FROM `smart_scripts` WHERE `entryorguid` = 38895 AND `source_type` = 0;
 DELETE FROM `smart_scripts` WHERE `entryorguid` = 38895*100 AND `source_type` = 9;
 INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES 
@@ -182,8 +182,8 @@ INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_
 (38895*100, 9, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 72, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, "Lilian Voss - On Script - Close Gossip"),
 (38895*100, 9, 1, 0, 0, 0, 100, 0, 0, 0, 0, 0, 85, 91874, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, "Lilian Voss - On Script - Cast Spell 'Summon Lilian'"),
 (38895*100, 9, 2, 0, 0, 0, 100, 0, 0, 0, 0, 0, 41, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Lilian Voss - On Script - Despawn");
-UPDATE npc_text SET BroadcastTextID0 = 49334 WHERE ID = 17564;
-UPDATE npc_text SET BroadcastTextID0 = 49335 WHERE ID = 17565;
+-- UPDATE npc_text SET BroadcastTextID0 = 49334 WHERE ID = 17564;
+-- UPDATE npc_text SET BroadcastTextID0 = 49335 WHERE ID = 17565;
 DELETE FROM `smart_scripts` WHERE `entryorguid` = 49230 AND `source_type` = 0;
 DELETE FROM `smart_scripts` WHERE `entryorguid` = 49230*100 AND `source_type` = 9;
 INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES 
@@ -191,5 +191,45 @@ INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_
 (49230*100, 9, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 72, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, "Marshal Redpath - On Script - Close Gossip"),
 (49230*100, 9, 1, 0, 0, 0, 100, 0, 0, 0, 0, 0, 85, 91873, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, "Marshal Redpath - On Script - Cast Spell 'Summon Marshal'"),
 (49230*100, 9, 2, 0, 0, 0, 100, 0, 0, 0, 0, 0, 41, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Marshal Redpath - On Script - Despawn");
-UPDATE npc_text SET BroadcastTextID0 = 49343 WHERE ID = 17566;
-UPDATE npc_text SET BroadcastTextID0 = 49344 WHERE ID = 17567;
+-- UPDATE npc_text SET BroadcastTextID0 = 49343 WHERE ID = 17566;
+-- UPDATE npc_text SET BroadcastTextID0 = 49344 WHERE ID = 17567;
+UPDATE creature SET position_x = 1708.0999, position_y = 1644.4699, position_z = 126.151, orientation = 5.5768 WHERE guid = 192770;
+DELETE FROM smart_scripts WHERE entryorguid IN (-192770, -192714);
+INSERT INTO smart_scripts (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES
+(-192770, 0, 0, 0, 60, 0, 100, 0, 1000, 1000, 1000, 1000, 45, 0, 1, 0, 0, 0, 0, 11, 49337, 8, 0, 0, 0, 0, 0, 'Generic Bunny - PRK - On Update (1000 - 1000) - Set Data 0 1 To Creature ID: 49337'),
+(-192714, 0, 0, 0, 60, 0, 100, 0, 1000, 1000, 1000, 1000, 45, 0, 2, 0, 0, 0, 0, 11, 49337, 5, 0, 0, 0, 0, 0, 'Generic Bunny - PRK - On Update (1000 - 1000) - Set Data 0 2 To Creature ID: 49337');
+DELETE FROM waypoints WHERE entry = 49337;
+DELETE FROM smart_scripts WHERE entryorguid = 49337 AND source_type = 0;
+DELETE FROM smart_scripts WHERE entryorguid IN (49337*100, (49337*100)+1, (49337*100)+2) AND source_type = 9;
+INSERT INTO smart_scripts (entryorguid, source_type, id, link, event_type, event_phase_mask, event_chance, event_flags, event_param1, event_param2, event_param3, event_param4, action_type, action_param1, action_param2, action_param3, action_param4, action_param5, action_param6, target_type, target_param1, target_param2, target_param3, target_x, target_y, target_z, target_o, comment) VALUES
+(49337, 0, 0, 4, 54, 0, 100, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Darnell - On Just Summoned - Say Text Line 0"),
+(49337, 0, 1, 0, 38, 0, 100, 1, 0, 1, 0, 0, 80, 49337*100, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Darnell - On Data Set 0 1 - Start Script"),
+(49337, 0, 2, 0, 38, 0, 100, 1, 0, 2, 0, 0, 80, (49337*100)+1, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Darnell - On Data Set 0 2 - Start Script (No Repeat)"),
+(49337, 0, 3, 4, 54, 0, 100, 1, 0, 0, 0, 0, 80, (49337*100)+2, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Darnell - On Just Summoned - Start Script (No Repeat)"),
+(49337, 0, 4, 0, 61, 0, 100, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Darnell - On Just Summoned (Link) - Set React State (Passive)"),
+(49337*100, 9, 0, 0, 0, 0, 100, 0, 3000, 3000, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Darnell - On Script - Say Text Line 1"),
+(49337*100, 9, 1, 0, 0, 0, 100, 0, 500, 500, 0, 0, 69, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 1783.75, 1595.59, 105.206, 0, "Darnell - On Script - Move To Position"),
+(49337*100, 9, 2, 0, 0, 0, 100, 0, 12000, 12000, 0, 0, 29, 0, 0, 0, 0, 0, 0, 23, 0, 0, 0, 0, 0, 0, 0, "Darnell - On Script - Set Follow Owner"),
+((49337*100)+1, 9, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Darnell - On Script - Say Text Line 2"),
+((49337*100)+1, 9, 1, 0, 0, 0, 100, 0, 500, 500, 0, 0, 69, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 1861.56, 1603.44, 98.11, 0, "Darnell - On Script - Move To Position"),
+((49337*100)+1, 9, 2, 0, 0, 0, 100, 0, 2500, 2500, 0, 0, 1, 3, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Darnell - On Script - Say Text Line 3"),
+((49337*100)+1, 9, 3, 0, 0, 0, 100, 0, 4000, 4000, 0, 0, 29, 0, 0, 0, 0, 0, 0, 23, 0, 0, 0, 0, 0, 0, 0, "Darnell - On Script - Set Follow Owner"),
+((49337*100)+2, 9, 0, 0, 0, 0, 100, 0, 2000, 2000, 0, 0, 1, 4, 0, 0, 0, 0, 0, 23, 0, 0, 0, 0, 0, 0, 0, "Darnell - On Script - Say Text Line 4"),
+((49337*100)+2, 9, 1, 0, 0, 0, 100, 0, 3000, 3000, 0, 0, 1, 5, 0, 0, 0, 0, 0, 23, 0, 0, 0, 0, 0, 0, 0, "Darnell - On Script - Say Text Line 5");
+DELETE FROM `smart_scripts` WHERE `entryorguid` = 1740 AND `source_type` = 0;
+DELETE FROM `smart_scripts` WHERE `entryorguid` IN (1740*100, 1740*100+1) AND `source_type` = 9;
+INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES 
+(1740, 0, 0, 0, 19, 0, 100, 512, 26800, 0, 0, 0, 80, 1740*100, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Saltain - On Quest Accept (26800) - Start Script"),
+(1740, 0, 1, 0, 20, 0, 100, 512, 26800, 0, 0, 0, 80, 1740*100+1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Saltain - On Quest Reward (26800) - Start Script"),
+(1740, 0, 2, 0, 20, 0, 100, 512, 25089, 0, 0, 0, 41, 0, 0, 0, 0, 0, 0, 19, 49337, 20, 0, 0, 0, 0, 0, "Saltain - On Quest Reward (25089) - Despawn (Creature ID: 49337)"),
+(1740*100, 9, 0, 0, 0, 0, 100, 0, 3000, 3000, 0, 0, 85, 91938, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, "Saltain - On Script - Cast Spell To Summon"),
+(1740*100+1, 9, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 41, 0, 0, 0, 0, 0, 0, 19, 49337, 20, 0, 0, 0, 0, 0, "Saltain - On Script - Despawn (Creature ID: 49337)"),
+(1740*100+1, 9, 1, 0, 0, 0, 100, 0, 0, 0, 0, 0, 41, 0, 0, 0, 0, 0, 0, 11, 49340, 20, 0, 0, 0, 0, 0, "Saltain - On Script - Despawn (Creature ID: 49340)");
+DELETE FROM `smart_scripts` WHERE `entryorguid` = 49340 AND `source_type` = 0;
+INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES 
+(49340, 0, 0, 1, 75, 0, 100, 513, 0, 49337, 3, 0, 86, 91945, 2, 19, 49337, 20, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Corpse - On Distance Creature (49337) - Cross Cast Spell"),
+(49340, 0, 1, 0, 61, 0, 100, 512, 0, 0, 0, 0, 11, 46598, 2, 0, 0, 0, 0, 19, 49337, 20, 0, 0, 0, 0, 0, "Corpse - On Distance Creature (49337) (Link) - Cast Spell");
+INSERT INTO conditions (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES
+(22, 1, 49337, 0, 0, 8, 0, 25089, 0, 0, 1, 0, 0, '', 'SAI only when player has not rewarded quest'),
+(22, 4, 49337, 0, 0, 8, 0, 26800, 0, 0, 1, 0, 0, '', 'SAI only when player has not rewarded quest');
+-- 91935

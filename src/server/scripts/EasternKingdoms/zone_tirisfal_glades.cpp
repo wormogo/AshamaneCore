@@ -66,7 +66,7 @@ public:
             m_phase = 0;
         }
 
-        void MovementInform(uint32 type, uint32 id)
+        void MovementInform(uint32 type, uint32 id) override
         {
             if (type == WAYPOINT_MOTION_TYPE)
             switch (id)
@@ -363,7 +363,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const override
     {
         return new npc_risen_deadAI(pCreature);
     }
@@ -473,14 +473,14 @@ public:
             }
         }
 
-        void sQuestAccept(Player* player, Quest const* quest) override
+        /*void sQuestAccept(Player* player, Quest const* quest) override
         {
             if (quest->GetQuestId() == QUEST_THE_SHADOW_GRAVE)
                 player->CastSpell(player, SPELL_SUMMON_DARNELL);
-        }
+        }*/
     };
 
-    CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const override
     {
         return new npc_undertaker_mordoAI(pCreature);
     }
@@ -549,7 +549,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const override
     {
         return new npc_mindless_zombieAI(pCreature);
     }
@@ -609,7 +609,7 @@ public:
             }
         }
 
-        void MovementInform(uint32 type, uint32 id)
+        void MovementInform(uint32 type, uint32 id) override
         {
             if (!CheckPlayerValid())
                 return;
@@ -618,7 +618,7 @@ public:
                 m_arrived = true;
         }
 
-        void MoveInLineOfSight(Unit* who)
+        void MoveInLineOfSight(Unit* who) override
         {
             if (who->GetGUID() != m_player->GetGUID())
                 return;
@@ -749,6 +749,7 @@ public:
                     return;
                 }
                 else
+                    me->DespawnOrUnsummon();
                     return;
             }
 
@@ -899,7 +900,7 @@ public:
         bool m_ItemsFound;
     };
 
-    CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const override
     {
         return new npc_darnellAI(pCreature);
     }
