@@ -112,7 +112,7 @@ namespace {
         const float D10 = sConfigMgr->GetFloatDefault("Solocraft.Raid10", 10.0);
         const float D25 = sConfigMgr->GetFloatDefault("Solocraft.Raid25", 25.0);
         const float D30 = sConfigMgr->GetFloatDefault("Solocraft.Raid30", 30.0);
-		const float D40 = sConfigMgr->GetFloatDefault("Solocraft.Raid30", 40.0);
+        const float D40 = sConfigMgr->GetFloatDefault("Solocraft.Raid40", 40.0);
 
         // Set the instance difficulty
         float CalculateDifficulty(Map *map, Player *player) {
@@ -128,8 +128,8 @@ namespace {
                         difficulty = D25; break;
                     case 30:
                         difficulty = D30; break;
-					case 40:
-						difficulty = D40; break;
+                    case 40:
+                        difficulty = D40; break;
                     default:
                         TC_LOG_WARN("scripts.solocraft.player.instance", "[SoloCraft] Unrecognized max players %d, defaulting to 10 man difficulty",
                             map->GetMapDifficulty()->MaxPlayers);
@@ -216,6 +216,7 @@ namespace {
     };
 }
 
-void AddSC_solocraft() {
+void AddSC_solocraft()
+{
     new solocraft_player_instance_handler();
 }
