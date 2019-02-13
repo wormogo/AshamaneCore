@@ -1,4 +1,4 @@
--- Quests: 24959, 28608, 26799, 28652, 24960, 25089, 26800
+-- Quests: 24959, 28608, 26799, 28652, 24960, 25089, 26800, 28653, 26801, 28651, 24961, 28672, 26802, 24973, 24970
 UPDATE creature SET position_z = 137.008 WHERE guid = 192768;
 UPDATE creature_template SET InhabitType = 4 WHERE entry = 49044;
 DELETE FROM `smart_scripts` WHERE `entryorguid` = 49044 AND `source_type` = 0;
@@ -210,6 +210,7 @@ INSERT INTO smart_scripts (entryorguid, source_type, id, link, event_type, event
 (49337, 0, 2, 0, 38, 0, 100, 1, 2, 2, 0, 0, 80, (49337*100)+1, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Darnell - On Data Set 2 2 - Start Script (No Repeat)"),
 (49337, 0, 3, 4, 54, 0, 100, 1, 0, 0, 0, 0, 80, (49337*100)+2, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Darnell - On Just Summoned - Start Script (No Repeat)"),
 (49337, 0, 4, 0, 61, 0, 100, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Darnell - On Just Summoned (Link) - Set React State (Passive)"),
+(49337, 0, 5, 0, 8, 0, 100, 0, 46598, 0, 0, 0, 11, 91935, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Darnell - On Spell Hit (46598) - Cast Spell Self (91935)"),
 (49337*100, 9, 0, 0, 0, 0, 100, 0, 3000, 3000, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Darnell - On Script - Say Text Line 1"),
 (49337*100, 9, 1, 0, 0, 0, 100, 0, 500, 500, 0, 0, 69, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 1783.75, 1595.59, 105.206, 0, "Darnell - On Script - Move To Position"),
 (49337*100, 9, 2, 0, 0, 0, 100, 0, 12000, 12000, 0, 0, 29, 0, 0, 0, 0, 0, 0, 23, 0, 0, 0, 0, 0, 0, 0, "Darnell - On Script - Set Follow Owner"),
@@ -240,3 +241,32 @@ INSERT INTO conditions (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`,
 -- (22, 3, 49337, 0, 0, 8, 0, 25089, 0, 0, 1, 0, 0, '', 'SAI only when player has not rewarded quest (25089)'),
 (22, 4, 49337, 0, 0, 9, 0, 26800, 0, 0, 0, 0, 0, '', 'SAI only when player has take quest (26800)');
 -- 91935
+DELETE FROM creature_queststarter WHERE quest = 24961 AND id = 38910;
+DELETE FROM `smart_scripts` WHERE `entryorguid` = 38910 AND `source_type` = 0;
+DELETE FROM `smart_scripts` WHERE `entryorguid` IN (38910*100, 38910*100+1) AND `source_type` = 9;
+INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES 
+(38910, 0, 0, 1, 62, 1, 100, 512, 11133, 0, 0, 0, 80, 38910*100, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Lilian Voss - On Gossip Option 0 Selected - Run Script (Phase 1)"),
+(38910, 0, 1, 8, 61, 1, 100, 512, 11133, 0, 0, 0, 72, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, "Lilian Voss - On Gossip Option 0 Selected - Close Gossip (Phase 1)"),
+(38910, 0, 2, 3, 62, 2, 100, 512, 11133, 0, 0, 0, 80, 38910*100+1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Lilian Voss - On Gossip Option 0 Selected - Run Script (Phase 2)"),
+(38910, 0, 3, 9, 61, 2, 100, 512, 11133, 0, 0, 0, 72, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, "Lilian Voss - On Gossip Option 0 Selected - Close Gossip (Phase 2)"),
+(38910, 0, 4, 0, 25, 0, 100, 0, 0, 0, 0, 0, 17, 431, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Lilian Voss - On Reset - Set Emote State 431"),
+(38910, 0, 5, 0, 25, 0, 100, 512, 0, 0, 0, 0, 22, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Lilian Voss - On Reset - Set Event Phase 1"),
+(38910, 0, 6, 0, 40, 0, 100, 0, 11, 3891000, 0, 0, 17, 431, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Lilian Voss - On Waypoint 11 Reached - Set Emote State 431"),
+(38910, 0, 7, 0, 40, 0, 100, 0, 11, 3891001, 0, 0, 17, 431, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Lilian Voss - On Waypoint 11 Reached - Set Emote State 431"),
+(38910, 0, 8, 0, 61, 0, 100, 512, 11133, 0, 0, 0, 85, 73210, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, "Lilian Voss - On Gossip Option 0 Selected - Invoker Cast 'Show Mirror' (Phase 1)"),
+(38910, 0, 9, 0, 61, 0, 100, 512, 11133, 0, 0, 0, 85, 73210, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, "Lilian Voss - On Gossip Option 0 Selected - Invoker Cast 'Show Mirror' (Phase 1)"),
+(38910*100, 9, 0, 0, 0, 0, 100, 0, 500, 500, 0, 0, 66, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, "Lilian Voss - On Script - Set Orientation"),
+(38910*100, 9, 1, 0, 0, 0, 100, 0, 0, 0, 0, 0, 17, 26, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Lilian Voss - On Script - Set Emote State (26)"),
+(38910*100, 9, 2, 0, 0, 0, 100, 0, 1000, 1000, 0, 0, 5, 18, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Lilian Voss - On Script - Play Emote (18)"),
+(38910*100, 9, 3, 0, 0, 0, 100, 0, 3200, 3200, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Lilian Voss - On Script - Say Line 0"),
+(38910*100, 9, 4, 0, 0, 0, 100, 0, 2000, 2000, 0, 0, 33, 38910, 0, 0, 0, 0, 0, 17, 0, 30, 0, 0, 0, 0, 0, "Lilian Voss - On Script - Quest Credit 'The Truth of the Grave'"),
+(38910*100, 9, 5, 0, 0, 0, 100, 0, 0, 0, 0, 0, 53, 1, 3891000, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Lilian Voss - On Script - Start Waypoint"),
+(38910*100, 9, 6, 0, 0, 0, 100, 0, 0, 0, 0, 0, 22, 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Lilian Voss - On Script - Set Event Phase 2"),
+(38910*100+1, 9, 0, 0, 0, 0, 100, 0, 500, 500, 0, 0, 66, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, "Lilian Voss - On Script - Set Orientation"),
+(38910*100+1, 9, 1, 0, 0, 0, 100, 0, 0, 0, 0, 0, 17, 26, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Lilian Voss - On Script - Set Emote State (26)"),
+(38910*100+1, 9, 2, 0, 0, 0, 100, 0, 1000, 1000, 0, 0, 5, 18, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Lilian Voss - On Script - Play Emote (18)"),
+(38910*100+1, 9, 3, 0, 0, 0, 100, 0, 3200, 3200, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Lilian Voss - On Script - Say Line 0"),
+(38910*100+1, 9, 4, 0, 0, 0, 100, 0, 2000, 2000, 0, 0, 33, 38910, 0, 0, 0, 0, 0, 17, 0, 30, 0, 0, 0, 0, 0, "Lilian Voss - On Script - Quest Credit 'The Truth of the Grave'"),
+(38910*100+1, 9, 5, 0, 0, 0, 100, 0, 0, 0, 0, 0, 53, 1, 3891001, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Lilian Voss - On Script - Start Waypoint"),
+(38910*100+1, 9, 6, 0, 0, 0, 100, 0, 0, 0, 0, 0, 22, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Lilian Voss - On Script - Set Event Phase 1");
+UPDATE creature_text SET emote = 18 WHERE CreatureID = 38910 AND GroupID = 0 AND ID = 0;

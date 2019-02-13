@@ -263,7 +263,7 @@ public:
                     if (me->GetVictim())
                     {
                         me->CastSpell(me->GetVictim(), SPELL_SPIKED_TONGUE, false);
-                        events.ScheduleEvent(EVENT_PLAYER_DEVOURING, 6s);
+                        events.ScheduleEvent(EVENT_PLAYER_DEVOURING, 6s + 100ms);
                     }
                     break;
                 case EVENT_PLAYER_DEVOURING:
@@ -273,7 +273,7 @@ public:
                         me->CastSpell(me->GetVictim(), SPELL_DEVOURING, false);
                         me->AddAura(SPELL_DEVOURING_BUFF, me);
                     }
-                    events.ScheduleEvent(EVENT_TO_1_PHASE, 4s);
+                    events.ScheduleEvent(EVENT_TO_1_PHASE, 3s + 500ms);
                     break;
             }
 

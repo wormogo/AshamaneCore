@@ -154,7 +154,7 @@ public:
                 case EVENT_LANDSLIDE:
                     me->CastSpell((Unit*)nullptr, SPELL_LANDSLIDE, false);
                     events.ScheduleEvent(EVENT_LANDSLIDE, 27s);
-                    events.ScheduleEvent(EVENT_MOLTEN_CRASH, 2s);
+                    events.ScheduleEvent(EVENT_MOLTEN_CRASH, 1s + 500ms);
                     break;
                 case EVENT_MOLTEN_CRASH:
                     if (me->GetVictim())

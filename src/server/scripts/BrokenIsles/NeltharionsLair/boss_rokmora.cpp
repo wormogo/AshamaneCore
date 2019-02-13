@@ -154,7 +154,7 @@ public:
                     break;
                 case EVENT_GO_TO_BARREL:
                         Talk(TALK_BARREL);
-                        events.ScheduleEvent(EVENT_SPIRITWALKER_DONT_BARREL, 4s);
+                        events.ScheduleEvent(EVENT_SPIRITWALKER_DONT_BARREL, 3s + 500ms);
                     break;
                 case EVENT_SPIRITWALKER_DONT_BARREL:
                     if (Creature* spiritwalkerNpc = me->FindNearestCreature(NPC_SPIRITWALKER, 90.0f, true))
@@ -232,7 +232,7 @@ public:
             switch(action)
             {
                 case ACTION_BARREL_TALK:
-                    events.ScheduleEvent(EVENT_TALK_DONT_BARREL, 1s);
+                    events.ScheduleEvent(EVENT_TALK_DONT_BARREL, 500ms);
                     break;
             }
         }
@@ -356,7 +356,7 @@ public:
                 case EVENT_PHRASE_2:
                     Talk(TALK_PHRASE_2);
                     events.ScheduleEvent(EVENT_AWAY, 6s);
-                    events.ScheduleEvent(EVENT_DATA_DONE, 5s);
+                    events.ScheduleEvent(EVENT_DATA_DONE, 5s + 500ms);
                     break;
                 case EVENT_AWAY:
                     me->SetWalk(false);
@@ -503,18 +503,18 @@ public:
                     Talk(TALK_SHATTER);
                     me->CastSpell(me->GetVictim(), SPELL_SHATTER, false);
                     if (!firstShardsCasted)
-                        events.ScheduleEvent(EVENT_RAZOR_SHARDS, 4s);
+                        events.ScheduleEvent(EVENT_RAZOR_SHARDS, 4s + 400ms);
                     else if (instance->instance->GetDifficultyID() >= 2)
-                        events.ScheduleEvent(EVENT_CRYSTALLINE_GROUND, 4s);
+                        events.ScheduleEvent(EVENT_CRYSTALLINE_GROUND, 4s + 400ms);
                     else
-                        events.ScheduleEvent(EVENT_MANARESET, 4s);
+                        events.ScheduleEvent(EVENT_MANARESET, 4s + 400ms);
                     break;
                 case EVENT_RAZOR_SHARDS:
                     me->CastSpell(me->GetVictim(), SPELL_RAZOR_SHARDS, false);
                     if (!firstShardsCasted)
                         firstShardsCasted = true;
 
-                    events.ScheduleEvent(EVENT_MANARESET, 4s);
+                    events.ScheduleEvent(EVENT_MANARESET, 3s + 900ms);
                     events.ScheduleEvent(EVENT_RAZOR_SHARDS, 30s);
                     break;
                 case EVENT_CRYSTALLINE_GROUND:
